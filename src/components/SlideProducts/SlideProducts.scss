@@ -1,0 +1,21 @@
+.products-list {
+  &__item {
+    .title {
+      strong:hover {
+        color: #22A6F2;
+      }
+    }
+    .price{
+      color: red;
+      font-size: 18px;
+      font-weight: bold ;
+    }
+    .priceOld{
+      margin: 0;
+      color: #888;
+      font-size: 12px;
+      text-decoration: line-through;
+    }
+  }
+
+}
