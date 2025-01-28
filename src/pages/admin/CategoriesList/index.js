@@ -163,9 +163,8 @@ function CategoriesList() {
           <Form onFinish={onFinish} layout="vertical">
             <Row gutter={[12, 12]}>
               <Col span={4}>
-                <Form.Item label="Sắp xếp theo vị trí" name="sortPrice">
+                <Form.Item label="Sắp xếp theo vị trí" name="sortPrice" initialValue="">
                   <Select
-                    defaultValue=""
                     onChange={handleChangePosition}
                     options={[
                       {

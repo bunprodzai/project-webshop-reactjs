@@ -49,7 +49,6 @@ function HeaderClient() {
   const [setting, setSetting] = useState([]);
 
   // menu
-  const [activeLink, setActiveLink] = useState("TRANG CHỦ"); // Link mặc định active
   const [menu, setMenu] = useState([]);
 
   // end menu
@@ -126,10 +125,6 @@ function HeaderClient() {
     if (componentRef.current && !componentRef.current.contains(event.target)) {
       setIsMenuOpen(false);
     }
-  };
-
-  const handleActive = (link) => {
-    setActiveLink(link); // Cập nhật link đang active
   };
 
   const handleReload = () => {
@@ -221,9 +216,8 @@ function HeaderClient() {
           {menu.map((link) => (
             <li
               key={link.url}
-              className={activeLink === link.title ? "active" : ""}
             >
-              <a href={link.url} onClick={() => handleActive(link.title)}>
+              <a href={link.url}>
                 {link.title}
               </a>
               {/* Kiểm tra nếu có children thì render submenu */}

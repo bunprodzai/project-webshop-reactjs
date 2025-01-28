@@ -186,9 +186,8 @@ function ProductList() {
                 </Form.Item>
               </Col>
               <Col span={4}>
-                <Form.Item label="Giá" name="sortPrice">
+                <Form.Item label="Giá" name="sortPrice" initialValue="">
                   <Select
-                    defaultValue=""
                     onChange={handleChangePrice}
                     options={[
                       {
@@ -208,9 +207,8 @@ function ProductList() {
                 </Form.Item>
               </Col>
               <Col span={4}>
-                <Form.Item label="Số lượng" name="sortStock">
+                <Form.Item label="Số lượng" name="sortStock" initialValue="">
                   <Select
-                    defaultValue=""
                     onChange={handleChangePosition}
                     options={[
                       {

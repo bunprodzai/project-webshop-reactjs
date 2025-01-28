@@ -1,6 +1,6 @@
 import { Button, Layout } from "antd";
 import { useEffect, useState } from "react";
-import { CaretLeftOutlined, HomeOutlined } from "@ant-design/icons";
+import { CaretLeftOutlined, CaretRightOutlined, HomeOutlined } from "@ant-design/icons";
 import "./LayoutAdmin.scss";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import MenuSider from "../../components/MenuSider";
@@ -8,8 +8,8 @@ import logo from "../../images/jobs.svg";
 import logoFold from "../../images/logo-fold.png";
 import { getCookie } from "../../helpers/cookie";
 
-
 const { Sider, Content } = Layout;
+
 function LayoutAdmin() {
   const [loading, setLoading] = useState(false);
   const [fullName, setFullName] = useState('');
@@ -34,20 +34,23 @@ function LayoutAdmin() {
             <div className="header__nav" >
               <div className="header__nav-left">
                 <div className="header__nav-menu">
-                  <CaretLeftOutlined onClick={() => setLoading(!loading)} />
+                  {loading ?
+                    <CaretRightOutlined onClick={() => setLoading(!loading)} />
+                    :
+                    <CaretLeftOutlined  onClick={() => setLoading(!loading)} />}
                 </div>
                 <div>
-                  <h5>Bún đẹp zai</h5>
+                  <h3>Trang quản trị</h3>
                 </div>
               </div>
               <div className="header__nav-right">
                 <div className="header__nav-right-title">
-                  <Button style={{ marginBottom: "5px" }} onClick={() => {navigate(`/admin/account-info`)}}>
+                  <Button style={{ marginBottom: "5px" }} onClick={() => { navigate(`/admin/account-info`) }}>
                     <HomeOutlined className="icons_home" /> Xin chào , <b>{fullName}</b>
                   </Button>
                 </div>
                 <div className="header__nav-right-link">
-                  <NavLink to="/" ><Button>Trang chủ</Button></NavLink>
+                  <NavLink to="/" target="_blank"><Button>Trang chủ</Button></NavLink>
                   <NavLink to="/auth/logout"><Button>Đăng xuất</Button></NavLink>
                 </div>
               </div>

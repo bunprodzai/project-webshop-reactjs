@@ -25,3 +25,13 @@ export const changeStatusAccountGet = async (token, status, id) => {
   const result = await getAuth(`${admin}/accounts/change-status/${status}/${id}`, token);
   return result;
 }
+
+export const resetPasswordAccountPatch = async (token, options) => {
+  const result = await patchAuth(`${admin}/accounts/reset-password`, options, token);
+  return result;
+}
+
+export const infoAccountPatch = async (token, option) => {
+  const result = await patchAuth(`${admin}/accounts/info`, option, token);
+  return result;
+}

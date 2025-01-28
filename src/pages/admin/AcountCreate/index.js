@@ -138,62 +138,64 @@ function AccountCreate() {
                 </Col>
                 <Col span={24}>
                   <Form.Item label="Ảnh đại diện" name="avatar">
-                    <Upload
-                      name="file"
-                      listType="picture-card"
-                      showUploadList={{ showPreviewIcon: false }}
-                      maxCount={1} // Giới hạn chỉ được chọn 1 ảnh
-                      customRequest={async ({ file, onSuccess, onError }) => {
-                        const formData = new FormData();
-                        formData.append("file", file);
-                        formData.append("upload_preset", "my_preset"); // Thay bằng preset của bạn
+                    <div>
+                      <Upload
+                        name="file"
+                        listType="picture-card"
+                        showUploadList={{ showPreviewIcon: false }}
+                        maxCount={1} // Giới hạn chỉ được chọn 1 ảnh
+                        customRequest={async ({ file, onSuccess, onError }) => {
+                          const formData = new FormData();
+                          formData.append("file", file);
+                          formData.append("upload_preset", "my_preset"); // Thay bằng preset của bạn
 
-                        try {
-                          const response = await fetch(
-                            `https://api.cloudinary.com/v1_1/djckm3ust/image/upload`,
-                            {
-                              method: "POST",
-                              body: formData,
-                            }
-                          );
-                          const data = await response.json();
-
-                          if (data.secure_url) {
-                            setImageUrl(data.secure_url); // Lưu đường dẫn ảnh
-                            setFileList([
+                          try {
+                            const response = await fetch(
+                              `https://api.cloudinary.com/v1_1/djckm3ust/image/upload`,
                               {
-                                uid: data.asset_id,
-                                name: data.original_filename,
-                                status: "done",
-                                url: data.secure_url,
-                              },
-                            ]);
-                            onSuccess(data);
+                                method: "POST",
+                                body: formData,
+                              }
+                            );
+                            const data = await response.json();
+
+                            if (data.secure_url) {
+                              setImageUrl(data.secure_url); // Lưu đường dẫn ảnh
+                              setFileList([
+                                {
+                                  uid: data.asset_id,
+                                  name: data.original_filename,
+                                  status: "done",
+                                  url: data.secure_url,
+                                },
+                              ]);
+                              onSuccess(data);
+                            }
+                          } catch (error) {
+                            console.error("Lỗi khi upload ảnh:", error);
+                            onError(error);
                           }
-                        } catch (error) {
-                          console.error("Lỗi khi upload ảnh:", error);
-                          onError(error);
-                        }
-                      }}
-                      onChange={({ fileList: newFileList }) => setFileList(newFileList)}
-                      onRemove={() => {
-                        setImageUrl(""); // Xóa link ảnh
-                        setFileList([]); // Xóa danh sách file
-                      }}
-                    >
-                      {fileList.length >= 1 ? null : (
-                        <div>
-                          <PlusOutlined />
-                          <div style={{ marginTop: 8 }}>Upload</div>
+                        }}
+                        onChange={({ fileList: newFileList }) => setFileList(newFileList)}
+                        onRemove={() => {
+                          setImageUrl(""); // Xóa link ảnh
+                          setFileList([]); // Xóa danh sách file
+                        }}
+                      >
+                        {fileList.length >= 1 ? null : (
+                          <div>
+                            <PlusOutlined />
+                            <div style={{ marginTop: 8 }}>Upload</div>
+                          </div>
+                        )}
+                      </Upload>
+                      {imageUrl && (
+                        <div style={{ marginTop: "10px" }}>
+                          <p>Link ảnh:</p>
+                          <Input value={imageUrl} readOnly />
                         </div>
                       )}
-                    </Upload>
-                    {imageUrl && (
-                      <div style={{ marginTop: "10px" }}>
-                        <p>Link ảnh:</p>
-                        <Input value={imageUrl} readOnly />
-                      </div>
-                    )}
+                    </div>
                   </Form.Item>
                 </Col>
                 <Col span={24}>
@@ -206,7 +208,7 @@ function AccountCreate() {
                 </Col>
                 <Col span={24}>
                   <Form.Item>
-                    <Button type="primary" htmlType="submit" name="btn">
+                    <Button type="primary" htmlType="submit">
                       Tạo
                     </Button>
                   </Form.Item>

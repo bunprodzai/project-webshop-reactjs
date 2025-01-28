@@ -171,45 +171,47 @@ function SettingGeneral() {
                 </Col>
                 <Col span={24}>
                   <Form.Item label="Ảnh nhỏ" name="logo">
-                    <Upload
-                      name="file"
-                      listType="picture-card"
-                      showUploadList={{ showPreviewIcon: false }}
-                      maxCount={1} // Giới hạn chỉ được chọn 1 ảnh
-                      customRequest={handleCustomRequest}
-                      onChange={({ fileList: newFileList }) => setFileList(newFileList)}
-                      onRemove={handleRemove}
-                      defaultFileList={[
-                        ...(fileList.length
-                          ? fileList
-                          : [
-                            {
-                              uid: "-1", // UID duy nhất cho ảnh đã có
-                              name: "existing-image", // Tên ảnh có sẵn
-                              status: "done",
-                              url: imageUrl, // Hiển thị ảnh hiện tại trong preview
-                            },
-                          ]),
-                      ]}
-                    >
-                      {fileList.length >= 1 ? null : (
-                        <div>
-                          <PlusOutlined />
-                          <div style={{ marginTop: 8 }}>Upload</div>
+                    <div>
+                      <Upload
+                        name="file"
+                        listType="picture-card"
+                        showUploadList={{ showPreviewIcon: false }}
+                        maxCount={1} // Giới hạn chỉ được chọn 1 ảnh
+                        customRequest={handleCustomRequest}
+                        onChange={({ fileList: newFileList }) => setFileList(newFileList)}
+                        onRemove={handleRemove}
+                        defaultFileList={[
+                          ...(fileList.length
+                            ? fileList
+                            : [
+                              {
+                                uid: "-1", // UID duy nhất cho ảnh đã có
+                                name: "existing-image", // Tên ảnh có sẵn
+                                status: "done",
+                                url: imageUrl, // Hiển thị ảnh hiện tại trong preview
+                              },
+                            ]),
+                        ]}
+                      >
+                        {fileList.length >= 1 ? null : (
+                          <div>
+                            <PlusOutlined />
+                            <div style={{ marginTop: 8 }}>Upload</div>
+                          </div>
+                        )}
+                      </Upload>
+                      {imageUrl && (
+                        <div style={{ marginTop: "10px" }}>
+                          <p>Link ảnh:</p>
+                          <Input value={imageUrl} readOnly />
                         </div>
                       )}
-                    </Upload>
-                    {imageUrl && (
-                      <div style={{ marginTop: "10px" }}>
-                        <p>Link ảnh:</p>
-                        <Input value={imageUrl} readOnly />
-                      </div>
-                    )}
+                    </div>
                   </Form.Item>
                 </Col>
                 <Col span={24}>
                   <Form.Item>
-                    <Button type="primary" htmlType="submit" name="btn">
+                    <Button type="primary" htmlType="submit" >
                       Cập nhập
                     </Button>
                   </Form.Item>

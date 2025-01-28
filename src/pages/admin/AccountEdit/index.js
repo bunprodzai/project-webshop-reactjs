@@ -11,6 +11,8 @@ function AccountEdit(props) {
   const token = getCookie("token");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Danh sách quyền
   const [roles, setRoles] = useState([]);
 
   const [form] = Form.useForm();
@@ -25,7 +27,6 @@ function AccountEdit(props) {
   // upload img
   const [imageUrl, setImageUrl] = useState(record.avatar);
   const [fileList, setFileList] = useState([]);
-  
   // upload img
 
   useEffect(() => {
@@ -66,6 +67,7 @@ function AccountEdit(props) {
     setIsModalOpen(false);
   };
 
+  // xử lý edit
   const onFinish = async (e) => {
     e.avatar = imageUrl ? imageUrl : "";
     e.role_id = !e.role_id ? "" : e.role_id;
@@ -108,7 +110,7 @@ function AccountEdit(props) {
   };
 
 
-  // Upload ảnh
+  // upload img
   const handleCustomRequest = async ({ file, onSuccess, onError }) => {
     const formData = new FormData();
     formData.append("file", file);
@@ -145,7 +147,7 @@ function AccountEdit(props) {
     setImageUrl(""); // Xóa link ảnh
     setFileList([]); // Xóa danh sách file
   }
-  // end upload ảnh
+  // upload img
   return (
     <>
       <Button icon={<EditOutlined />} type="primary" ghost onClick={showModal} />
