@@ -26,7 +26,7 @@ import Cart from "../pages/clients/Cart";
 import InfoCheckOut from "../pages/clients/InfoCheckOut";
 import CheckoutPay from "../pages/clients/CheckoutPay";
 import InfoUser from "../pages/clients/InfoUser";
-import ProductsCategory from "../components/ProductsCategory";
+import Categories from "../components/Categories";
 import AccountInfo from "../pages/admin/AccountInfo";
 
 const pathAdmin = "admin";
@@ -69,8 +69,8 @@ export const routes = [
         element: <InfoUser />
       },
       {
-        path: `danh-muc/:slug`,
-        element: <ProductsCategory />
+        path: `danh-muc`,
+        element: <Categories />
       }
       // {
       //   path: "login",

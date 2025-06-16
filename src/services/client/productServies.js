@@ -6,8 +6,8 @@ export const detailProductGet = async (slug) => {
   return result;
 }
 
-export const productsCategoryGet = async (slugCategory) => {
-  const result = await get(`/products/${slugCategory}`);
+export const productsCategoryGet = async (slugCategory, sortKey, sortType, price) => {
+  const result = await get(`/products/${slugCategory}?sortKey=${sortKey}&sortType=${sortType}&priceRange=${price}`);
   return result;
 }
 

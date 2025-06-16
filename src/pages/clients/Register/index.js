@@ -1,5 +1,5 @@
 import { Button, Col, Form, Input, message, Modal, Row } from "antd";
-import { UserOutlined, LockOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import "./Register.scss";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
@@ -41,7 +41,7 @@ function Register(props) {
 
   return (
     <>
-      <Button color="default" style={{ marginLeft: "5px" }} icon={<PlusCircleOutlined />} onClick={showModal} >Đăng ký</Button>
+      <Button color="default" style={{ marginLeft: "5px" }} onClick={showModal} >Sign up</Button>
       <Modal
         open={isModalOpen}
         onOk={handleOk}

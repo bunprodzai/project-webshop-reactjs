@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getCookie } from "../../../helpers/cookie";
-import { Card, message, Modal, Table, Tag } from "antd";
+import { Card, message, Modal, Select, Table, Tag } from "antd";
 import { changeStatusOrderGet, listOrderGet } from "../../../services/admin/orderServies";
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import OrderDetail from "../OrderDetail";
@@ -28,6 +28,7 @@ function OrderList() {
         createdAt: order.createdAt,
         quantityOrder: order.products.reduce((sum, product) => sum + product.quantity, 0),
         products: order.products,
+        paymentMethod: order.paymentMethod,
         code: order.code,
         status: order.status
       }));
@@ -57,32 +58,55 @@ function OrderList() {
     fetchApi();
   }
 
-  const handleCLickStatus = (e) => {
+  const handleChangeStatus = (newStatus, code) => {
     confirm({
-      title: 'Bạn chắc chắn là hoàn thành đơn hàng này?',
+      title: 'Bạn chắc chắn muốn thay đổi trạng thái đơn hàng?',
       icon: <ExclamationCircleFilled />,
       onOk() {
-        const code = e.target.attributes[0].value.split("-")[1];
-
         const fetchApiChangeStatus = async () => {
-          const response = await changeStatusOrderGet(token, "success", code);
+          const response = await changeStatusOrderGet(token, newStatus, code);
 
           if (response.code === 200) {
             message.success(response.message);
             handleReload();
           } else {
-            message.error(response.message)
+            message.error(response.message);
           }
-        }
+        };
 
         fetchApiChangeStatus();
       },
-      onCancel() {
-      },
+      onCancel() { },
     });
-  }
+  };
+
+  // const handleCLickStatus = (e) => {
+  //   confirm({
+  //     title: 'Bạn chắc chắn là hoàn thành đơn hàng này?',
+  //     icon: <ExclamationCircleFilled />,
+  //     onOk() {
+  //       const code = e.target.attributes[0].value.split("-")[1];
+
+  //       const fetchApiChangeStatus = async () => {
+  //         const response = await changeStatusOrderGet(token, "success", code);
+
+  //         if (response.code === 200) {
+  //           message.success(response.message);
+  //           handleReload();
+  //         } else {
+  //           message.error(response.message)
+  //         }
+  //       }
+
+  //       fetchApiChangeStatus();
+  //     },
+  //     onCancel() {
+  //     },
+  //   });
+  // }
 
   // Data đổ vào table
+
   const columns = [
     {
       title: 'Họ tên',
@@ -106,13 +130,28 @@ function OrderList() {
       key: 'address',
     },
     {
+      title: 'Phương thức thanh toán',
+      dataIndex: 'paymentMethod',
+      key: 'paymentMethod',
+    },
+    {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
       render: (_, record) => {
         return (
           <>
-            {record.status === "initialize" && (
+            <Select
+              defaultValue={record.status}
+              style={{ width: 140 }}
+              onChange={(value) => handleChangeStatus(value, record.code)}
+            >
+              <Select.Option value="initialize">Khởi tạo</Select.Option>
+              <Select.Option value="received">Đã nhận</Select.Option>
+              <Select.Option value="success">Hoàn thành</Select.Option>
+              <Select.Option value="cancelled">Đã hủy</Select.Option>
+            </Select>
+            {/* {record.status === "initialize" && (
               <Tag color="processing" key={`initialize-${record.code}`} style={{ cursor: "pointer" }} >
                 Khởi tạo
               </Tag>
@@ -126,7 +165,7 @@ function OrderList() {
               <Tag color={"success"} key={`success-${record.code}`} style={{ cursor: "pointer" }} >
                 Hoàn thành
               </Tag>
-            )}
+            )} */}
           </>
         )
       }
@@ -180,7 +219,7 @@ function OrderList() {
               className='table-list'
               rowKey={(record) => record._id} // Đảm bảo rằng mỗi hàng trong bảng có key duy nhất
               pagination={{
-                pageSize: 5, // Số mục trên mỗi trang
+                pageSize: 10, // Số mục trên mỗi trang
                 total: orders.length, // Tổng số mục (dựa trên data)
                 showSizeChanger: false, // Ẩn tính năng thay đổi số mục trên mỗi trang
                 style: { display: 'flex', justifyContent: 'center' }, // Căn giữa phân trang

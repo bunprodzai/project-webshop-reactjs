@@ -22,7 +22,7 @@ function FooterClient() {
   return (
     <>
       <Footer className="layout-default__footer">
-        <div className="container">
+        {/* <div className="container">
           <div className="content">
             <Row gutter={[16, 16]}>
               <Col span={6}>
@@ -120,7 +120,7 @@ function FooterClient() {
           <div className="copy-right">
             <p>Copyright © 2024 bundepzai.zz. Design by Bunz.vn</p>
           </div>
-        </div>
+        </div> */}
       </Footer>
     </>
   )

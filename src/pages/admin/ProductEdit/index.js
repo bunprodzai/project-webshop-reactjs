@@ -1,11 +1,13 @@
-import { Button, Col, Form, Input, message, Modal, Radio, Row, Select, Upload } from "antd";
-import { EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Col, Form, Input, message, Modal, Radio, Row, Select } from "antd";
+import { EditOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
 import { editProduct } from "../../../services/admin/productServies";
 import { getCookie } from "../../../helpers/cookie";
 import { listCategory } from "../../../services/admin/categoryServies";
 import NoRole from "../../../components/NoRole";
+import UploadFile from "../../../components/UploadFile";
+import UploadFiles from "../../../components/UploadFiles";
 
 function ProductEdit(props) {
   const permissions = JSON.parse(localStorage.getItem('permissions'));
@@ -14,6 +16,7 @@ function ProductEdit(props) {
   const token = getCookie("token");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
   const [categories, setCategories] = useState([]);
 
   const [form] = Form.useForm();
@@ -29,9 +32,10 @@ function ProductEdit(props) {
   const onChangeFeatured = (e) => {
     setValueRadioFeatured(e.target.value);
   }
+
   // upload img
-  const [imageUrl, setImageUrl] = useState(record.thumbnail);
-  const [fileList, setFileList] = useState([]);
+  const [thumbnailUrl, setThumbnailUrl] = useState(record.thumbnail);
+  const [imageUrls, setImageUrls] = useState(record.images || []);
   // upload img
 
   useEffect(() => {
@@ -54,7 +58,7 @@ function ProductEdit(props) {
 
     fetchApi();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [thumbnailUrl]);
 
   // Tạo options cho Select 
   const options = categories.map((category) => ({
@@ -73,7 +77,8 @@ function ProductEdit(props) {
   };
 
   const onFinish = async (e) => {
-    e.thumbnail = imageUrl ? imageUrl : "";
+    e.thumbnail = thumbnailUrl ? thumbnailUrl : "";
+    e.images = imageUrls ? imageUrls : [];
     e.position = !e.position ? "" : Number(e.position);
     e.product_category_id = !e.product_category_id ? "" : e.product_category_id;
     e.description = !e.description ? "" : e.description;
@@ -81,13 +86,10 @@ function ProductEdit(props) {
     e.price = Number(e.price);
     e.stock = Number(e.stock);
     e.discountPercentage = Number(e.discountPercentage);
-    // console.log(e);
-    // console.log(record);
-
 
     const response = await editProduct(record._id, e, token);
     if (response.code === 200) {
-      message.success("Cap nhap thanh cong");
+      message.success("Cập nhật thành công");
       onReload();
       handleCancel();
     } else {
@@ -95,42 +97,6 @@ function ProductEdit(props) {
     }
   };
 
-  const handleCustomRequest = async ({ file, onSuccess, onError }) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "my_preset"); // Thay bằng preset của bạn
-
-    try {
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/djckm3ust/image/upload`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-      const data = await response.json();
-
-      if (data.secure_url) {
-        setImageUrl(data.secure_url); // Cập nhật link ảnh
-        setFileList([
-          {
-            uid: data.asset_id, // Đảm bảo UID là duy nhất
-            name: data.original_filename,
-            status: "done",
-            url: data.secure_url,
-          },
-        ]);
-        onSuccess(data);
-      }
-    } catch (error) {
-      message.error("Lỗi khi upload ảnh:", error);
-      onError(error);
-    }
-  };
-  const handleRemove = () => {
-    setImageUrl(""); // Xóa link ảnh
-    setFileList([]); // Xóa danh sách file
-  }
   return (
     <>
       {permissions.includes("products_view") ?
@@ -190,40 +156,12 @@ function ProductEdit(props) {
                 </Col>
                 <Col span={24}>
                   <Form.Item label="Ảnh nhỏ" name="thumbnail">
-                    <Upload
-                      name="file"
-                      listType="picture-card"
-                      showUploadList={{ showPreviewIcon: false }}
-                      maxCount={1} // Giới hạn chỉ được chọn 1 ảnh
-                      customRequest={handleCustomRequest}
-                      onChange={({ fileList: newFileList }) => setFileList(newFileList)}
-                      onRemove={handleRemove}
-                      defaultFileList={[
-                        ...(fileList.length
-                          ? fileList
-                          : [
-                            {
-                              uid: "-1", // UID duy nhất cho ảnh đã có
-                              name: "existing-image", // Tên ảnh có sẵn
-                              status: "done",
-                              url: imageUrl, // Hiển thị ảnh hiện tại trong preview
-                            },
-                          ]),
-                      ]}
-                    >
-                      {fileList.length >= 1 ? null : (
-                        <div>
-                          <PlusOutlined />
-                          <div style={{ marginTop: 8 }}>Upload</div>
-                        </div>
-                      )}
-                    </Upload>
-                    {imageUrl && (
-                      <div style={{ marginTop: "10px" }}>
-                        <p>Link ảnh:</p>
-                        <Input value={imageUrl} readOnly />
-                      </div>
-                    )}
+                    <UploadFile onImageUrlsChange={setThumbnailUrl} initialImageUrls={thumbnailUrl} />
+                  </Form.Item>
+                </Col>
+                <Col span={24}>
+                  <Form.Item label="Ảnh mô tả" name="images">
+                    <UploadFiles onImageUrlsChange={setImageUrls} initialImageUrls={imageUrls} />
                   </Form.Item>
                 </Col>
                 <Col span={24}>

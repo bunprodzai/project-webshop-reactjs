@@ -1,5 +1,4 @@
-import { Button, Card, Col, Form, Input, message, Row, Select, Switch, Upload } from "antd";
-import { PlusOutlined } from "@ant-design/icons"
+import { Button, Card, Col, Form, Input, message, Row, Select, Switch } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useEffect, useState } from "react";
 import { listCategory } from "../../../services/admin/categoryServies";
@@ -7,6 +6,8 @@ import { addCategory } from "../../../services/admin/categoryServies";
 import { getCookie } from "../../../helpers/cookie";
 import { useNavigate } from "react-router-dom";
 import NoRole from "../../../components/NoRole";
+// import UploadFiles from "../../../components/UploadFiles";
+import UploadFile from "../../../components/UploadFile";
 
 function CategoriesCreate() {
   const permissions = JSON.parse(localStorage.getItem('permissions'));
@@ -15,8 +16,7 @@ function CategoriesCreate() {
   const token = getCookie("token"); // Lấy token từ cookie
   const navigate = useNavigate();
   // upload img
-  const [imageUrl, setImageUrl] = useState("");
-  const [fileList, setFileList] = useState([]);
+  const [imageUrls, setImageUrls] = useState("");
 
 
   useEffect(() => {
@@ -37,11 +37,10 @@ function CategoriesCreate() {
     };
 
     fetchApi();
-  }, [token]); // Thêm token vào dependency để đảm bảo cập nhật khi token thay đổi
+  }, [token, imageUrls]); // Thêm token vào dependency để đảm bảo cập nhật khi token thay đổi
 
   // xử lý submit
   const onFinish = async (e) => {
-
     if (!e.title) {
       message.error("Vui lòng nhập tiêu đề");
       return;
@@ -51,8 +50,8 @@ function CategoriesCreate() {
     e.parent_id = !e.parent_id ? "" : e.parent_id;
     e.description = !e.description ? "" : e.description;
     e.position = !e.position ? "" : Number(e.position);
-    e.thumbnail = imageUrl ? imageUrl : "";
-    console.log(e);
+    e.thumbnail = imageUrls ? imageUrls : "";
+
     try {
       const response = await addCategory(e, token); // Truyền token vào hàm
       console.log(response);
@@ -67,7 +66,7 @@ function CategoriesCreate() {
     }
   }
   // xử lý submit
-  // console.log(categories);
+
 
   // options cho Select
   // Hàm đệ quy để xây dựng danh sách Select
@@ -128,64 +127,8 @@ function CategoriesCreate() {
                 </Col>
                 <Col span={24}>
                   <Form.Item label="Ảnh nhỏ" name="thumbnail">
-                    <div>
-                      <Upload
-                        name="file"
-                        listType="picture-card"
-                        showUploadList={{ showPreviewIcon: false }}
-                        maxCount={1} // Giới hạn chỉ được chọn 1 ảnh
-                        customRequest={async ({ file, onSuccess, onError }) => {
-                          const formData = new FormData();
-                          formData.append("file", file);
-                          formData.append("upload_preset", "my_preset"); // Thay bằng preset của bạn
-
-                          try {
-                            const response = await fetch(
-                              `https://api.cloudinary.com/v1_1/djckm3ust/image/upload`,
-                              {
-                                method: "POST",
-                                body: formData,
-                              }
-                            );
-                            const data = await response.json();
-
-                            if (data.secure_url) {
-                              setImageUrl(data.secure_url); // Lưu đường dẫn ảnh
-                              setFileList([
-                                {
-                                  uid: data.asset_id,
-                                  name: data.original_filename,
-                                  status: "done",
-                                  url: data.secure_url,
-                                },
-                              ]);
-                              onSuccess(data);
-                            }
-                          } catch (error) {
-                            console.error("Lỗi khi upload ảnh:", error);
-                            onError(error);
-                          }
-                        }}
-                        onChange={({ fileList: newFileList }) => setFileList(newFileList)}
-                        onRemove={() => {
-                          setImageUrl(""); // Xóa link ảnh
-                          setFileList([]); // Xóa danh sách file
-                        }}
-                      >
-                        {fileList.length >= 1 ? null : (
-                          <div>
-                            <PlusOutlined />
-                            <div style={{ marginTop: 8 }}>Upload</div>
-                          </div>
-                        )}
-                      </Upload>
-                      {imageUrl && (
-                        <div style={{ marginTop: "10px" }}>
-                          <p>Link ảnh:</p>
-                          <Input value={imageUrl} readOnly />
-                        </div>
-                      )}
-                    </div>
+                    {/* <UploadFiles onImageUrlsChange={setImageUrls} /> */}
+                    <UploadFile onImageUrlsChange={setImageUrls} />
                   </Form.Item>
                 </Col>
                 <Col span={24}>
@@ -194,7 +137,7 @@ function CategoriesCreate() {
                   </Form.Item>
                 </Col>
                 <Col span={24}>
-                  <Form.Item label="Hoạt động / Tắt hoạt động" name="status">
+                  <Form.Item label="Tắt hoạt động / Hoạt động " name="status">
                     <Switch />
                   </Form.Item>
                 </Col>

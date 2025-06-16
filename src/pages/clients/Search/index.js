@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import SlideProducts from "../../../components/SlideProducts";
+import ListProduct from "../../../components/ListProduct";
 import { productsSearchGet } from "../../../services/client/productServies";
 
 
@@ -28,7 +28,7 @@ function Search() {
   
   return (
     <>
-      <SlideProducts products={products} title={`Kết quả tìm kiếm: ${keyword}`}/>
+      <ListProduct products={products} title={`Kết quả tìm kiếm: ${keyword}`}/>
     </>
   )
 

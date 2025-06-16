@@ -37,7 +37,7 @@ function ForgotPassword(props) {
 
   return (
     <>
-      <p color="default" className="forgot" icon={<LoginOutlined />} onClick={showModal} >Quên mật khẩu?</p>
+      <p color="default" className="forgot" icon={<LoginOutlined />} onClick={showModal} >Forgot password?</p>
       <Modal
         open={isModalOpen}
         onOk={handleOk}

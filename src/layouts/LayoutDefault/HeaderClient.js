@@ -1,32 +1,17 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { getCookie } from "../../helpers/cookie";
-import { Button, Col, Input, Layout, Form, Row, Image, Badge, Avatar } from 'antd';
 import { useDispatch, useSelector } from "react-redux";
 import LoginUser from "../../pages/clients/LoginUser";
-import { LogoutOutlined, SearchOutlined, ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
 import { useEffect, useRef, useState } from "react";
 import { settingGeneralGet } from "../../services/client/settingServies";
 import { findCartGet } from "../../services/client/cartServies";
 import { updateCartLength } from "../../actions/cart";
 import Register from "../../pages/clients/Register";
-import { listCategoriesGet } from "../../services/client/productCategoriesServies";
 
-const createTree = (arr, parentId = "") => {
-  const tree = [];
-  arr.forEach((item) => {
-    if (item.parent_id === parentId) {
-      const newItem = { ...item }; // Sao chép để tránh sửa trực tiếp
-      const children = createTree(arr, item._id);
-      if (children.length > 0) {
-        newItem.children = children;
-      }
-      tree.push(newItem);
-    }
-  });
-  return tree;
-};
+import { ShoppingCartOutlined, SearchOutlined, HeartOutlined, UserOutlined, LogoutOutlined } from "@ant-design/icons"
+import { Layout, Button, Input, Badge, Space, Form, Row, Col } from "antd"
 
-const { Header } = Layout;
+const { Header } = Layout
 
 function HeaderClient() {
   // Khi islogin thay đổi thì sẽ render lại component này
@@ -34,7 +19,7 @@ function HeaderClient() {
   const isLogin = useSelector(state => state.loginUserReducers);
 
   const tokenUser = getCookie("tokenUser");
-  const avatar = getCookie("avatar");
+  // const avatar = getCookie("avatar");
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -43,15 +28,10 @@ function HeaderClient() {
   // Xử lý hiển thị số lượng sản phẩm trong giỏ hàng.
   const dispatch = useDispatch();
   const lengthCart = useSelector((state) => state.cartReducer.lengthCart);
-  // Xử lý hiển thị số lượng sản phẩm trong giỏ hàng.
+  
 
   // Phần hiển thị thông tin trang web
   const [setting, setSetting] = useState([]);
-
-  // menu
-  const [menu, setMenu] = useState([]);
-
-  // end menu
 
   useEffect(() => {
     const fetchApiSetting = async () => {
@@ -72,44 +52,44 @@ function HeaderClient() {
 
     fetchApiSetting();
 
-    const fetchApiCategories = async () => {
-      try {
-        // Lấy thông tin web
-        const response = await listCategoriesGet();
-        const tree = createTree(response.productsCategory);
-        setMenu([
-          {
-            title: "TRANG CHỦ",
-            url: "/"
-          },
-          {
-            title: "DANH MỤC",
-            url: "danh-muc",
-            children: tree,
-          },
-          {
-            title: "GIỚI THIỆU",
-            url: "#"
-          },
-          // {
-          //   title: "TƯ VẤN CHỌN",
-          //   url: "#"
-          // },
-          // {
-          //   title: "TẠP CHÍ NƯỚC HOA",
-          //   url: "https://www.facebook.com/bunsdzpo"
-          // },
-          // {
-          //   title: "LIÊN HỆ",
-          //   url: "https://www.facebook.com/bunsdzpr"
-          // }
-        ]);
+    // const fetchApiCategories = async () => {
+    //   try {
+    //     // Lấy thông tin web
+    //     const response = await listCategoriesGet();
+    //     const tree = createTree(response.productsCategory);
+    //     setMenu([
+    //       {
+    //         title: "TRANG CHỦ",
+    //         url: "/"
+    //       },
+    //       {
+    //         title: "DANH MỤC",
+    //         url: "danh-muc",
+    //         children: tree,
+    //       },
+    //       {
+    //         title: "GIỚI THIỆU",
+    //         url: "#"
+    //       },
+    //       // {
+    //       //   title: "TƯ VẤN CHỌN",
+    //       //   url: "#"
+    //       // },
+    //       // {
+    //       //   title: "TẠP CHÍ NƯỚC HOA",
+    //       //   url: "https://www.facebook.com/bunsdzpo"
+    //       // },
+    //       // {
+    //       //   title: "LIÊN HỆ",
+    //       //   url: "https://www.facebook.com/bunsdzpr"
+    //       // }
+    //     ]);
 
-      } catch (error) {
-      }
-    };
+    //   } catch (error) {
+    //   }
+    // };
 
-    fetchApiCategories();
+    // fetchApiCategories();  
 
     // Gắn sự kiện click trên document
     document.addEventListener("mousedown", handleClickOutside);
@@ -131,6 +111,7 @@ function HeaderClient() {
 
   }
 
+  // tim kiem
   const onFinish = (e) => {
     navigate(`/search?keyword=${e.keyword || ""}`);
   }
@@ -138,22 +119,62 @@ function HeaderClient() {
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-  
+
   return (
     <>
-      <Header style={{ background: "#FFFFFF" }}>
-        <div className="layout-default__header container">
-          <div className="layout-default__logo">
-            <NavLink to="/">
-              <Image src={setting.logo}
+      <Header
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 50,
+          width: "100%",
+          background: "white",
+          padding: "0 50px",
+          boxShadow: "0 1px 2px rgba(0, 0, 0, 0.06)",
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", height: "100%" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+            {/* <Button
+              type="text"
+              icon={<MenuOutlined />}
+              style={{ display: "block", marginRight: "16px" }}
+              className="md:hidden"
+            /> */}
+            <NavLink to="/" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              {/* <Image src={setting.logo}
                 preview={false}
                 style={{
-                  maxWidth: "100%",
                   maxHeight: "50px"
-                }} />
+                }} /> */}
+              <span style={{ fontSize: "20px", fontWeight: "bold" }}>{setting.websiteName}</span>
             </NavLink>
+            <div className="hidden md:flex">
+              <Row>
+                <Col>
+                </Col>
+              </Row>
+              <Space size={24}>
+                <NavLink to="#" style={{ fontSize: "14px", fontWeight: 500, color: "#000" }}>
+                  Home
+                </NavLink>
+                <NavLink to="#" style={{ fontSize: "14px", fontWeight: 500, color: "#000" }}>
+                  Products
+                </NavLink>
+                <NavLink to="/danh-muc" style={{ fontSize: "14px", fontWeight: 500, color: "#000" }}>
+                  Categories
+                </NavLink>
+                <NavLink to="#" style={{ fontSize: "14px", fontWeight: 500, color: "#000" }}>
+                  Deals
+                </NavLink>
+                <NavLink to="#" style={{ fontSize: "14px", fontWeight: 500, color: "#000" }}>
+                  About
+                </NavLink>
+              </Space>
+            </div>
           </div>
-          <div className="layout-default__search">
+          
+          <div className="layout-default__search hidden md:block" style={{maxWidth: "350px", width: "100%", marginTop: "12px"}}>
             <Form onFinish={onFinish} layout="vertical">
               <Row gutter={[12, 12]}>
                 <Col span={22}>
@@ -161,7 +182,9 @@ function HeaderClient() {
                     <Input
                       allowClear
                       type="text"
-                      placeholder='Tìm kiếm'
+                      placeholder='Search products...'
+                      prefix={<SearchOutlined style={{ color: "rgba(0,0,0,.45)" }} />}
+                      style={{ width: "100%" }}
                     />
                   </Form.Item>
                 </Col>
@@ -173,15 +196,18 @@ function HeaderClient() {
               </Row>
             </Form>
           </div>
-          <div className="layout-default__accounts" >
-            <Badge count={lengthCart} style={{ marginRight: "15px" }} color="#22A6F2">
+
+          <div className="layout-default__accounts">
+            <Badge count={lengthCart} size="small">
               <a href="/order/cart">
-                <Button color="default" variant="link" icon={<ShoppingCartOutlined />} style={{ marginRight: "10px" }} />
+                <Button type="text" icon={<ShoppingCartOutlined style={{ fontSize: "20px" }} />} />
               </a>
             </Badge>
+            <Button type="text" icon={<HeartOutlined style={{ fontSize: "20px" }} />} />
             {tokenUser ? (
               <>
-                <Avatar src={avatar} size="large" className="avatar" icon={<UserOutlined />} onClick={toggleMenu} />
+                <Button type="text" onClick={toggleMenu} className="avatar" icon={<UserOutlined style={{ fontSize: "20px" }} />} />
+                {/* <Avatar src={avatar} size="large" className="avatar" icon={<UserOutlined />} onClick={toggleMenu} /> */}
                 {isMenuOpen && (
                   <ul className="menu" ref={componentRef}>
                     <li className="fullName">
@@ -196,7 +222,7 @@ function HeaderClient() {
                     </li>
                     <li>
                       <NavLink to="/logout">
-                        <LogoutOutlined /> Đăng xuất
+                        <LogoutOutlined /> Logout
                       </NavLink>
                     </li>
                   </ul>
@@ -209,43 +235,8 @@ function HeaderClient() {
               </>
             )}
           </div>
-        </div >
-      </Header >
-      <div className="layout-default__menu container">
-        <ul>
-          {menu.map((link) => (
-            <li
-              key={link.url}
-            >
-              <a href={link.url}>
-                {link.title}
-              </a>
-              {/* Kiểm tra nếu có children thì render submenu */}
-              {link.children && (
-                <ul className="submenu">
-                  {link.children.map((child) => (
-                    <li key={child.slug}>
-                      <a href={`/danh-muc/${child.slug}`} >{child.title}</a>
-                      {/* Kiểm tra nếu có children tiếp tục render sub-submenu */}
-                      {child.children && (
-                        <ul className="sub-submenu">
-                          {child.children.map((subChild) => (
-                            <li key={subChild.slug}>
-                              <a href={`/danh-muc/${subChild.slug}`} >
-                                {subChild.title}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
+        </div>
+      </Header>
     </>
   )
 }

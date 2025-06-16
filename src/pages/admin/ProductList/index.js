@@ -16,7 +16,7 @@ function ProductList() {
   // tổng số trang để phân trang
   const [totalPage, setTotalPage] = useState(0);
   // eslint-disable-next-line no-unused-vars
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(10);
 
   // page hiện tại đang đứng
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,11 +27,13 @@ function ProductList() {
   const [sortKey, setSortKey] = useState("");
   const [sortType, setSortType] = useState("asc");
 
-
+  
   const fetchApi = async () => {
     const response = await listProducts(token, currentPage, limit, keyword, sortKey, sortType);
 
     if (response.code === 200) {
+      console.log(response);
+      
       setData(response.products);
       setTotalPage(response.totalPage);
     } else {

@@ -1,22 +1,25 @@
-import { Button, Card, Col, Form, Input, Row, Select, Switch, Radio, Upload, message } from "antd";
-import { PlusOutlined } from "@ant-design/icons"
+import { Button, Card, Col, Form, Input, Row, Select, Switch, Radio, message } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useEffect, useState } from "react";
 import { listCategory } from "../../../services/admin/categoryServies";
 import { addProduct } from "../../../services/admin/productServies";
 import { getCookie } from "../../../helpers/cookie";
 import NoRole from "../../../components/NoRole";
-
+import UploadFiles from "../../../components/UploadFiles";
+import UploadFile from "../../../components/UploadFile";
+import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 function ProductsCreate() {
   const permissions = JSON.parse(localStorage.getItem('permissions'));
+
+  const navigate = useNavigate(); // Sử dụng useNavigate để điều hướng
 
   const [categories, setCategories] = useState([]); // Sửa tên biến cho đúng ngữ pháp
   const token = getCookie("token"); // Lấy token từ cookie
 
   // upload img
-  const [imageUrl, setImageUrl] = useState("");
-  const [fileList, setFileList] = useState([]);
-
+  const [imageUrls, setImageUrls] = useState([]);
+  const [thumbnail, setThumbnail] = useState("");
 
   useEffect(() => {
     const fetchApi = async () => {
@@ -40,7 +43,8 @@ function ProductsCreate() {
 
   // xử lý submit
   const onFinish = async (e) => {
-    e.thumbnail = imageUrl ? imageUrl : "";
+    e.thumbnail = thumbnail ? thumbnail : "";
+    e.images = imageUrls ? imageUrls : [];
     e.status = e.status ? "active" : "inactive";
     e.price = Number(e.price);
     e.stock = Number(e.stock);
@@ -56,12 +60,18 @@ function ProductsCreate() {
     e.product_category_id = !e.product_category_id ? "" : e.product_category_id;
     e.description = !e.description ? "" : e.description;
 
-    // console.log(e);
+    /* --- chuyển sizeStock trước khi gửi server --- */
+    // const sizeStockArr = (e.sizeStock || [])
+    //   .filter(v => v.size && v.quantity > 0)
+    //   .map(v => `${v.size}-${v.quantity}`);
+
+    // e.sizeStock = sizeStockArr;     // gán lại đúng định dạng mong muốn
 
     try {
       const response = await addProduct(e, token); // Truyền token vào hàm
-      console.log(response);
+
       if (response.code === 200) {
+        navigate("/admin/products"); // Điều hướng đến trang sản phẩm
         message.success("Thêm mới thành công");
       } else {
         message.error(response.message);
@@ -98,7 +108,7 @@ function ProductsCreate() {
                     <Input />
                   </Form.Item>
                 </Col>
-                <Col span={5}>
+                <Col span={4}>
                   <Form.Item label="Danh mục" name="product_category_id">
                     <Select
                       options={options}     // Cung cấp danh sách options
@@ -106,28 +116,30 @@ function ProductsCreate() {
                     />
                   </Form.Item>
                 </Col>
-                <Col span={5}>
+                <Col span={4}>
                   <Form.Item label="Giá" name="price" >
                     <Input
-                      allowClear
+                      allowClear type="number"
                     />
                   </Form.Item>
                 </Col>
-                <Col span={5}>
+                <Col span={4}>
                   <Form.Item label="Số lượng" name="stock" >
                     <Input
                       allowClear
+                      type="number"
                     />
                   </Form.Item>
                 </Col>
-                <Col span={5}>
+                <Col span={4}>
                   <Form.Item label="Phần trăm giảm giá" name="discountPercentage" >
                     <Input
-                      allowClear
+                      allowClear type="number" max={100} min={0}
+                      placeholder="0 - 100"
                     />
                   </Form.Item>
                 </Col>
-                <Col span={5}>
+                <Col span={4}>
                   <Form.Item label="Vị trí" name="position" >
                     <Input
                       allowClear
@@ -136,7 +148,15 @@ function ProductsCreate() {
                     />
                   </Form.Item>
                 </Col>
-                <Col span={5}>
+                <Col span={4}>
+                  <Form.Item label="Giới tính" name="gender" initialValue={1}>
+                    <Radio.Group>
+                      <Radio value={1}>Nam</Radio>
+                      <Radio value={0}>Nữ</Radio>
+                    </Radio.Group>
+                  </Form.Item>
+                </Col>
+                <Col span={24}>
                   <Form.Item label="Nổi bật?" name="featured" initialValue={1}>
                     <Radio.Group>
                       <Radio value={1}>Nổi bật</Radio>
@@ -144,66 +164,85 @@ function ProductsCreate() {
                     </Radio.Group>
                   </Form.Item>
                 </Col>
+                
+                {/* <Col span={24}>
+                  <Card
+                    style={{
+                      marginTop: 10,
+                      width: "100%"
+                    }}
+                    type="inner"
+                  ><Form.Item label="Kích cở & số lượng" required>
+                      <Form.List
+                        name="sizeStock"
+                        // khởi tạo sẵn 1 dòng trống
+                        initialValue={[{ size: "", quantity: 0 }]}
+                      >
+                        {(fields, { add, remove }) => (
+                          <>
+                            {fields.map(({ key, name, ...restField }) => (
+                              <Row
+                                key={key}
+                                gutter={12}
+                                align="middle"
+                                style={{ marginBottom: 12, border: "1px solid #f0f0f0", padding: 12, borderRadius: 6 }}
+                              >
+                                <Col span={10}>
+                                  <Form.Item
+                                    {...restField}
+                                    name={[name, "size"]}
+                                    rules={[{ required: true, message: "Nhập kích cỡ!" }]}
+                                  >
+                                    <Input placeholder="VD: S, M, L, XL hoặc 38, 39, 40" />
+                                  </Form.Item>
+                                </Col>
+
+                                <Col span={10}>
+                                  <Form.Item
+                                    {...restField}
+                                    name={[name, "quantity"]}
+                                    rules={[{ required: true, message: "Nhập số lượng!" }]}
+                                  >
+                                    <Input type="number" min={0} placeholder="0" />
+                                  </Form.Item>
+                                </Col>
+
+                                <Col span={4} style={{ textAlign: "center" }}>
+                                  {fields.length > 1 && (
+                                    <MinusCircleOutlined
+                                      style={{ fontSize: 20, cursor: "pointer" }}
+                                      onClick={() => remove(name)}
+                                    />
+                                  )}
+                                </Col>
+                              </Row>
+                            ))}
+
+                            <Form.Item>
+                              <Button
+                                type="dashed"
+                                onClick={() => add()}
+                                block
+                                icon={<PlusOutlined />}
+                              >
+                                Thêm kích cỡ
+                              </Button>
+                            </Form.Item>
+                          </>
+                        )}
+                      </Form.List>
+                    </Form.Item>
+                  </Card>
+                </Col> */}
+
                 <Col span={24}>
                   <Form.Item label="Ảnh nhỏ" name="thumbnail">
-                    <div>
-                      <Upload
-                        name="file"
-                        listType="picture-card"
-                        showUploadList={{ showPreviewIcon: false }}
-                        maxCount={1} // Giới hạn chỉ được chọn 1 ảnh
-                        customRequest={async ({ file, onSuccess, onError }) => {
-                          const formData = new FormData();
-                          formData.append("file", file);
-                          formData.append("upload_preset", "my_preset"); // Thay bằng preset của bạn
-
-                          try {
-                            const response = await fetch(
-                              `https://api.cloudinary.com/v1_1/djckm3ust/image/upload`,
-                              {
-                                method: "POST",
-                                body: formData,
-                              }
-                            );
-                            const data = await response.json();
-
-                            if (data.secure_url) {
-                              setImageUrl(data.secure_url); // Lưu đường dẫn ảnh
-                              setFileList([
-                                {
-                                  uid: data.asset_id,
-                                  name: data.original_filename,
-                                  status: "done",
-                                  url: data.secure_url,
-                                },
-                              ]);
-                              onSuccess(data);
-                            }
-                          } catch (error) {
-                            console.error("Lỗi khi upload ảnh:", error);
-                            onError(error);
-                          }
-                        }}
-                        onChange={({ fileList: newFileList }) => setFileList(newFileList)}
-                        onRemove={() => {
-                          setImageUrl(""); // Xóa link ảnh
-                          setFileList([]); // Xóa danh sách file
-                        }}
-                      >
-                        {fileList.length >= 1 ? null : (
-                          <div>
-                            <PlusOutlined />
-                            <div style={{ marginTop: 8 }}>Upload</div>
-                          </div>
-                        )}
-                      </Upload>
-                      {imageUrl && (
-                      <div style={{ marginTop: "10px" }}>
-                        <p>Link ảnh:</p>
-                        <Input value={imageUrl} readOnly />
-                      </div>
-                    )}
-                    </div>
+                    <UploadFile onImageUrlsChange={setThumbnail} />
+                  </Form.Item>
+                </Col>
+                <Col span={24}>
+                  <Form.Item label="Ảnh mô tả" name="images">
+                    <UploadFiles onImageUrlsChange={setImageUrls} />
                   </Form.Item>
                 </Col>
                 <Col span={24}>

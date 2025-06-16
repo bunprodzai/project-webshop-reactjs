@@ -1,5 +1,5 @@
 import { Button, Col, Form, Input, message, Modal, Row } from "antd";
-import { UserOutlined, LockOutlined, LoginOutlined } from "@ant-design/icons";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import "./LoginUser.scss";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
@@ -8,8 +8,15 @@ import { loginUserPost } from "../../../services/client/loginServies";
 import { checkLoginUser } from "../../../actions/loginUser";
 import ForgotPassword from "../ForgotPassword";
 
+import { Checkbox, Card, Divider, Typography } from "antd"
+import { GoogleOutlined, GithubOutlined } from "@ant-design/icons"
+const { Title, Text, Link: AntLink } = Typography
 
 function LoginUser(props) {
+  // eslint-disable-next-line no-unused-vars
+  const [loading, setLoading] = useState(false);
+
+  
   const { onMenuOpen } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -43,7 +50,7 @@ function LoginUser(props) {
 
   return (
     <>
-      <Button color="default" icon={<LoginOutlined />} onClick={showModal} >Đăng nhập</Button>
+      <Button color="default" onClick={showModal} >Sign in</Button>
       <Modal
         open={isModalOpen}
         onOk={handleOk}
@@ -51,38 +58,76 @@ function LoginUser(props) {
         footer={null}
         width={"25%"}
       >
-        <div className="login_user">
-          <Row>
-            <Form className="login_user__form" onFinish={handleSubmit} >
-              <Col span={24}>
-                <h2 style={{textAlign: "center"}}>Đăng nhập</h2>
-              </Col>
-              <Col span={24}>
-                <Form.Item
-                  name="email"
-                  rules={[{ required: true, message: 'Please input your Username!' }]}
-                >
-                  <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
+        <div>
+          <Card
+            style={{
+              width: "100%",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+            }}
+          >
+            <div style={{ textAlign: "center", marginBottom: "24px" }}>
+              <Title level={2} style={{ marginBottom: "8px" }}>
+                Login
+              </Title>
+              <Text type="secondary">Enter your credentials to access your account</Text>
+            </div>
+
+            <Form name="login" initialValues={{ remember: true }} onFinish={handleSubmit} layout="vertical" size="large">
+              <Form.Item name="email" rules={[{ required: true, message: "Please input your username or email!" }]}>
+                <Input prefix={<UserOutlined style={{ color: "rgba(0, 0, 0, 0.25)" }} />} placeholder="Email" type="email" />
+              </Form.Item>
+
+              <Form.Item
+                name="password"
+                rules={[{ required: true, message: "Please input your password!" }]}
+                style={{ marginBottom: "12px" }}
+              >
+                <Input.Password prefix={<LockOutlined style={{ color: "rgba(0, 0, 0, 0.25)" }} />} placeholder="Password" />
+              </Form.Item>
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "24px",
+                }}
+              >
+                <Form.Item name="remember" valuePropName="checked" noStyle>
+                  <Checkbox>Remember me</Checkbox>
                 </Form.Item>
-                <Form.Item
-                  name="password"
-                  rules={[{ required: true, message: 'Please input your Password!' }]}
-                >
-                  <Input
-                    prefix={<LockOutlined className="site-form-item-icon" />}
-                    type="password"
-                    placeholder="Password"
-                  />
-                </Form.Item>
+
                 <ForgotPassword onCancel={handleCancel}/>
-                <Form.Item>
-                  <Button type="primary" htmlType="submit" className="login-form-button">
-                    Log in
+              </div>
+
+              <Form.Item>
+                <Button type="primary" htmlType="submit" style={{ width: "100%" }} loading={loading}>
+                  {loading ? "Logging in..." : "Sign in"}
+                </Button>
+              </Form.Item>
+
+              <Divider plain>Or continue with</Divider>
+
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Button icon={<GoogleOutlined />} style={{ width: "100%" }}>
+                    Google
                   </Button>
-                </Form.Item>
-              </Col>
+                </Col>
+                <Col span={12}>
+                  <Button icon={<GithubOutlined />} style={{ width: "100%" }}>
+                    GitHub
+                  </Button>
+                </Col>
+              </Row>
             </Form>
-          </Row>
+
+            <div style={{ textAlign: "center", marginTop: "24px" }}>
+              <Text type="secondary">
+                Don't have an account? <AntLink href="/signup">Sign up</AntLink>
+              </Text>
+            </div>
+          </Card>
         </div>
       </Modal>
     </>
