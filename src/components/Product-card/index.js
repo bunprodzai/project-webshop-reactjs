@@ -1,49 +1,46 @@
 import { useState } from "react"
 import { NavLink } from 'react-router-dom';
-import { Card, Typography, Rate, Button, Badge, message } from "antd"
-import { HeartOutlined, HeartFilled, ShoppingCartOutlined } from "@ant-design/icons"
-import { addCartPatch } from "../../services/client/cartServies";
-import { updateCartLength } from "../../actions/cart";
-import { useDispatch } from "react-redux";
+import { Card, Typography, Rate, Button, Badge } from "antd"
+import { HeartOutlined, HeartFilled } from "@ant-design/icons"
 
 const { Meta } = Card
 const { Text } = Typography
 
 export default function ProductCard({ product }) {
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const [isWishlisted, setIsWishlisted] = useState(false)
 
   const discountedPrice = product.discountPercentage ? product.price * (1 - product.discountPercentage / 100) : product.price
 
-const addCart = () => {
-    const productId = product._id;
+  // const addCart = () => {
+  //     const productId = product._id;
 
-    const fetchApiAddCart = async () => {
-      try {
-        const resAddToCart = await addCartPatch(productId, { quantity: 1, cartId: localStorage.getItem("cartId") });
-        if (resAddToCart.code === 200) {
-          console.log(resAddToCart);
-          
-          const newLength = resAddToCart.totalQuantityProduts; // Lấy số lượng sản phẩm mới từ API
-          dispatch(updateCartLength(newLength)); // Cập nhật lengthCart trong Redux
-          message.success("Thêm vào giỏ hàng thành công!");
-        } else {
-          message.error("Thêm vào giỏ hàng thất bại");
-        }
-      } catch (error) {
+  //     const fetchApiAddCart = async () => {
+  //       try {
+  //         const resAddToCart = await addCartPatch(productId, { quantity: 1, cartId: localStorage.getItem("cartId") });
+  //         if (resAddToCart.code === 200) {
+  //           console.log(resAddToCart);
 
-      }
-    }
-    fetchApiAddCart();
-  }
+  //           const newLength = resAddToCart.totalQuantityProduts; // Lấy số lượng sản phẩm mới từ API
+  //           dispatch(updateCartLength(newLength)); // Cập nhật lengthCart trong Redux
+  //           message.success("Thêm vào giỏ hàng thành công!");
+  //         } else {
+  //           message.error("Thêm vào giỏ hàng thất bại");
+  //         }
+  //       } catch (error) {
 
-  const actions = [
-    <Button key="add-to-cart" onClick={addCart} type="primary" icon={<ShoppingCartOutlined />} block>
-      Add to Cart
-    </Button>,
-  ]
+  //       }
+  //     }
+  //     fetchApiAddCart();
+  //   }
+
+  // const actions = [
+  //   <Button key="add-to-cart" onClick={addCart} type="primary" icon={<ShoppingCartOutlined />} block>
+  //     Add to Cart
+  //   </Button>,
+  // ]
 
   return (
     <Badge.Ribbon text={`${product.discountPercentage}% OFF`} color="red" style={{ display: product.discountPercentage ? "block" : "none" }}>
@@ -70,7 +67,7 @@ const addCart = () => {
             />
           </div>
         }
-        actions={actions}
+      // actions={actions}
       >
         <div style={{ marginBottom: "8px" }}>
           <Rate disabled defaultValue={5} style={{ fontSize: "14px" }} />

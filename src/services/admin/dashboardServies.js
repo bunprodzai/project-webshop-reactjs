@@ -41,6 +41,12 @@ export const getLatestRevenue = async (token) => {
   const result = await getAuth(`${admin}/dashboard/latest-revenue`, token);
   return result;
 }
+
+export const getRerentOrders = async (token) => {
+  const result = await getAuth(`${admin}/dashboard/recent-orders`, token);
+  return result;
+}
+
 // export const editCategory = async (id, option, token) => {
 //   const result = await patchAuth(`${admin}/products-category/edit/${id}`, option, token);
 //   return result;

@@ -42,6 +42,7 @@ function InfoCheckOut() {
           <div>
             <b>{record.productInfo.title}</b>
             <p>Số lượng: <b>{record.quantity}</b></p>
+            <p>Kích cở: <b>{record.size}</b></p>
             <p>Đơn giá: {(Number(record.productInfo.price) * (100 - Number(record.productInfo.discountPercentage)) / 100).toFixed(0)}</p>
             <p>Thành tiền: {record.quantity * (Number(record.productInfo.price) * (100 - Number(record.productInfo.discountPercentage)) / 100).toFixed(0)}</p>
           </div>
@@ -56,6 +57,12 @@ function InfoCheckOut() {
       message.error("Vui lòng nhập họ tên!");
       return;
     }
+
+    if (!values.email) {
+      message.error("Vui lòng nhập Email!");
+      return;
+    }
+
     if (!values.address) {
       message.error("Vui lòng nhập địa chỉ!");
       return;
@@ -65,23 +72,25 @@ function InfoCheckOut() {
       return;
     }
     values.note = values.note ? values.note : "";
+
     const userInfo = {
       fullName: values.fullName,
       phone: values.phone,
       address: values.address,
-      note: values.note
+      note: values.note,
+      email: values.email
     }
 
     try {
       const resOrderPost = await orderPost({ cartId: cartId, userInfo: userInfo });
       if (resOrderPost.code === 200) {
-        message.success("Đặt hàng thành công");
         dispatch(updateCartLength(0));
         navigate(`/order/checkout/pay?code=${resOrderPost.codeOrder}`);
+        message.success(resOrderPost.message);
       } else if (resOrderPost.code === 204) {
         message.error(resOrderPost.message);
       } else {
-        message.error("Đăng hàng không thành công");
+        message.error("Tạo đơn hàng không thành công");
       }
     } catch (error) {
     }
@@ -97,10 +106,15 @@ function InfoCheckOut() {
             </Typography.Title>
             <div className="info-user">
               <Form layout="vertical" form={form} >
-                <Row>
+                <Row gutter={[16,16]}>
                   <Col span={12}>
                     <Form.Item label="Họ tên" name="fullName">
                       <Input allowClear />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item label="Email" name="email">
+                      <Input allowClear required/>
                     </Form.Item>
                   </Col>
                   <Col span={12}>
@@ -151,7 +165,7 @@ function InfoCheckOut() {
                           }}
                           onClick={onFinish}
                         >
-                          Thanh toán
+                          Tiến hành thanh toán
                         </Button>
                       </Table.Summary.Cell>
                     </Table.Summary.Row>

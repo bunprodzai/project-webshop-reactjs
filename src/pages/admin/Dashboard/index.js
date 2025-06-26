@@ -19,29 +19,45 @@ import {
 } from "@ant-design/icons"
 import { useEffect, useState } from "react"
 import { Option } from "antd/es/mentions"
-import { getLatestRevenue, getpercentGrowthCategory, getpercentGrowthOrder, getpercentGrowthProduct, getpercentGrowthUser, getTimeStartWeb } from "../../../services/admin/dashboardServies"
+import { getLatestRevenue, getpercentGrowthCategory, getpercentGrowthOrder, getpercentGrowthProduct, getpercentGrowthUser, getRerentOrders, getTimeStartWeb } from "../../../services/admin/dashboardServies"
 import { getCookie } from "../../../helpers/cookie"
+import OrderDetail from "../OrderDetail"
 
 const { Title, Text } = Typography
 const { Search } = Input
+
+const formatDate = (isoString) => {
+  const date = new Date(isoString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
+  const year = date.getFullYear();
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${day}/${month}/${year} ${hours}:${minutes}`;
+};
 
 // Dữ liệu cho bảng đơn hàng
 const orderColumns = [
   {
     title: "Mã Đơn",
-    dataIndex: "orderCode",
-    key: "orderCode",
+    dataIndex: "code",
+    key: "code",
     render: (text) => <Text strong>{text}</Text>,
   },
   {
     title: "Khách Hàng",
-    dataIndex: "customer",
-    key: "customer",
+    dataIndex: "fullName",
+    key: "fullName",
   },
   {
-    title: "Sản Phẩm",
-    dataIndex: "product",
-    key: "product",
+    title: "Email",
+    dataIndex: "email",
+    key: "email",
+  },
+  {
+    title: 'Thanh toán',
+    dataIndex: 'paymentMethod',
+    key: 'paymentMethod',
   },
   {
     title: "Trạng Thái",
@@ -49,9 +65,10 @@ const orderColumns = [
     key: "status",
     render: (status) => {
       const statusConfig = {
-        completed: { color: "green", text: "Hoàn thành" },
+        initialize: { color: "green", text: "Khởi tạo" },
+        success: { color: "green", text: "Hoàn thành" },
         processing: { color: "orange", text: "Đang xử lý" },
-        shipping: { color: "blue", text: "Đang giao" },
+        received: { color: "blue", text: "Đã xác nhận" },
         cancelled: { color: "red", text: "Đã hủy" },
       }
       const config = statusConfig[status]
@@ -60,63 +77,30 @@ const orderColumns = [
   },
   {
     title: "Tổng Tiền",
-    dataIndex: "total",
-    key: "total",
+    dataIndex: "totalMoney",
+    key: "totalMoney",
     render: (amount) => <Text strong>{amount.toLocaleString()} VNĐ</Text>,
   },
   {
     title: "Ngày Đặt",
-    dataIndex: "date",
-    key: "date",
-  },
-]
-
-const orderData = [
-  {
-    key: "1",
-    orderCode: "#DH001",
-    customer: "Nguyễn Văn A",
-    product: "iPhone 15 Pro",
-    status: "completed",
-    total: 25990000,
-    date: "15/03/2024",
+    dataIndex: "createdAt",
+    key: "createdAt",
+    render: (text) => formatDate(text)
   },
   {
-    key: "2",
-    orderCode: "#DH002",
-    customer: "Trần Thị B",
-    product: "Áo khoác nữ",
-    status: "processing",
-    total: 450000,
-    date: "14/03/2024",
-  },
-  {
-    key: "3",
-    orderCode: "#DH003",
-    customer: "Lê Văn C",
-    product: "Laptop Dell XPS",
-    status: "shipping",
-    total: 18500000,
-    date: "13/03/2024",
-  },
-  {
-    key: "4",
-    orderCode: "#DH004",
-    customer: "Phạm Thị D",
-    product: "Nồi cơm điện",
-    status: "cancelled",
-    total: 1200000,
-    date: "12/03/2024",
-  },
-  {
-    key: "5",
-    orderCode: "#DH005",
-    customer: "Hoàng Văn E",
-    product: "Sách lập trình",
-    status: "completed",
-    total: 299000,
-    date: "11/03/2024",
-  },
+    title: 'Hành động',
+    dataIndex: 'actions',
+    key: 'actions',
+    render: (_, record) => {
+      return (
+        <>
+          <div key={`action-${record._id}`}>
+            <OrderDetail record={record} />
+          </div>
+        </>
+      )
+    }
+  }
 ]
 
 const getCurrentMonth = () => {
@@ -164,6 +148,9 @@ function Dashboard() {
 
   const [countCategoryCurrent, setCountCategoryCurrent] = useState(0);
   const [countCategoryLast, setCountCategoryLast] = useState(0);
+
+  const [recentOrders, setRecentOrders] = useState([]);
+
   // End dữ liệu thống kê
 
   const [latestRevenue, setLatestRevenue] = useState([]);
@@ -221,7 +208,28 @@ function Dashboard() {
       const response = await getLatestRevenue(token);
       if (response.code === 200) {
         setLatestRevenue(response.revenues);
-        console.log(response);
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy tỷ lệ tăng trưởng danh mục:", error);
+    }
+  }
+
+  const fetchApiRecentOrders = async () => {
+    try {
+      const response = await getRerentOrders(token);
+      if (response.code === 200) {
+        // Biến đổi mảng
+        const transformedOrders = response.orders.map(order => ({
+          _id: order._id,
+          fullName: order.userInfo.fullName,
+          totalMoney: order.totalOrder,
+          createdAt: order.createdAt,
+          paymentMethod: order.paymentMethod,
+          code: order.code,
+          status: order.status,
+          email: order.userInfo.email
+        }));
+        setRecentOrders(transformedOrders);
       }
     } catch (error) {
       console.error("Lỗi khi lấy tỷ lệ tăng trưởng danh mục:", error);
@@ -254,6 +262,7 @@ function Dashboard() {
     fetchApiPercentGrowthCategory(selectedMonth);
     fetchApiPercentGrowthOrder(selectedMonth);
     fetchApiPercentGrowthProduct(selectedMonth);
+    fetchApiRecentOrders();
     fetchApiTimeStart();
     setLoading(false);
   }, [])
@@ -265,7 +274,6 @@ function Dashboard() {
     fetchApiPercentGrowthOrder(value);
     fetchApiPercentGrowthUser(value);
     fetchApiPercentGrowthCategory(value);
-    console.log('Tháng được chọn:', value);
   };
 
   if (loading) {
@@ -536,7 +544,7 @@ function Dashboard() {
             </Col>
           </Row>
         )}
-        
+
         {/* Recent Orders Table */}
         <Card
           title="Đơn Hàng Gần Đây"
@@ -548,7 +556,10 @@ function Dashboard() {
           }
           style={{ marginBottom: 32 }}
         >
-          <Table columns={orderColumns} dataSource={orderData} pagination={{ pageSize: 5 }} scroll={{ x: 800 }} />
+          {recentOrders.length > 0 && (
+            <Table columns={orderColumns} dataSource={recentOrders} pagination={{ pageSize: 5 }} scroll={{ x: 800 }} />
+          )}
+
         </Card>
 
         {/* Sản Phẩm Bán Chạy */}

@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
-import { getCookie } from "../../../helpers/cookie";
-import { infoAccountPatch, resetPasswordAccountPatch } from "../../../services/admin/accountServies";
+import { getCookie, setCookie } from "../../../helpers/cookie";
+import { editMyAccount, infoAccountPatch, resetPasswordMyAccount } from "../../../services/admin/accountServies";
 import { Button, Card, Col, Form, Input, message, Modal, Row } from "antd";
 import Password from "antd/es/input/Password";
+import { useNavigate } from "react-router-dom";
 
 
 function AccountInfo() {
 
   const token = getCookie('token');
   const [info, setInfo] = useState({});
+
+  const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -17,10 +20,10 @@ function AccountInfo() {
   useEffect(() => {
     const fetchApi = async () => {
       try {
-        const response = await infoAccountPatch(token, { token: token });
+        const response = await infoAccountPatch(token);
         if (response.code === 200) {
-          setInfo(response.account);
-          form.setFieldsValue(response.account);
+          setInfo(response.myAccount);
+          form.setFieldsValue(response.myAccount);
         } else {
           message.error(response.message);
         }
@@ -34,22 +37,21 @@ function AccountInfo() {
 
   // xử lý thay đổi thông tin
   const handleChangeInfo = async (e) => {
-    if(e.fullName === "" || e.phone === "" || e.email === ""){
+    if (e.fullName === "" || e.phone === "" || e.email === "") {
       message.error("Không được để trống thông tin!");
-      return ;
+      return;
     }
-    // e.tokenUser = tokenUser;
-    // try {
-    //   const resChangeInfo = await editInfoPatch(e);
-    //   if (resChangeInfo.code === 200) {
-    //     message.success(resChangeInfo.message);
-    //     setCookie("fullName", e.fullName, 24);
-    //   } else {
-    //     message.error(resChangeInfo.message);
-    //   }
-    // } catch (error) {
-
-    // }
+    try {
+      const resChangeInfo = await editMyAccount(token, e);
+      if (resChangeInfo.code === 200) {
+        setCookie("name", e.fullName, 24)
+        message.success(resChangeInfo.message);
+      } else {
+        message.error(resChangeInfo.message);
+      }
+    } catch (error) {
+      message.error(error);
+    }
   }
 
   const showModal = () => {
@@ -65,11 +67,11 @@ function AccountInfo() {
   // xử lý đổi mật khẩu
   const handleResetPassword = async (e) => {
     try {
-      e.token = token;
-      const resResetPassword = await resetPasswordAccountPatch(token, e);
+      const resResetPassword = await resetPasswordMyAccount(token, e);
       if (resResetPassword.code === 200) {
         message.success(resResetPassword.message);
         handleCancel();
+        navigate("/auth/logout");
       } else {
         message.error(resResetPassword.message);
       }
@@ -95,7 +97,7 @@ function AccountInfo() {
               <Row>
                 <Col span={24}>
                   <Form.Item label="Họ tên" name="fullName">
-                    <Input style={{ width: "400px" }}  allowClear={true}/>
+                    <Input style={{ width: "400px" }} allowClear={true} />
                   </Form.Item>
                 </Col>
                 <Col span={24}>
@@ -105,13 +107,11 @@ function AccountInfo() {
                 </Col>
                 <Col span={24}>
                   <Form.Item label="Email" name="email">
-                    <Input style={{ width: "400px" }} allowClear={true} />
+                    <Input style={{ width: "400px" }} allowClear={true} type="email" />
                   </Form.Item>
                 </Col>
                 <Col span={24}>
-                  <Form.Item label="Thay đổi mật khẩu" name="resetPassword">
-                    <Button onClick={() => { showModal() }}>Thay đổi mật khẩu?</Button>
-                  </Form.Item>
+                  <h3>Quyền: {info.titleRole}</h3>
                 </Col>
                 <Col span={24}>
                   <Form.Item>
@@ -122,6 +122,7 @@ function AccountInfo() {
                 </Col>
               </Row>
             </Form>
+            <Button onClick={() => { showModal() }}>Thay đổi mật khẩu?</Button>
           </Card>
         </>
       )}

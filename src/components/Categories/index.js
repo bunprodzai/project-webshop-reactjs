@@ -10,7 +10,6 @@ const { TabPane } = Tabs
 
 function Categories() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [params] = useSearchParams();
 
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
@@ -23,13 +22,12 @@ function Categories() {
 
   const [selectedCategory, setSelectedCategory] = useState(1);
 
-  const slugParam = params.get('danhmuc');
+  const slugParam = searchParams.get('danhmuc');
 
   const fetchApiProducts = async (slug, sortKey, sortType, priceRange) => {
     try {
       const response = await productsCategoryGet(slug, sortKey, sortType, priceRange);
       setProducts(response.products);
-
     } catch (error) {
 
     }
@@ -40,7 +38,13 @@ function Categories() {
     const fetchCategories = async () => {
       try {
         const response = await listCategoriesGet();
-        setCategories(response.productsCategory);
+        // setCategories(response.productsCategory);
+        // console.log(response);
+        const list = Array.isArray(response?.productsCategory)
+          ? response.productsCategory
+          : [];
+
+        setCategories(list);
 
         if (!slugParam || response.productsCategory.length === 0) return;
 
@@ -48,7 +52,10 @@ function Categories() {
 
         if (category) {
           fetchApiProducts(slugParam, sortKey, sortType, priceRange);
-          setSelectedCategory(category._id.toString());
+          // setSelectedCategory(category._id.toString());
+          if (selectedCategory !== category._id.toString()) {
+            setSelectedCategory(category._id.toString());
+          }
         } else {
           console.warn('Không tìm thấy category với slug:', slugParam);
         }
@@ -60,13 +67,17 @@ function Categories() {
 
     fetchCategories();
 
-  }, [selectedCategory, sortKey, sortType, priceRange, searchParams, slugParam])
+  }, [sortKey, sortType, priceRange, searchParams, slugParam, selectedCategory])
 
 
   // Handle category change
   const handleCategoryChange = (categoryId) => {
     const category = categories.find((cat) => cat._id.toString() === categoryId);
     if (category) {
+      setSortKey("");
+      setSortType("asc"); 
+      setPriceRange("");
+      
       fetchApiProducts(category.slug, sortKey, sortType, priceRange);
       setSearchParams({ danhmuc: category.slug });
     }
@@ -94,7 +105,9 @@ function Categories() {
             <NavLink to="/">Home</NavLink>
           </Breadcrumb.Item>
           <Breadcrumb.Item>Categories</Breadcrumb.Item>
-          <Breadcrumb.Item>{categories.find((c) => c._id === selectedCategory)?.title}</Breadcrumb.Item>
+          {categories.length > 0 && (
+            <Breadcrumb.Item>{categories.find((c) => c._id === selectedCategory)?.title}</Breadcrumb.Item>
+          )}
         </Breadcrumb>
 
         {/* Page Title */}
@@ -110,7 +123,7 @@ function Categories() {
             tabPosition="top"
           >
             <Text strong>Subcategories:</Text>
-            {categories.map((category) => (
+            {/* {categories?.map((category) => (
               <TabPane
                 tab={
                   <span>
@@ -120,11 +133,30 @@ function Categories() {
                 // key = categoryId
                 key={category._id.toString()}
               >
-                <div style={{ padding: "0" }} className="products_category">
-                  <ListProduct products={products} filter={true} onFilterChange={handleFilterChange} />
-                </div>
+                {products.length > 0 && (
+                  <div style={{ padding: "0" }} className="products_category">
+                    <ListProduct products={products} filter={true} onFilterChange={handleFilterChange} />
+                  </div>
+                )}
               </TabPane>
-            ))}
+            ))} */}
+
+            {Array.isArray(categories) &&
+              categories.map((category) => (
+                <TabPane
+                  tab={<span>{category.title}</span>}
+                  key={category._id.toString()}
+                >
+                  <div style={{ padding: "0" }} className="products_category">
+                    <ListProduct
+                      products={products}
+                      filter={true}
+                      onFilterChange={handleFilterChange}
+                    />
+                  </div>
+                </TabPane>
+              ))}
+
           </Tabs>
         </Card>
 

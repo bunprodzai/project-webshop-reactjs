@@ -30,7 +30,8 @@ function OrderList() {
         products: order.products,
         paymentMethod: order.paymentMethod,
         code: order.code,
-        status: order.status
+        status: order.status,
+        email: order.userInfo.email
       }));
 
       setOrders(transformedOrders)
@@ -80,31 +81,6 @@ function OrderList() {
     });
   };
 
-  // const handleCLickStatus = (e) => {
-  //   confirm({
-  //     title: 'Bạn chắc chắn là hoàn thành đơn hàng này?',
-  //     icon: <ExclamationCircleFilled />,
-  //     onOk() {
-  //       const code = e.target.attributes[0].value.split("-")[1];
-
-  //       const fetchApiChangeStatus = async () => {
-  //         const response = await changeStatusOrderGet(token, "success", code);
-
-  //         if (response.code === 200) {
-  //           message.success(response.message);
-  //           handleReload();
-  //         } else {
-  //           message.error(response.message)
-  //         }
-  //       }
-
-  //       fetchApiChangeStatus();
-  //     },
-  //     onCancel() {
-  //     },
-  //   });
-  // }
-
   // Data đổ vào table
 
   const columns = [
@@ -146,7 +122,8 @@ function OrderList() {
               style={{ width: 140 }}
               onChange={(value) => handleChangeStatus(value, record.code)}
             >
-              <Select.Option value="initialize">Khởi tạo</Select.Option>
+              <Select.Option value="initialize" disabled >Khởi tạo</Select.Option>
+              <Select.Option value="processing" disabled >Đang xử lý</Select.Option>
               <Select.Option value="received">Đã nhận</Select.Option>
               <Select.Option value="success">Hoàn thành</Select.Option>
               <Select.Option value="cancelled">Đã hủy</Select.Option>

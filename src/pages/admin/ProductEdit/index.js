@@ -1,5 +1,5 @@
-import { Button, Col, Form, Input, message, Modal, Radio, Row, Select } from "antd";
-import { EditOutlined } from "@ant-design/icons";
+import { Button, Card, Col, Form, Input, message, Modal, Radio, Row, Select } from "antd";
+import { EditOutlined, MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
 import { editProduct } from "../../../services/admin/productServies";
@@ -9,6 +9,16 @@ import NoRole from "../../../components/NoRole";
 import UploadFile from "../../../components/UploadFile";
 import UploadFiles from "../../../components/UploadFiles";
 
+const convertSizeStock = (rawList) => {
+  return rawList.map(item => {
+    const [size, quantity] = item.split("-");
+    return {
+      size: size.trim(),
+      quantity: parseInt(quantity.trim(), 10)
+    };
+  });
+};
+
 function ProductEdit(props) {
   const permissions = JSON.parse(localStorage.getItem('permissions'));
 
@@ -16,7 +26,7 @@ function ProductEdit(props) {
   const token = getCookie("token");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+
   const [categories, setCategories] = useState([]);
 
   const [form] = Form.useForm();
@@ -44,11 +54,15 @@ function ProductEdit(props) {
         message.error("Token không tồn tại, vui lòng đăng nhập!");
         return;
       }
-
+      // form.setFieldsValue({
+      //   ...record,
+      //   sizeStock: convertSizeStock(record.sizeStock || [])
+      // });
       try {
         const response = await listCategory(token, "", "");
 
         if (response) {
+
           setCategories(response.productsCategory);
         }
       } catch (error) {
@@ -58,7 +72,7 @@ function ProductEdit(props) {
 
     fetchApi();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [thumbnailUrl]);
+  }, []);
 
   // Tạo options cho Select 
   const options = categories.map((category) => ({
@@ -77,6 +91,9 @@ function ProductEdit(props) {
   };
 
   const onFinish = async (e) => {
+
+    delete e.stock;
+
     e.thumbnail = thumbnailUrl ? thumbnailUrl : "";
     e.images = imageUrls ? imageUrls : [];
     e.position = !e.position ? "" : Number(e.position);
@@ -84,8 +101,13 @@ function ProductEdit(props) {
     e.description = !e.description ? "" : e.description;
     e.featured = valueRadioFeatured;
     e.price = Number(e.price);
-    e.stock = Number(e.stock);
     e.discountPercentage = Number(e.discountPercentage);
+
+    /* --- chuyển sizeStock trước khi gửi server --- */
+    const sizeStockArr = (e.sizeStock || [])
+      .filter(v => v.size && v.quantity > 0)
+      .map(v => `${v.size}-${v.quantity}`);
+    e.sizeStock = sizeStockArr;
 
     const response = await editProduct(record._id, e, token);
     if (response.code === 200) {
@@ -110,8 +132,12 @@ function ProductEdit(props) {
             footer={null}
             width={"70%"}
           >
-            <Form onFinish={onFinish} layout="vertical" form={form} initialValues={record}>
-              <Row>
+            <Form onFinish={onFinish} layout="vertical" form={form}
+              initialValues={{
+                ...record,
+                sizeStock: convertSizeStock(record.sizeStock || [])
+              }}>
+              <Row gutter={[16,16]}>
                 <Col span={24}>
                   <Form.Item label="Tiêu đề" name="title">
                     <Input />
@@ -128,8 +154,8 @@ function ProductEdit(props) {
                   </Form.Item>
                 </Col>
                 <Col span={5}>
-                  <Form.Item label="Số lượng" name="stock">
-                    <Input allowClear />
+                  <Form.Item label="Tổng số lượng" name="stock">
+                    <Input allowClear disabled/>
                   </Form.Item>
                 </Col>
                 <Col span={5}>
@@ -154,6 +180,78 @@ function ProductEdit(props) {
                     </Radio.Group>
                   </Form.Item>
                 </Col>
+
+                {/* size va stock */}
+                <Col span={24}>
+                  <Card
+                    style={{
+                      marginTop: 10,
+                      width: "100%"
+                    }}
+                    type="inner"
+                  ><Form.Item label="Kích cở & số lượng" required>
+                      <Form.List
+                        name="sizeStock"
+                        // khởi tạo sẵn 1 dòng trống
+                        initialValue={[{ size: "", quantity: 0 }]}
+                      >
+                        {(fields, { add, remove }) => (
+                          <>
+                            {fields.map(({ key, name, ...restField }) => (
+                              <Row
+                                key={key}
+                                gutter={12}
+                                align="middle"
+                                style={{ marginBottom: 12, border: "1px solid #f0f0f0", padding: 12, borderRadius: 6 }}
+                              >
+                                <Col span={10}>
+                                  <Form.Item
+                                    {...restField}
+                                    name={[name, "size"]}
+                                    rules={[{ required: true, message: "Nhập kích cỡ!" }]}
+                                  >
+                                    <Input placeholder="VD: S, M, L, XL hoặc 38, 39, 40" />
+                                  </Form.Item>
+                                </Col>
+
+                                <Col span={10}>
+                                  <Form.Item
+                                    {...restField}
+                                    name={[name, "quantity"]}
+                                    rules={[{ required: true, message: "Nhập số lượng!" }]}
+                                  >
+                                    <Input type="number" min={0} placeholder="0" />
+                                  </Form.Item>
+                                </Col>
+
+                                <Col span={4} style={{ textAlign: "center" }}>
+                                  {fields.length > 1 && (
+                                    <MinusCircleOutlined
+                                      style={{ fontSize: 20, cursor: "pointer" }}
+                                      onClick={() => remove(name)}
+                                    />
+                                  )}
+                                </Col>
+                              </Row>
+                            ))}
+
+                            <Form.Item>
+                              <Button
+                                type="dashed"
+                                onClick={() => add()}
+                                block
+                                icon={<PlusOutlined />}
+                              >
+                                Thêm kích cỡ
+                              </Button>
+                            </Form.Item>
+                          </>
+                        )}
+                      </Form.List>
+                    </Form.Item>
+                  </Card>
+                </Col>
+
                 <Col span={24}>
                   <Form.Item label="Ảnh nhỏ" name="thumbnail">
                     <UploadFile onImageUrlsChange={setThumbnailUrl} initialImageUrls={thumbnailUrl} />

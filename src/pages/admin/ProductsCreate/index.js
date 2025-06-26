@@ -47,7 +47,6 @@ function ProductsCreate() {
     e.images = imageUrls ? imageUrls : [];
     e.status = e.status ? "active" : "inactive";
     e.price = Number(e.price);
-    e.stock = Number(e.stock);
     e.discountPercentage = Number(e.discountPercentage);
 
     if (!e.title) {
@@ -61,12 +60,11 @@ function ProductsCreate() {
     e.description = !e.description ? "" : e.description;
 
     /* --- chuyển sizeStock trước khi gửi server --- */
-    // const sizeStockArr = (e.sizeStock || [])
-    //   .filter(v => v.size && v.quantity > 0)
-    //   .map(v => `${v.size}-${v.quantity}`);
-
-    // e.sizeStock = sizeStockArr;     // gán lại đúng định dạng mong muốn
-
+    const sizeStockArr = (e.sizeStock || [])
+      .filter(v => v.size && v.quantity > 0)
+      .map(v => `${v.size}-${v.quantity}`);
+    e.sizeStock = sizeStockArr;     // gán lại đúng định dạng mong muốn
+    
     try {
       const response = await addProduct(e, token); // Truyền token vào hàm
 
@@ -124,14 +122,6 @@ function ProductsCreate() {
                   </Form.Item>
                 </Col>
                 <Col span={4}>
-                  <Form.Item label="Số lượng" name="stock" >
-                    <Input
-                      allowClear
-                      type="number"
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={4}>
                   <Form.Item label="Phần trăm giảm giá" name="discountPercentage" >
                     <Input
                       allowClear type="number" max={100} min={0}
@@ -164,8 +154,9 @@ function ProductsCreate() {
                     </Radio.Group>
                   </Form.Item>
                 </Col>
-                
-                {/* <Col span={24}>
+
+                {/* size va stock */}
+                <Col span={24}>
                   <Card
                     style={{
                       marginTop: 10,
@@ -233,7 +224,7 @@ function ProductsCreate() {
                       </Form.List>
                     </Form.Item>
                   </Card>
-                </Col> */}
+                </Col>
 
                 <Col span={24}>
                   <Form.Item label="Ảnh nhỏ" name="thumbnail">

@@ -11,17 +11,15 @@ function LayoutDefault() {
   return (
     <>
       <CartProvider>
-        <Layout>
+        <Layout style={{ minHeight: '100vh' }}>
           <HeaderClient />
-          <Layout>
-            <Content className="container" style={{
-              height: "100vh",
-              padding: "20px", // Khoảng cách với các cạnh
-              boxSizing: "border-box", // Đảm bảo padding không ảnh hưởng chiều rộng
-            }}>
-              <Outlet />
-            </Content>
-          </Layout>
+          <Content className="container" style={{
+            flex: 1,
+            padding: "20px", // Khoảng cách với các cạnh
+            boxSizing: "border-box", // Đảm bảo padding không ảnh hưởng chiều rộng
+          }}>
+            <Outlet />
+          </Content>
           <FooterClient />
         </Layout>
       </CartProvider>

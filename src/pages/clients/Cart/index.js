@@ -32,7 +32,7 @@ function Cart() {
   // Xử lý thay đổi số lượng
   const handleQuantityChange = (e, record) => {
     const fetchApiChangeQuantity = async () => {
-      const response = await updateCartPatch(record.productInfo._id, { quantity: e, cartId: localStorage.getItem("cartId") });
+      const response = await updateCartPatch(record.productInfo._id, { quantity: e, cartId: localStorage.getItem("cartId"), size: record.size });
       if (response.code === 200) {
         const updatedItems = cart.map((item) =>
           item._id === record._id ? { ...item, quantity: e } : item
@@ -52,7 +52,7 @@ function Cart() {
   // Xóa sản phẩm
   const handleRemove = (record) => {
     const fetchApiDelProduct = async () => {
-      const response = await delCartPatch(record.productInfo._id, { cartId: localStorage.getItem("cartId") });
+      const response = await delCartPatch(record.productInfo._id, { cartId: localStorage.getItem("cartId"), size: record.size });
       if (response.code === 200) {
         dispatch(updateCartLength(response.totalQuantityProduts));
         fetchApi();
@@ -119,6 +119,11 @@ function Cart() {
       ),
     },
     {
+      title: "Size",
+      dataIndex: "size",
+      key: "size"
+    },
+    {
       title: "Tổng tiền",
       dataIndex: "totalPrice",
       key: "totalPrice"
@@ -139,7 +144,7 @@ function Cart() {
           summary={() => (
             <>
               <Table.Summary.Row>
-                <Table.Summary.Cell colSpan={5} align="right">
+                <Table.Summary.Cell colSpan={6} align="right">
                   <Text strong>Tổng tiền</Text>
                 </Table.Summary.Cell>
                 <Table.Summary.Cell>
@@ -149,7 +154,7 @@ function Cart() {
                 </Table.Summary.Cell>
               </Table.Summary.Row>
               <Table.Summary.Row>
-                <Table.Summary.Cell colSpan={6} align="right">
+                <Table.Summary.Cell colSpan={7} align="right">
                   <a href={`/order/info-checkout`}>
                     <Button
                       type="primary"

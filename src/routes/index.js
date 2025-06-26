@@ -28,6 +28,7 @@ import CheckoutPay from "../pages/clients/CheckoutPay";
 import InfoUser from "../pages/clients/InfoUser";
 import Categories from "../components/Categories";
 import AccountInfo from "../pages/admin/AccountInfo";
+import Order from "../pages/clients/Order";
 
 const pathAdmin = "admin";
 
@@ -71,6 +72,10 @@ export const routes = [
       {
         path: `danh-muc`,
         element: <Categories />
+      },
+      {
+        path: `order/history`,
+        element: <Order />
       }
       // {
       //   path: "login",

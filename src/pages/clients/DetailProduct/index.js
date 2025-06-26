@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { detailProductGet } from "../../../services/client/productServies";
-import { Row, Col, Image, Typography, Button, InputNumber, message, Tag, Carousel } from "antd";
+import { Row, Col, Image, Typography, Button, InputNumber, message, Tag, Carousel, Radio, Space } from "antd";
 import { addCartPatch } from "../../../services/client/cartServies";
 import { updateCartLength } from "../../../actions/cart";
 import { useDispatch } from "react-redux";
@@ -15,6 +15,8 @@ function DetailProduct() {
   const [images, setImages] = useState([]);
   const dispatch = useDispatch();
   const carouselRef = useRef(null);
+  const [selectedSize, setSelectedSize] = useState("");
+  const [sizeStock, setSizeStock] = useState({});
 
   useEffect(() => {
     const fetchApi = async () => {
@@ -23,6 +25,14 @@ function DetailProduct() {
         if (response.code === 200) {
           setProduct(response.record);
           setImages(response.record.images || []);
+
+          const sizeStockMap = {};
+          (response.record.sizeStock || []).forEach((item) => {
+            const [size, stock] = item.split("-");
+            sizeStockMap[size] = Number(stock);
+          });
+          setSizeStock(sizeStockMap);
+
         } else {
         }
       } catch (error) {
@@ -39,7 +49,7 @@ function DetailProduct() {
 
     const fetchApiAddCart = async () => {
       try {
-        const resAddToCart = await addCartPatch(productId, { quantity: quantity, cartId: localStorage.getItem("cartId") });
+        const resAddToCart = await addCartPatch(productId, { quantity: quantity, cartId: localStorage.getItem("cartId"), size: selectedSize });
 
         if (resAddToCart.code === 200) {
           const newLength = resAddToCart.totalQuantityProduts; // Lấy số lượng sản phẩm mới từ API
@@ -52,7 +62,12 @@ function DetailProduct() {
 
       }
     }
-    fetchApiAddCart();
+
+    if (selectedSize === "") {
+      message.error("Vui lòng chọn kích cở!");
+    } else {
+      fetchApiAddCart();
+    }
   }
 
   const handleChangeQuantity = (e) => {
@@ -137,18 +152,10 @@ function DetailProduct() {
             />
           </div>
         </Col>
-        {/* <Col span={12} style={{ textAlign: "center" }}>
-          <Image
-            width={300}
-            height={400}
-            src={product.thumbnail}
-            style={{ objectFit: "contain" }}
-          />
-        </Col> */}
 
         {/* Thông tin sản phẩm */}
         <Col span={12}>
-          <Title level={3}>{product.title}</Title>
+          <Title level={1}>{product.title}</Title>
           <Text type="secondary">Danh mục: {product.titleCategory ?
             <a href={`/danh-muc?danhmuc=${product.slugCategory}`} >{product.titleCategory}</a> : ""}</Text>
 
@@ -164,16 +171,36 @@ function DetailProduct() {
           {/* Chức năng */}
           <div style={{ marginTop: "20px" }}>
             <div style={{ display: "flex", alignItems: "center" }}>
-              <Text strong style={{ marginRight: "10px", marginBottom: "5px" }}>
-                Số lượng còn lại: {product.stock}
-              </Text>
+              <Title level={3}>Chọn size</Title>
             </div>
+
+            <div>
+              <Radio.Group
+                value={selectedSize}
+                onChange={(e) => setSelectedSize(e.target.value)}
+                style={{ display: "block", margin: "12px 0" }}
+              >
+                <Space direction="horizontal" wrap>
+                  {Object.entries(sizeStock).map(([size, stock]) => (
+                    <Radio.Button key={size} value={size} disabled={stock === 0}>
+                      {size} ({stock})
+                    </Radio.Button>
+                  ))}
+                </Space>
+              </Radio.Group>
+            </div>
+
             <div style={{ display: "flex", alignItems: "center" }}>
-              <Text strong style={{ marginRight: "10px" }}>
-                Số lượng:
-              </Text>
+              <Text strong>Số lượng:</Text>
+
               {product.stock > 0 ?
-                <InputNumber min={1} max={product.stock} defaultValue={quantity} onChange={handleChangeQuantity} />
+                <InputNumber
+                  min={1}
+                  max={sizeStock[selectedSize] || 1}
+                  value={quantity}
+                  onChange={handleChangeQuantity}
+                  style={{ marginLeft: 16, width: 80 }}
+                />
                 :
                 <Tag color="#cd201f">
                   Hết hàng

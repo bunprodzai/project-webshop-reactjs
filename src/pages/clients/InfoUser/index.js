@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import { editInfoPatch, infoGet, resetPassowrdPatch } from "../../../services/client/userServies";
-import { getCookie, setCookie } from "../../../helpers/cookie";
+import {  getCookie, setCookie } from "../../../helpers/cookie";
 import { Avatar, Button, Card, Col, Form, Input, message, Row, Tabs } from "antd";
 import { UserOutlined } from "@ant-design/icons"
 import "./InfoUser.scss";
+import { useNavigate } from "react-router-dom";
 
 function InfoUser() {
   const tokenUser = getCookie("tokenUser");
   const [infoUser, setInfoUser] = useState({});
   const [isEdit, setIsEdit] = useState(false);
   const [form] = Form.useForm();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchApi = async () => {
@@ -28,16 +31,18 @@ function InfoUser() {
 
   const handleChangeInfo = async (e) => {
     e.tokenUser = tokenUser;
+    console.log(e);
     try {
       const resChangeInfo = await editInfoPatch(e);
       if (resChangeInfo.code === 200) {
-        message.success(resChangeInfo.message);
         setCookie("fullName", e.fullName, 24);
+        setCookie("email", e.email, 24);
+        message.success(resChangeInfo.message);
       } else {
         message.error(resChangeInfo.message);
       }
     } catch (error) {
-
+      message.error(error);
     }
   }
 
@@ -46,7 +51,8 @@ function InfoUser() {
     try {
       const resChangePassword = await resetPassowrdPatch(e);
       if (resChangePassword.code === 200) {
-        message.success(resChangePassword.message)
+        navigate("/logout");
+        message.success(resChangePassword.message);
       } else {
         message.error(resChangePassword.message);
       }

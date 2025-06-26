@@ -10,13 +10,16 @@ import ForgotPassword from "../ForgotPassword";
 
 import { Checkbox, Card, Divider, Typography } from "antd"
 import { GoogleOutlined, GithubOutlined } from "@ant-design/icons"
-const { Title, Text, Link: AntLink } = Typography
+import Register from "../Register";
+const { Title, Text } = Typography
 
 function LoginUser(props) {
   // eslint-disable-next-line no-unused-vars
   const [loading, setLoading] = useState(false);
-
   
+  // eslint-disable-next-line no-unused-vars
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const { onMenuOpen } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -47,6 +50,10 @@ function LoginUser(props) {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
+  const handleReload = () => {
+    
+  }
 
   return (
     <>
@@ -97,7 +104,7 @@ function LoginUser(props) {
                   <Checkbox>Remember me</Checkbox>
                 </Form.Item>
 
-                <ForgotPassword onCancel={handleCancel}/>
+                <ForgotPassword onCancel={handleCancel} />
               </div>
 
               <Form.Item>
@@ -124,7 +131,9 @@ function LoginUser(props) {
 
             <div style={{ textAlign: "center", marginTop: "24px" }}>
               <Text type="secondary">
-                Don't have an account? <AntLink href="/signup">Sign up</AntLink>
+                Don't have an account?
+                {/* <AntLink >Sign up</AntLink> */}
+                <Register onReload={handleReload} page="login" onCancelLoginModal={handleCancel} onMenuOpen={() => setIsMenuOpen(false)} />
               </Text>
             </div>
           </Card>

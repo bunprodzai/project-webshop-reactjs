@@ -1,37 +1,14 @@
-import { Button, Card, Col, message, Modal, Row, Table, Tag } from "antd";
-import { useEffect, useState } from "react";
+import { Button, Card, Col, Modal, Row, Table, Tag } from "antd";
+import { useState } from "react";
 import { EyeOutlined } from "@ant-design/icons";
-import { getCookie } from "../../../helpers/cookie";
-import { detailOrderGet } from "../../../services/admin/orderServies";
-import NoRole from "../../../components/NoRole";
 
 
 const OrderDetail = (props) => {
-  const permissions = JSON.parse(localStorage.getItem('permissions'));
 
   const { record } = props;
-
-  const token = getCookie("token");
-
+  console.log(record);
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const [detail, setDetail] = useState([]);
-
-  const fetchApi = async () => {
-    try {
-      const response = await detailOrderGet(record._id, token);
-      console.log(response);
-      
-      setDetail(response.record);
-    } catch (error) {
-      message.error('Lỗi khi tải dữ liệu vai trò!');
-    }
-  }
-
-  useEffect(() => {
-    fetchApi();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -93,8 +70,6 @@ const OrderDetail = (props) => {
   };
 
   return (
-    <>
-      {permissions.includes("orders_view") ?
         <>
           <Button icon={<EyeOutlined />} type="primary" ghost onClick={showModal} />
           <Modal
@@ -118,20 +93,19 @@ const OrderDetail = (props) => {
                     <p>Tên: {record.fullName}</p>
                     <p>Số điện thoại: {record.phone}</p>
                     <p>Địa chỉ: {record.address}</p>
-                    <p>Email: {record.email}</p>
                     <p>Ngày tạo: {formatDate(record.createdAt)}</p>
                   </Card>
                 </Card>
               </Col>
               <Col span={24}>
                 <Table
-                  dataSource={detail.products ? detail.products : []}
+                  dataSource={record.products ? record.products : []}
                   columns={columns}
                   className='table-list'
                   rowKey={(record) => record._id} // Đảm bảo rằng mỗi hàng trong bảng có key duy nhất
                   pagination={{
                     pageSize: 5, // Số mục trên mỗi trang
-                    total: record.products?.length || 0, // Tổng số mục (dựa trên data)
+                    total: record.products.length, // Tổng số mục (dựa trên data)
                     showSizeChanger: false, // Ẩn tính năng thay đổi số mục trên mỗi trang
                     style: { display: 'flex', justifyContent: 'center' } // Căn giữa phân trang
                   }}
@@ -155,15 +129,11 @@ const OrderDetail = (props) => {
                   )}
                 </b>
                 <br />
-                <b>Tổng tiền: {detail.totalPriceProducts}</b>
+                Tổng tiền: <b>{record.totalMoney} VNĐ</b>
               </Col>
             </Row>
           </Modal>
         </>
-        :
-        <NoRole />
-      }
-    </>
   )
 }
 

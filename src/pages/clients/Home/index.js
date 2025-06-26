@@ -2,11 +2,10 @@ import { useEffect, useState } from "react";
 import { listHomeGet } from "../../../services/client/homeServies";
 import ListProduct from "../../../components/ListProduct";
 
-import { Link } from 'react-router-dom';
-import { Layout, Button, Input, Typography, Row, Col, Divider, Form, Space, Card } from "antd"
+import { Layout, Button, Input, Typography, Row, Col, Form, Space, Card } from "antd"
 import CategoryCard from "../../../components/Category-card"
 
-const { Content, Footer } = Layout
+const { Content } = Layout
 const { Title, Text, Paragraph } = Typography
 
 
@@ -162,120 +161,6 @@ function Home() {
             </div>
           </section>
         </Content>
-
-        {/* Footer */}
-        <Footer style={{ background: "white", borderTop: "1px solid #f0f0f0" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 16px" }}>
-            <Row gutter={[48, 32]}>
-              <Col xs={12} md={6}>
-                <Title level={5}>Shop</Title>
-                <ul style={{ listStyle: "none", padding: 0 }}>
-                  <li style={{ marginBottom: "8px" }}>
-                    <Link href="#">All Products</Link>
-                  </li>
-                  <li style={{ marginBottom: "8px" }}>
-                    <Link href="#">New Arrivals</Link>
-                  </li>
-                  <li style={{ marginBottom: "8px" }}>
-                    <Link href="#">Best Sellers</Link>
-                  </li>
-                  <li style={{ marginBottom: "8px" }}>
-                    <Link href="#">Discounted</Link>
-                  </li>
-                </ul>
-              </Col>
-              <Col xs={12} md={6}>
-                <Title level={5}>Company</Title>
-                <ul style={{ listStyle: "none", padding: 0 }}>
-                  <li style={{ marginBottom: "8px" }}>
-                    <Link href="#">About Us</Link>
-                  </li>
-                  <li style={{ marginBottom: "8px" }}>
-                    <Link href="#">Careers</Link>
-                  </li>
-                  <li style={{ marginBottom: "8px" }}>
-                    <Link href="#">Press</Link>
-                  </li>
-                  <li style={{ marginBottom: "8px" }}>
-                    <Link href="#">Affiliates</Link>
-                  </li>
-                </ul>
-              </Col>
-              <Col xs={12} md={6}>
-                <Title level={5}>Support</Title>
-                <ul style={{ listStyle: "none", padding: 0 }}>
-                  <li style={{ marginBottom: "8px" }}>
-                    <Link href="#">Contact Us</Link>
-                  </li>
-                  <li style={{ marginBottom: "8px" }}>
-                    <Link href="#">FAQs</Link>
-                  </li>
-                  <li style={{ marginBottom: "8px" }}>
-                    <Link href="#">Shipping</Link>
-                  </li>
-                  <li style={{ marginBottom: "8px" }}>
-                    <Link href="#">Returns</Link>
-                  </li>
-                </ul>
-              </Col>
-              <Col xs={12} md={6}>
-                <Title level={5}>Legal</Title>
-                <ul style={{ listStyle: "none", padding: 0 }}>
-                  <li style={{ marginBottom: "8px" }}>
-                    <Link href="#">Terms of Service</Link>
-                  </li>
-                  <li style={{ marginBottom: "8px" }}>
-                    <Link href="#">Privacy Policy</Link>
-                  </li>
-                  <li style={{ marginBottom: "8px" }}>
-                    <Link href="#">Cookie Policy</Link>
-                  </li>
-                  <li style={{ marginBottom: "8px" }}>
-                    <Link href="#">Accessibility</Link>
-                  </li>
-                </ul>
-              </Col>
-            </Row>
-            <Divider />
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
-              <Text type="secondary">© 2025 ShopNow. All rights reserved.</Text>
-              <Space>
-                <Button
-                  type="text"
-                  icon={
-                    <span role="img" aria-label="facebook">
-                      📘
-                    </span>
-                  }
-                />
-                <Button
-                  type="text"
-                  icon={
-                    <span role="img" aria-label="instagram">
-                      📷
-                    </span>
-                  }
-                />
-                <Button
-                  type="text"
-                  icon={
-                    <span role="img" aria-label="twitter">
-                      🐦
-                    </span>
-                  }
-                />
-                <Button
-                  type="text"
-                  icon={
-                    <span role="img" aria-label="linkedin">
-                      💼
-                    </span>
-                  }
-                />
-              </Space>
-            </div>
-          </div>
-        </Footer>
       </Layout>
     </>
   );

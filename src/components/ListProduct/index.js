@@ -7,7 +7,7 @@ const { Title } = Typography
 
 function ListProduct(props) {
   const { products, title, onFilterChange, filter } = props;
-
+  
   const handleChange = (value, key) => {
     onFilterChange({ [key]: value });
   };
@@ -21,7 +21,7 @@ function ListProduct(props) {
           </div>
           {/* filter  */}
           {filter && (
-            <div class="filter_product">
+            <div className="filter_product">
               <Row gutter={16} align="middle" wrap={false}>
                 <Col>
                   <Select
@@ -76,7 +76,7 @@ function ListProduct(props) {
             </div>
           )}
 
-          {products.length > 0 ?
+          {Array.isArray(products) && products.length > 0 ?
             <Row gutter={[24, 24]}>
               {products.map((product) => (
                 <Col xs={24} sm={12} md={8} lg={6}>

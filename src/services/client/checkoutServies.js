@@ -14,3 +14,8 @@ export const detailOrderGet = async (orderId) => {
   const result = await get(`/checkout/order/detail/${orderId}`);
   return result;
 }
+
+export const historyOrderGet = async (tokenUser) => {
+  const result = await get(`/checkout/history/${tokenUser}`);
+  return result;
+}

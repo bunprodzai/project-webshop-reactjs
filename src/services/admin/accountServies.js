@@ -31,7 +31,19 @@ export const resetPasswordAccountPatch = async (token, options) => {
   return result;
 }
 
-export const infoAccountPatch = async (token, option) => {
-  const result = await patchAuth(`${admin}/accounts/info`, option, token);
+// -- my account 
+
+export const infoAccountPatch = async (token) => {
+  const result = await getAuth(`${admin}/my-account`, token);
+  return result;
+}
+
+export const editMyAccount = async (token, option) => {
+  const result = await patchAuth(`${admin}/my-account/edit`, option, token);
+  return result;
+}
+
+export const resetPasswordMyAccount = async (token, option) => {
+  const result = await patchAuth(`${admin}/my-account/reset-password`, option, token);
   return result;
 }

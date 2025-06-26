@@ -28,7 +28,7 @@ function HeaderClient() {
   // Xử lý hiển thị số lượng sản phẩm trong giỏ hàng.
   const dispatch = useDispatch();
   const lengthCart = useSelector((state) => state.cartReducer.lengthCart);
-  
+
 
   // Phần hiển thị thông tin trang web
   const [setting, setSetting] = useState([]);
@@ -173,8 +173,8 @@ function HeaderClient() {
               </Space>
             </div>
           </div>
-          
-          <div className="layout-default__search hidden md:block" style={{maxWidth: "350px", width: "100%", marginTop: "12px"}}>
+
+          <div className="layout-default__search hidden md:block" style={{ maxWidth: "350px", width: "100%", marginTop: "12px" }}>
             <Form onFinish={onFinish} layout="vertical">
               <Row gutter={[12, 12]}>
                 <Col span={22}>
@@ -210,28 +210,29 @@ function HeaderClient() {
                 {/* <Avatar src={avatar} size="large" className="avatar" icon={<UserOutlined />} onClick={toggleMenu} /> */}
                 {isMenuOpen && (
                   <ul className="menu" ref={componentRef}>
-                    <li className="fullName">
-                      <NavLink to="/info-user">
+                    <NavLink to="/info-user">
+                      <li className="fullName">
                         Xin chào!, {getCookie("fullName") ? getCookie("fullName") : ""}
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink to="/orders/detail">
-                        Đơn hàng
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink to="/logout">
+                      </li>
+                    </NavLink>
+                    <NavLink to="/order/history">
+                      <li>
+                        Đơn hàng của bạn
+                      </li>
+                    </NavLink>
+                    <NavLink to="/logout">
+                      <li>
                         <LogoutOutlined /> Logout
-                      </NavLink>
-                    </li>
+                      </li>
+                    </NavLink>
+
                   </ul>
                 )}
               </>
             ) : (
               <>
                 <LoginUser onReload={handleReload} onMenuOpen={() => setIsMenuOpen(false)} />
-                <Register onReload={handleReload} onMenuOpen={() => setIsMenuOpen(false)} />
+                <Register onReload={handleReload} page="header" onMenuOpen={() => setIsMenuOpen(false)} />
               </>
             )}
           </div>
