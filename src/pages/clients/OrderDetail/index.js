@@ -119,11 +119,21 @@ const OrderDetail = (props) => {
                 )}
                   {record.status === "received" && (
                     <Tag color="orange" key={`received-${record.code}`} >
-                      Đã nhận
+                      Đã xác nhận
                     </Tag>
                   )}
                   {record.status === "success" && (
                     <Tag color="success" key={`success-${record.code}`} >
+                      Hoàn thành
+                    </Tag>
+                  )}
+                  {record.status === "processing" && (
+                    <Tag color="green" key={`processing-${record.code}`} >
+                      Hoàn thành
+                    </Tag>
+                  )}
+                  {record.status === "cancelled" && (
+                    <Tag color="red" key={`cancelled-${record.code}`} >
                       Hoàn thành
                     </Tag>
                   )}

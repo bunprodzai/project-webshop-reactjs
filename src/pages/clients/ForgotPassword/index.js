@@ -1,5 +1,5 @@
-import { Button, Col, Form, Input, message, Modal, Row } from "antd";
-import { UserOutlined, LoginOutlined } from "@ant-design/icons";
+import { Button, Form, Input, message, Modal } from "antd";
+import { UserOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { setCookie } from "../../../helpers/cookie";
 import "./ForgotPassword.scss";
@@ -28,44 +28,63 @@ function ForgotPassword(props) {
     setIsModalOpen(true);
     onCancel()
   };
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
+
   const handleCancel = () => {
     setIsModalOpen(false);
   };
 
   return (
     <>
-      <p color="default" className="forgot" icon={<LoginOutlined />} onClick={showModal} >Forgot password?</p>
-      <Modal
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        footer={null}
-        width={"25%"}
-      >
-        <div className="login_user">
-          <Row>
-            <Form className="login_user__form" onFinish={handleSubmit} >
-              <Col span={24}>
-                <Form.Item
-                  name="email"
-                  rules={[{ required: true, message: 'Please input your Email!' }]}
-                >
-                  <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Nhập email" />
-                </Form.Item>
-                <Form.Item>
-                  <Button type="primary" htmlType="submit" className="login-form-button">
-                    Nhận mã OTP
-                  </Button>
-                </Form.Item>
-              </Col>
-            </Form>
-          </Row>
-        </div>
-      </Modal>
-      {isOtpOpen && <OtpPassword onCancel={() => setIsOtpOpen(false)} />}
+      <>
+        <Button
+          type="link"
+          onClick={showModal}
+          style={{ padding: 0, fontSize: 14 }}
+        >
+          Quên mật khẩu?
+        </Button>
+
+        <Modal
+          title="Khôi phục mật khẩu"
+          open={isModalOpen}
+          onCancel={handleCancel}
+          footer={null}
+          width={400}
+          centered
+        >
+          <Form
+            layout="vertical"
+            className="forgot-password-form"
+            onFinish={handleSubmit}
+          >
+            <Form.Item
+              label="Email"
+              name="email"
+              rules={[{ required: true, message: 'Vui lòng nhập email!' }]}
+            >
+              <Input
+                prefix={<UserOutlined className="site-form-item-icon" />}
+                placeholder="Nhập email của bạn"
+              />
+            </Form.Item>
+
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                block
+              >
+                Nhận mã OTP
+              </Button>
+            </Form.Item>
+          </Form>
+        </Modal>
+
+        {isOtpOpen && (
+          <OtpPassword onCancel={() => setIsOtpOpen(false)} />
+        )}
+      </>
+
     </>
   )
 }

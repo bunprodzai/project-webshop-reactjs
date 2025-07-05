@@ -34,6 +34,7 @@ function OtpPassword() {
       <Modal
         open={isModalOpen}
         onCancel={handleCancel}
+        maskClosable={false}
         footer={null}
         width={"25%"}
       >

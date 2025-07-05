@@ -38,6 +38,8 @@ function HeaderClient() {
       try {
         // Lấy thông tin web
         const response = await settingGeneralGet();
+        console.log(response);
+        
         setSetting(response.settings);
         // Xử lý giỏ hàng
         const cartId = localStorage.getItem("cartId");
@@ -155,7 +157,7 @@ function HeaderClient() {
                 </Col>
               </Row>
               <Space size={24}>
-                <NavLink to="#" style={{ fontSize: "14px", fontWeight: 500, color: "#000" }}>
+                <NavLink to="/" style={{ fontSize: "14px", fontWeight: 500, color: "#000" }}>
                   Home
                 </NavLink>
                 <NavLink to="#" style={{ fontSize: "14px", fontWeight: 500, color: "#000" }}>
@@ -164,10 +166,10 @@ function HeaderClient() {
                 <NavLink to="/danh-muc" style={{ fontSize: "14px", fontWeight: 500, color: "#000" }}>
                   Categories
                 </NavLink>
-                <NavLink to="#" style={{ fontSize: "14px", fontWeight: 500, color: "#000" }}>
+                <NavLink to="/" style={{ fontSize: "14px", fontWeight: 500, color: "#000" }}>
                   Deals
                 </NavLink>
-                <NavLink to="#" style={{ fontSize: "14px", fontWeight: 500, color: "#000" }}>
+                <NavLink to="/" style={{ fontSize: "14px", fontWeight: 500, color: "#000" }}>
                   About
                 </NavLink>
               </Space>

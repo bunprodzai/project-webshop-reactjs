@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getCookie } from "../../../helpers/cookie";
-import { Card, message, Modal, Select, Table, Tag } from "antd";
+import { Card, message, Modal, Select, Table } from "antd";
 import { changeStatusOrderGet, listOrderGet } from "../../../services/admin/orderServies";
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import OrderDetail from "../OrderDetail";

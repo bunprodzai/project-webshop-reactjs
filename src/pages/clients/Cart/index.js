@@ -92,7 +92,7 @@ function Cart() {
       title: "Giá",
       dataIndex: "price",
       key: "price",
-      render: (_, record) => `${record.productInfo.price} đ`,
+      render: (_, record) => `${record.productInfo.price.toLocaleString()} VNĐ`,
     },
     {
       title: "Giảm giá",
@@ -104,7 +104,7 @@ function Cart() {
       title: "Thành tiền",
       dataIndex: "newPrice",
       key: "newPrice",
-      render: (_, record) => `${(Number(record.productInfo.price) * (100 - Number(record.productInfo.discountPercentage)) / 100).toFixed(0)}`,
+      render: (_, record) => `${(Number(record.productInfo.price) * (100 - Number(record.productInfo.discountPercentage)) / 100).toLocaleString()} VNĐ` ,
     },
     {
       title: "Số lượng",
@@ -149,7 +149,7 @@ function Cart() {
                 </Table.Summary.Cell>
                 <Table.Summary.Cell>
                   <Text strong>
-                    {cart.reduce((total, item) => total + item.totalPrice, 0).toLocaleString()} $
+                    {cart.reduce((total, item) => total + item.totalPrice, 0).toLocaleString()} VNĐ
                   </Text>
                 </Table.Summary.Cell>
               </Table.Summary.Row>
@@ -165,7 +165,7 @@ function Cart() {
                         borderColor: "#ffc107",
                       }}
                     >
-                      Xác nhận giỏ hàng
+                      Tiến hành đặt hàng
                     </Button>
                   </a>
                 </Table.Summary.Cell>

@@ -152,7 +152,7 @@ function Dashboard() {
   const [recentOrders, setRecentOrders] = useState([]);
 
   // End dữ liệu thống kê
-
+  
   const [latestRevenue, setLatestRevenue] = useState([]);
 
   const fetchApiPercentGrowthProduct = async (time) => {
@@ -242,7 +242,8 @@ function Dashboard() {
         const response = await getTimeStartWeb(token);
         if (response.code === 200) {
           setTimeLine(response.timeLine);
-
+          console.log(response);
+          
           // Thiết lập tháng được chọn mặc định là tháng hiện tại
           const currentMonth = getCurrentMonth();
           if (response.timeLine.includes(currentMonth)) {
@@ -265,8 +266,10 @@ function Dashboard() {
     fetchApiRecentOrders();
     fetchApiTimeStart();
     setLoading(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  
 
   const handleChange = (value) => {
     setSelectedMonth(value);

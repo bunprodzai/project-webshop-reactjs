@@ -26,12 +26,12 @@ function ListProduct(props) {
                 <Col>
                   <Select
                     placeholder="Giá tiền"
-                    style={{ width: 150 }}
+                    style={{ width: 250 }}
                     onChange={(value) => handleChange(value, 'priceRange')}
                   >
-                    <Option value="0-50">Dưới 50$</Option>
-                    <Option value="50-100">50$ - 100$</Option>
-                    <Option value="100-">Trên 100$</Option>
+                    <Option value="0-50000">Dưới 500.000VNĐ</Option>
+                    <Option value="500000-1000000">500.000VNĐ - 1.000.000VNĐ</Option>
+                    <Option value="1000000-">Trên 1.000.000VNĐ</Option>
                     <Option value="0-0">Mặc định</Option>
                   </Select>
                 </Col>

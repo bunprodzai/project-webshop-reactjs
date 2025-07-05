@@ -1,4 +1,4 @@
-import { Button, Card, message, Select, Table, Tag } from "antd";
+import { Button, Card, message, Table, Tag } from "antd";
 import { useState } from "react";
 import { historyOrderGet } from "../../../services/client/checkoutServies";
 import { getCookie } from "../../../helpers/cookie";
@@ -49,12 +49,17 @@ const columns = [
             </Tag>
           )}
           {record.status === "received" && (
-            <Tag color={"orange"} key={`received-${record.code}`} data-id={`received-${record.code}`} style={{ cursor: "pointer" }} >
+            <Tag color={"blue"} key={`received-${record.code}`} data-id={`received-${record.code}`} style={{ cursor: "pointer" }} >
               Đã xác nhận
             </Tag>
           )}
           {record.status === "success" && (
             <Tag color={"success"} key={`success-${record.code}`} style={{ cursor: "pointer" }} >
+              Hoàn thành
+            </Tag>
+          )}
+          {record.status === "cancelled" && (
+            <Tag color={"red"} key={`cancelled-${record.code}`} style={{ cursor: "pointer" }} >
               Hoàn thành
             </Tag>
           )}

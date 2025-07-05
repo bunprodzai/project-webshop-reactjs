@@ -43,8 +43,8 @@ function InfoCheckOut() {
             <b>{record.productInfo.title}</b>
             <p>Số lượng: <b>{record.quantity}</b></p>
             <p>Kích cở: <b>{record.size}</b></p>
-            <p>Đơn giá: {(Number(record.productInfo.price) * (100 - Number(record.productInfo.discountPercentage)) / 100).toFixed(0)}</p>
-            <p>Thành tiền: {record.quantity * (Number(record.productInfo.price) * (100 - Number(record.productInfo.discountPercentage)) / 100).toFixed(0)}</p>
+            <p>Đơn giá: {(Number(record.productInfo.price) * (100 - Number(record.productInfo.discountPercentage)) / 100).toLocaleString()} VNĐ</p> 
+            <p>Thành tiền: {record.quantity * (Number(record.productInfo.price) * (100 - Number(record.productInfo.discountPercentage)) / 100).toLocaleString()} VNĐ</p>
           </div>
         </div>
       ),

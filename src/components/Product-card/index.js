@@ -82,15 +82,15 @@ export default function ProductCard({ product }) {
               {product.discountPercentage ? (
                 <div>
                   <Text strong style={{ fontSize: "16px" }}>
-                    ${discountedPrice.toFixed(2)}
+                    {discountedPrice.toLocaleString()} VNĐ
                   </Text>
                   <Text delete type="secondary" style={{ marginLeft: "8px" }}>
-                    ${product.price.toFixed(2)}
+                    ${product.price.toLocaleString()} VNĐ
                   </Text>
                 </div>
               ) : (
                 <Text strong style={{ fontSize: "16px" }}>
-                  ${product.price.toFixed(2)}
+                  ${product.price.toLocaleString()} VNĐ
                 </Text>
               )}
             </div>

@@ -3,17 +3,17 @@ import { Card, Typography } from "antd"
 
 const { Text, Title } = Typography
 
-export default function CategoryCard({ name, image, itemCount }) {
+export default function CategoryCard({ name, image, itemCount, slug }) {
   return (
-    <Link href="#">
+    <Link to={`/danh-muc?danhmuc=${slug}`}>
       <Card
         hoverable
         cover={
-          <div style={{ position: "relative", height: "180px", overflow: "hidden" }}>
+          <div style={{ position: "relative", height: "300px", overflow: "hidden" }}>
             <img
               alt={name}
               src={image || "/placeholder.svg"}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              style={{ width: "100%", height: "auto", objectFit: "cover" }}
             />
             <div
               style={{

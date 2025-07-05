@@ -1,4 +1,4 @@
-import { Button, Col, Form, Input, message, Modal, Row } from "antd";
+import { Button, Form, Input, message, Modal} from "antd";
 import { useState } from "react";
 import { getCookie, setCookie } from "../../../helpers/cookie";
 import { LockOutlined } from "@ant-design/icons";
@@ -37,45 +37,52 @@ function ResetPassword() {
 
   return (
     <Modal
+      title="Đổi mật khẩu"
       open={isModalOpen}
       onCancel={handleCancel}
       footer={null}
-      width={"25%"}
+      width={400}
+      centered
     >
-      <div className="otp">
-        <Row>
-          <Form className="otp__form" onFinish={handleSubmit} >
-            <Col span={24}>
-              <Form.Item
-                name="password"
-                rules={[{ required: true, message: 'Please input your Password!' }]}
-              >
-                <Input
-                  prefix={<LockOutlined className="site-form-item-icon" />}
-                  type="password"
-                  placeholder="Password"
-                />
-              </Form.Item>
-              <Form.Item
-                name="comfirmPassword"
-                rules={[{ required: true, message: 'Please input your Comfirm Password!' }]}
-              >
-                <Input
-                  prefix={<LockOutlined className="site-form-item-icon" />}
-                  type="password"
-                  placeholder="Password"
-                />
-              </Form.Item>
-              <Form.Item>
-                <Button type="primary" htmlType="submit" className="otp-form-button">
-                  Đổi mật khẩu
-                </Button>
-              </Form.Item>
-            </Col>
-          </Form>
-        </Row>
-      </div>
+      <Form
+        layout="vertical"
+        className="reset-password-form"
+        onFinish={handleSubmit}
+      >
+        <Form.Item
+          label="Mật khẩu mới"
+          name="password"
+          rules={[{ required: true, message: 'Vui lòng nhập mật khẩu mới!' }]}
+        >
+          <Input.Password
+            prefix={<LockOutlined className="site-form-item-icon" />}
+            placeholder="Nhập mật khẩu mới"
+          />
+        </Form.Item>
+
+        <Form.Item
+          label="Xác nhận mật khẩu"
+          name="confirmPassword"
+          rules={[{ required: true, message: 'Vui lòng xác nhận mật khẩu!' }]}
+        >
+          <Input.Password
+            prefix={<LockOutlined className="site-form-item-icon" />}
+            placeholder="Nhập lại mật khẩu mới"
+          />
+        </Form.Item>
+
+        <Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            block
+          >
+            Đổi mật khẩu
+          </Button>
+        </Form.Item>
+      </Form>
     </Modal>
+
   );
 }
 
