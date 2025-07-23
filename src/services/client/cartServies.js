@@ -1,4 +1,4 @@
-import { get, patch } from "../../utils/request";
+import { get, getAuth, patch, patchAuth } from "../../utils/request";
 
 export const findCartGet = async (cartId) => {
   const result = await get(`/cart/get-cart/${cartId}`);
@@ -11,12 +11,12 @@ export const cartCreateGet = async () => {
 }
 
 export const findCartByUserId = async (tokenUser) => {
-  const result = await get(`/cart/find/${tokenUser}`);
+  const result = await getAuth(`/cart/find`, tokenUser);
   return result;
 }
 
-export const updateUserPatch = async (tokenUser, options) => {
-  const result = await patch(`/cart/update-user/${tokenUser}`, options);
+export const updateUserPatch = async (options, tokenUser) => {
+  const result = await patchAuth(`/cart/update-user`, options, tokenUser);
   return result;
 }
 

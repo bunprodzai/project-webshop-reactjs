@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { getCookie } from "../../../helpers/cookie";
-import { Button, Card, message, Table, Tag } from "antd";
-import { Link } from "react-router-dom";
+import { Card, message, Table, Tag } from "antd";
 import DeleteItem from "../../../components/DeleteItem";
-import { EyeOutlined } from '@ant-design/icons';
 import { listArticleGet } from "../../../services/admin/articleServies";
 import ArticleEdit from "../ArticleEdit";
 import NoRole from "../../../components/NoRole";
@@ -187,9 +185,6 @@ function ArticleList() {
         return (
           <>
             <div>
-              <Link to={`/detail-job/${record._id}`} key={`view-${record._id}`}>
-                <Button icon={<EyeOutlined />} style={{ marginRight: 8 }} />
-              </Link>
               {permissions.includes("articles_edit") && (
                 <ArticleEdit record={record} key={`edit-${record._id}`} onReload={handleReload} />
               )}

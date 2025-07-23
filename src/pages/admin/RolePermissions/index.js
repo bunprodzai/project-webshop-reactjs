@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import "./RolePermissions.scss";
 import { Card, Table, Checkbox, Button, Typography, message } from 'antd';
 import { editPermissionsPatch, listRoleGet } from '../../../services/admin/rolesServies';

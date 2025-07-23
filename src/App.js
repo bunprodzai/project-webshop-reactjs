@@ -47,7 +47,7 @@ function App() {
       if (tokenUser) {
         const fetchApi = async () => {
           try {
-            const response = await updateUserPatch(tokenUser, { cartId: cartId} );
+            const response = await updateUserPatch({ cartId: cartId}, tokenUser);
             if (response.code === 200) {
               localStorage.setItem("cartId", response.cartId);
             }

@@ -1,5 +1,4 @@
-import { Button, Card, Col, Form, Input, Row, Switch, Radio, Upload, message, Select, Space } from "antd";
-import { PlusOutlined } from "@ant-design/icons"
+import { Button, Card, Col, Form, Input, Row, Switch, Radio, message, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useEffect, useState } from "react";
 import { addArticlePost } from "../../../services/admin/articleServies";
@@ -7,29 +6,35 @@ import { useNavigate } from "react-router-dom";
 import { getCookie } from "../../../helpers/cookie";
 import NoRole from "../../../components/NoRole";
 import { listCategory } from "../../../services/admin/categoryServies";
+import MyEditor from "../../../components/MyEditor";
+import UploadFile from "../../../components/UploadFile";
 
-const options = [
-  {
-    value: 'china',
-    desc: 'China (中国)',
-  },
-  {
-    value: 'usa',
-    desc: 'USA (美国)',
-  },
-  {
-    value: 'japan',
-    desc: 'Japan (日本)',
-  },
-  {
-    value: 'korea',
-    desc: 'Korea (韩国)',
-  },
+const optionsTags = [
+  { value: 'ao-so-mi', desc: 'Áo sơ mi' },
+  { value: 'vay-dam', desc: 'Váy đầm' },
+  { value: 'quan-jean', desc: 'Quần jean' },
+  { value: 'ao-khoac', desc: 'Áo khoác' },
+  { value: 'thoi-trang-nu', desc: 'Thời trang nữ' },
+  { value: 'thoi-trang-nam', desc: 'Thời trang nam' },
+  { value: 'basic-style', desc: 'Basic style' },
+  { value: 'y2k', desc: 'Y2K' },
+  { value: 'thoi-trang-cong-so', desc: 'Thời trang công sở' },
+  { value: 'outfit-di-choi', desc: 'Outfit đi chơi' },
+  { value: 'outfit-di-lam', desc: 'Outfit đi làm' },
+  { value: 'mix-match', desc: 'Mix & Match' },
+  { value: 'lookbook', desc: 'Lookbook' },
+  { value: 'xuan-he', desc: 'Xuân - Hè' },
+  { value: 'thu-dong', desc: 'Thu - Đông' },
+  { value: 'vintage', desc: 'Vintage' },
+  { value: 'nang-dong', desc: 'Năng động' },
+  { value: 'sang-trong', desc: 'Sang trọng' },
+  { value: 'hoa-tiet-hoa', desc: 'Họa tiết hoa' },
+  { value: 'chat-lieu-cotton', desc: 'Chất liệu cotton' },
 ];
+
 
 function ArticleCreate() {
   const permissions = JSON.parse(localStorage.getItem('permissions'));
-  const [form] = Form.useForm();
   const navigate = useNavigate();
   const token = getCookie("token"); // Lấy token từ cookie
 
@@ -37,7 +42,6 @@ function ArticleCreate() {
 
   // upload img
   const [imageUrl, setImageUrl] = useState("");
-  const [fileList, setFileList] = useState([]);
 
   useEffect(() => {
     const fetchApi = async () => {
@@ -57,6 +61,7 @@ function ArticleCreate() {
     };
 
     fetchApi();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // xử lý submit
@@ -64,29 +69,21 @@ function ArticleCreate() {
     e.thumbnail = imageUrl ? imageUrl : "";
     e.status = e.status ? "active" : "inactive";
 
-    if (!e.title) {
-      message.error("Vui lòng nhập tiêu đề");
-      return;
-    }
-
     e.featured = e.featured === 0 ? "0" : "1";
     e.position = !e.position ? "" : Number(e.position);
-    e.description = !e.description ? "" : e.description;
 
-    console.log(e);
-
-    // try {
-    //   const response = await addArticlePost(e, token); // Truyền token vào hàm
-    //   console.log(response);
-    //   if (response.code === 200) {
-    //     message.success("Thêm mới thành công");
-    //     navigate(`/admin/articles`);
-    //   } else {
-    //     message.error(response.message);
-    //   }
-    // } catch (error) {
-    //   message.error("Lỗi: ", error.message);
-    // }
+    try {
+      const response = await addArticlePost(e, token); // Truyền token vào hàm
+      console.log(response);
+      if (response.code === 200) {
+        message.success("Thêm mới thành công");
+        navigate(`/admin/articles`);
+      } else {
+        message.error(response.message);
+      }
+    } catch (error) {
+      message.error("Lỗi: ", error.message);
+    }
   }
   // end xử lý submit
 
@@ -111,12 +108,12 @@ function ArticleCreate() {
             <Form onFinish={onFinish} layout="vertical">
               <Row gutter={[12, 12]}>
                 <Col span={24}>
-                  <Form.Item label="Tiêu đề" name="title">
+                  <Form.Item label="Tiêu đề" name="title" rules={[{ required: true, message: "Nhập tiêu đề" }]}>
                     <Input />
                   </Form.Item>
                 </Col>
                 <Col span={5}>
-                  <Form.Item label="Danh mục" name="product_category_id">
+                  <Form.Item label="Danh mục" name="category" rules={[{ required: true, message: "Chọn danh mục" }]}>
                     <Select
                       options={optionsCategories}     // Cung cấp danh sách options
                       placeholder="Chọn danh mục"
@@ -132,21 +129,13 @@ function ArticleCreate() {
                     />
                   </Form.Item>
                 </Col>
-                <Col span={5}>
-                  <Form.Item label="Tags" name="tags" >
+                <Col span={14}>
+                  <Form.Item label="Tags" name="tags" rules={[{ required: true, message: "Chọn tags" }]}>
                     <Select
                       mode="multiple"
                       style={{ width: '100%' }}
-                      placeholder="select one country"
-                      defaultValue={['china']}
-                      options={options}
-                      optionRender={option => (
-                        <Space>
-                          <span>
-                            {option.data.desc}
-                          </span>
-                        </Space>
-                      )}
+                      placeholder="select multiple tags"
+                      options={optionsTags.map(opt => ({ value: opt.value, label: opt.desc }))}
                     />
                   </Form.Item>
                 </Col>
@@ -160,80 +149,31 @@ function ArticleCreate() {
                 </Col>
                 <Col span={24}>
                   <Form.Item label="Ảnh nhỏ" name="thumbnail">
-                    <div>
-                      <Upload
-                        name="file"
-                        listType="picture-card"
-                        showUploadList={{ showPreviewIcon: false }}
-                        maxCount={1} // Giới hạn chỉ được chọn 1 ảnh
-                        customRequest={async ({ file, onSuccess, onError }) => {
-                          const formData = new FormData();
-                          formData.append("file", file);
-                          formData.append("upload_preset", "my_preset"); // Thay bằng preset của bạn
-
-                          try {
-                            const response = await fetch(
-                              `https://api.cloudinary.com/v1_1/djckm3ust/image/upload`,
-                              {
-                                method: "POST",
-                                body: formData,
-                              }
-                            );
-                            const data = await response.json();
-
-                            if (data.secure_url) {
-                              setImageUrl(data.secure_url); // Lưu đường dẫn ảnh
-                              setFileList([
-                                {
-                                  uid: data.asset_id,
-                                  name: data.original_filename,
-                                  status: "done",
-                                  url: data.secure_url,
-                                },
-                              ]);
-                              onSuccess(data);
-                            }
-                          } catch (error) {
-                            console.error("Lỗi khi upload ảnh:", error);
-                            onError(error);
-                          }
-                        }}
-                        onChange={({ fileList: newFileList }) => setFileList(newFileList)}
-                        onRemove={() => {
-                          setImageUrl(""); // Xóa link ảnh
-                          setFileList([]); // Xóa danh sách file
-                        }}
-                      >
-                        {fileList.length >= 1 ? null : (
-                          <div>
-                            <PlusOutlined />
-                            <div style={{ marginTop: 8 }}>Upload</div>
-                          </div>
-                        )}
-                      </Upload>
-                      {imageUrl && (
-                        <div style={{ marginTop: "10px" }}>
-                          <p>Link ảnh:</p>
-                          <Input value={imageUrl} readOnly />
-                        </div>
-                      )}
-                    </div>
+                    <UploadFile onImageUrlsChange={setImageUrl} />
                   </Form.Item>
                 </Col>
                 <Col span={24}>
-                  <Form.Item label="Mô tả" name="description" >
-                    <TextArea rows={6} />
+                  <Form.Item label="Tác giả" name="author" rules={[{ required: true, message: "Nhập tác giả" }]}>
+                    <Input />
                   </Form.Item>
                 </Col>
                 <Col span={24}>
-                  <Form.Item label="Hoạt động / Tắt hoạt động" name="status">
+                  <Form.Item label="Trích đoạn" name="excerpt" rules={[{ required: true, message: "Nhập trích đoạn" }]}>
+                    <TextArea></TextArea>
+                  </Form.Item>
+                </Col>
+                <Col span={24}>
+                  <Form.Item label="Mô tả" name="description" rules={[{ required: true, message: "Nhập nội dung" }]}>
+                    <MyEditor />
+                  </Form.Item>
+                </Col>
+                <Col span={24}>
+                  <Form.Item label="Tắt hoạt động / Hoạt động" name="status">
                     <Switch />
                   </Form.Item>
                 </Col>
                 <Col span={24}>
-                  <Form.Item name="btn">
-                    <Button type="primary" htmlType="submit">Thêm</Button>
-                  </Form.Item>
+                  <Button type="primary" htmlType="submit">Thêm</Button>
                 </Col>
               </Row>
             </Form>

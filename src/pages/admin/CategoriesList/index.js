@@ -1,8 +1,6 @@
-import { Button, Card, Table, Tag, Form, Row, Col, Select, message } from 'antd';
+import { Card, Table, Tag, Form, Row, Col, Select, message } from 'antd';
 import { useEffect, useState } from 'react';
 import { getCookie } from "../../../helpers/cookie";
-import Link from 'antd/es/typography/Link';
-import { EyeOutlined } from '@ant-design/icons';
 import DeleteItem from '../../../components/DeleteItem';
 import { changeStatusCategory, listCategory } from '../../../services/admin/categoryServies';
 import CategoriesEdit from '../CategoriesEdit';
@@ -114,9 +112,6 @@ function CategoriesList() {
         return (
           <>
             <div>
-              <Link to={`/detail-job/${record._id}`} key={`view-${record._id}`}>
-                <Button icon={<EyeOutlined />} style={{ marginRight: 8 }} />
-              </Link>
               {permissions.includes("products_category_edit") && (
                 <CategoriesEdit record={record} key={`edit-${record._id}`} onReload={handleReload} />
               )}

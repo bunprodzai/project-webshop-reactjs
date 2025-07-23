@@ -14,7 +14,7 @@ function ListProduct(props) {
 
   return (
     <>
-      <section>
+      <section style={{ backgroundColor: "#fff" }}>
         <div style={{ maxWidth: "1200px", padding: "10px 16px" }}>
           <div style={{ textAlign: "center", marginBottom: "16px" }}>
             <Title level={1}>{title}</Title>

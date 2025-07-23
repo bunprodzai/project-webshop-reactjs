@@ -162,10 +162,10 @@ function DetailProduct() {
           {/* Giá sản phẩm */}
           <div style={{ marginTop: "20px" }}>
             <Text strong style={{ fontSize: "18px", color: "#ff4d4f" }}>
-              Giá: {product.newPrice},000 ₫
+              Giá: {Number(product.newPrice).toLocaleString()} VNĐ
             </Text>
             <br />
-            <Text>Giá gốc: <strike>{product.price},000 ₫</strike></Text>
+            <Text>Giá gốc: <strike>{Number(product.price).toLocaleString()} VNĐ</strike></Text>
           </div>
 
           {/* Chức năng */}

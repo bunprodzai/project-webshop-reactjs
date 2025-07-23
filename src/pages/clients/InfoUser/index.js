@@ -33,7 +33,7 @@ function InfoUser() {
     e.tokenUser = tokenUser;
     console.log(e);
     try {
-      const resChangeInfo = await editInfoPatch(e);
+      const resChangeInfo = await editInfoPatch(e, tokenUser);
       if (resChangeInfo.code === 200) {
         setCookie("fullName", e.fullName, 24);
         setCookie("email", e.email, 24);
@@ -49,7 +49,7 @@ function InfoUser() {
   const handleChangePassword = async (e) => {
     e.tokenUser = tokenUser;
     try {
-      const resChangePassword = await resetPassowrdPatch(e);
+      const resChangePassword = await resetPassowrdPatch(e, tokenUser);
       if (resChangePassword.code === 200) {
         navigate("/logout");
         message.success(resChangePassword.message);

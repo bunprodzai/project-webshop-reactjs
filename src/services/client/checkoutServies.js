@@ -15,7 +15,7 @@ export const detailOrderGet = async (orderId) => {
   return result;
 }
 
-export const historyOrderGet = async (tokenUser) => {
-  const result = await get(`/checkout/history/${tokenUser}`);
+export const createQrPost = async (options) => {
+  const result = await post(`/vn-pay/create-qr`, options);
   return result;
 }

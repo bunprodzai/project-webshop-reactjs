@@ -99,15 +99,15 @@ function ProductsCreate() {
             }}
             type="inner"
           >
-            <Form onFinish={onFinish} layout="vertical">
+            <Form onFinish={onFinish} layout="vertical" initialValues={{ discountPercentage: 0 }}>
               <Row gutter={[12, 12]}>
                 <Col span={24}>
-                  <Form.Item label="Tiêu đề" name="title" >
+                  <Form.Item label="Tiêu đề" name="title" rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]}>
                     <Input />
                   </Form.Item>
                 </Col>
                 <Col span={4}>
-                  <Form.Item label="Danh mục" name="product_category_id">
+                  <Form.Item label="Danh mục" name="product_category_id" rules={[{ required: true, message: 'Vui lòng chọn danh mục!' }]}>
                     <Select
                       options={options}     // Cung cấp danh sách options
                       placeholder="Chọn danh mục"
@@ -115,16 +115,17 @@ function ProductsCreate() {
                   </Form.Item>
                 </Col>
                 <Col span={4}>
-                  <Form.Item label="Giá" name="price" >
+                  <Form.Item label="Giá" name="price" rules={[{ required: true, message: 'Vui lòng nhập giá!' }]}>
                     <Input
                       allowClear type="number"
                     />
                   </Form.Item>
                 </Col>
                 <Col span={4}>
-                  <Form.Item label="Phần trăm giảm giá" name="discountPercentage" >
+                  <Form.Item label="Phần trăm giảm giá" name="discountPercentage" rules={[{ required: true, message: 'Vui lòng nhập phần trăm giảm giá!' }]}>
                     <Input
-                      allowClear type="number" max={100} min={0}
+                      allowClear type="number"
+                      max={100} min={0}
                       placeholder="0 - 100"
                     />
                   </Form.Item>
@@ -242,7 +243,7 @@ function ProductsCreate() {
                   </Form.Item>
                 </Col>
                 <Col span={24}>
-                  <Form.Item label="Hoạt động / Tắt hoạt động" name="status">
+                  <Form.Item label="Tắt hoạt động / Hoạt động " name="status">
                     <Switch />
                   </Form.Item>
                 </Col>

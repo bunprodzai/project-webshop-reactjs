@@ -1,4 +1,4 @@
-import { get, patch, post } from "../../utils/request";
+import { get, getAuth, patch, patchAuth, post, postAuth } from "../../utils/request";
 
 export const forgotPasswordPost = async (options) => {
   const result = await post(`/users/password/forgot`, options);
@@ -10,8 +10,8 @@ export const optPasswordPost = async (email, options) => {
   return result;
 }
 
-export const resetPasswordPost = async (options) => {
-  const result = await post(`/users/password/reset-password`, options);
+export const resetPasswordPost = async (options, token) => {
+  const result = await postAuth(`/users/password/reset-password`, options, token);
   return result;
 }
 
@@ -21,16 +21,21 @@ export const registerPost = async (options) => {
 }
 
 export const infoGet = async (tokenUser) => {
-  const result = await get(`/users/info/${tokenUser}`);
+  const result = await getAuth(`/users/info`, tokenUser);
   return result;
 }
 
-export const editInfoPatch = async (options) => {
-  const result = await patch(`/users/info/edit`, options);
+export const editInfoPatch = async (options, tokenUser) => {
+  const result = await patchAuth(`/users/info/edit`, options, tokenUser);
   return result;
 }
 
-export const resetPassowrdPatch = async (options) => {
-  const result = await patch(`/users/info/reset-password`, options);
+export const resetPassowrdPatch = async (options, tokenUser) => {
+  const result = await patchAuth(`/users/info/reset-password`, options, tokenUser);
+  return result;
+}
+
+export const historyOrderGet = async (tokenUser) => {
+  const result = await getAuth(`/users/history-order`, tokenUser);
   return result;
 }

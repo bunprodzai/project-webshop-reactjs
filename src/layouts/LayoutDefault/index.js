@@ -12,7 +12,7 @@ function LayoutDefault() {
   return (
     <>
       <CartProvider>
-        <Layout style={{ minHeight: '100vh' }}>
+        <Layout style={{ minHeight: '100vh', backgroundColor: "#ffffff" }}>
           <HeaderClient />
           <Content className="container" style={{
             flex: 1,

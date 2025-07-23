@@ -90,7 +90,7 @@ export default function ProductCard({ product }) {
                 </div>
               ) : (
                 <Text strong style={{ fontSize: "16px" }}>
-                  ${product.price.toLocaleString()} VNĐ
+                  {product.price.toLocaleString()} VNĐ
                 </Text>
               )}
             </div>

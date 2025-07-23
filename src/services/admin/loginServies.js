@@ -6,7 +6,7 @@ export const login = async (option) => {
   return result;
 }
 
-export const permissionsPost = async (option) => {
-  const result = await post(`/admin/auth/permissions`, option);
-  return result;
-}
+// export const permissionsPost = async (option) => {
+//   const result = await post(`/admin/auth/permissions`, option);
+//   return result;
+// }

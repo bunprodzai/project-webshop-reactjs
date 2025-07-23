@@ -1,6 +1,6 @@
 import { Button, Card, message, Table, Tag } from "antd";
 import { useState } from "react";
-import { historyOrderGet } from "../../../services/client/checkoutServies";
+import { historyOrderGet } from "../../../services/client/userServies";
 import { getCookie } from "../../../helpers/cookie";
 import { useEffect } from "react";
 import { CreditCardOutlined } from '@ant-design/icons';

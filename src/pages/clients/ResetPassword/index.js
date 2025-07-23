@@ -18,7 +18,7 @@ function ResetPassword() {
 
   const handleSubmit = async (e) => {
     e.tokenUser = tokenUser;
-    const response = await resetPasswordPost(e);
+    const response = await resetPasswordPost(e, tokenUser);
     if (response.code === 200) {
       message.success(response.message);
       setCookie("email", e.email, 1);
@@ -62,7 +62,7 @@ function ResetPassword() {
 
         <Form.Item
           label="Xác nhận mật khẩu"
-          name="confirmPassword"
+          name="comfirmPassword"
           rules={[{ required: true, message: 'Vui lòng xác nhận mật khẩu!' }]}
         >
           <Input.Password

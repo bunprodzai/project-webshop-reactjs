@@ -2,10 +2,8 @@ import { useEffect, useState } from "react";
 import { listAccountGet } from "../../../services/admin/accountServies";
 import { getCookie } from "../../../helpers/cookie";
 import { listRoleGet } from "../../../services/admin/rolesServies";
-import { Button, Card, message, Table } from "antd";
-import { Link } from "react-router-dom";
+import { Card, message, Table } from "antd";
 import DeleteItem from "../../../components/DeleteItem";
-import { EyeOutlined } from '@ant-design/icons';
 import AccountEdit from "../AccountEdit";
 import NoRole from "../../../components/NoRole";
 
@@ -88,9 +86,6 @@ function AccountList() {
         return (
           <>
             <div>
-              <Link to={`/detail-job/${record._id}`} key={`view-${record._id}`}>
-                <Button icon={<EyeOutlined />} style={{ marginRight: 8 }} />
-              </Link>
               {permissions.includes("accounts_edit") && (
                 <AccountEdit record={record} key={`edit-${record._id}`} onReload={handleReload} />
               )}

@@ -7,6 +7,7 @@ import CategoryCard from "../../../components/Category-card"
 import { listCategoriesGet } from "../../../services/client/categoriesServies";
 import { Link } from "react-router-dom";
 import Article from "../article";
+import TopBanner from "../TopBanner";
 
 const { Content } = Layout
 const { Title, Text, Paragraph } = Typography
@@ -41,6 +42,7 @@ function Home() {
 
       <Layout className="min-h-screen">
         <Content>
+          <TopBanner />
           {/* Hero Section */}
           <section style={{ padding: "48px 0", background: "linear-gradient(to right, #f0f5ff, #e6f7ff)" }}>
             <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 16px" }}>
@@ -155,10 +157,11 @@ function Home() {
             </div>
           </section>
 
+          {/* Bài biết */}
           <Article />
 
           {/* Newsletter */}
-          <section style={{ padding: "48px 0", background: "#f5f5f5" }}>
+          <section style={{ padding: "48px 0", background: "#ffffff" }}>
             <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 16px" }}>
               <div style={{ textAlign: "center", maxWidth: "600px", margin: "0 auto" }}>
                 <Title level={2}>Join Our Newsletter</Title>

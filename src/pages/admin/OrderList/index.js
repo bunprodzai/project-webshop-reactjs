@@ -115,36 +115,28 @@ function OrderList() {
       dataIndex: 'status',
       key: 'status',
       render: (_, record) => {
+        // Tính toán option cần disable
+        const disabledOptions = {
+          initialize: ['initialize', 'processing'],
+          processing: ['initialize', 'processing'],
+          received: ['initialize', 'processing'],
+          success: ['initialize', 'processing', 'received', 'cancelled'],
+          cancelled: ['initialize', 'processing', 'received', 'success'],
+        };
+
         return (
-          <>
-            <Select
-              defaultValue={record.status}
-              style={{ width: 140 }}
-              onChange={(value) => handleChangeStatus(value, record.code)}
-            >
-              <Select.Option value="initialize" disabled >Khởi tạo</Select.Option>
-              <Select.Option value="processing" disabled >Đang xử lý</Select.Option>
-              <Select.Option value="received">Đã nhận</Select.Option>
-              <Select.Option value="success">Hoàn thành</Select.Option>
-              <Select.Option value="cancelled">Đã hủy</Select.Option>
-            </Select>
-            {/* {record.status === "initialize" && (
-              <Tag color="processing" key={`initialize-${record.code}`} style={{ cursor: "pointer" }} >
-                Khởi tạo
-              </Tag>
-            )}
-            {record.status === "received" && (
-              <Tag color={"orange"} key={`received-${record.code}`} data-id={`received-${record.code}`} onClick={handleCLickStatus} style={{ cursor: "pointer" }} >
-                Đã nhận
-              </Tag>
-            )}
-            {record.status === "success" && (
-              <Tag color={"success"} key={`success-${record.code}`} style={{ cursor: "pointer" }} >
-                Hoàn thành
-              </Tag>
-            )} */}
-          </>
-        )
+          <Select
+            defaultValue={record.status}
+            style={{ width: 140 }}
+            onChange={(value) => handleChangeStatus(value, record.code)}
+          >
+            <Select.Option value="initialize" disabled={disabledOptions[record.status].includes('initialize')}>Khởi tạo</Select.Option>
+            <Select.Option value="processing" disabled={disabledOptions[record.status].includes('processing')}>Đang xử lý</Select.Option>
+            <Select.Option value="received" disabled={disabledOptions[record.status].includes('received')}>Đã nhận</Select.Option>
+            <Select.Option value="success" disabled={disabledOptions[record.status].includes('success')}>Hoàn thành</Select.Option>
+            <Select.Option value="cancelled" disabled={disabledOptions[record.status].includes('cancelled')}>Đã hủy</Select.Option>
+          </Select>
+        );
       }
     },
     {

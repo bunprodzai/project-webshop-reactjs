@@ -3,8 +3,6 @@ import "./ListProduct.scss";
 import { useEffect, useState } from 'react';
 import { changeStatusProduct, listProducts } from '../../../services/admin/productServies';
 import { getCookie } from "../../../helpers/cookie";
-import Link from 'antd/es/typography/Link';
-import { EyeOutlined } from '@ant-design/icons';
 import DeleteItem from '../../../components/DeleteItem';
 import ProductEdit from '../ProductEdit';
 import NoRole from '../../../components/NoRole';
@@ -116,9 +114,6 @@ function ProductList() {
         return (
           <>
             <div>
-              <Link to={`/detail-job/${record._id}`} key={`view-${record._id}`}>
-                <Button icon={<EyeOutlined />} style={{ marginRight: 8 }} />
-              </Link>
               {permissions.includes("products_edit") && (
                 <ProductEdit record={record} key={`edit-${record._id}`} onReload={handleReload} />
               )}

@@ -29,6 +29,9 @@ import InfoUser from "../pages/clients/InfoUser";
 import Categories from "../components/Categories";
 import AccountInfo from "../pages/admin/AccountInfo";
 import Order from "../pages/clients/Order";
+import ArticleDetail from "../pages/clients/ArticleDetail";
+import SuccessCheckOut from "../pages/clients/SuccessCheckOut";
+import FailCheckOut from "../pages/clients/FailCheckOut";
 
 const pathAdmin = "admin";
 
@@ -76,6 +79,20 @@ export const routes = [
       {
         path: `order/history`,
         element: <Order />
+      }
+      ,
+      {
+        path: `articles/:slug`,
+        element: <ArticleDetail/>
+      },
+      {
+        path: `order/checkout/pay/success/:code`,
+        element: <SuccessCheckOut />
+      }
+      ,
+      {
+        path: `order/checkout/pay/fail/:code`,
+        element: <FailCheckOut />
       }
       // {
       //   path: "login",

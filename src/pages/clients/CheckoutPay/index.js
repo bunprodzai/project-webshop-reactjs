@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { detailOrderGet, successOrderPatch } from "../../../services/client/checkoutServies";
+import { createQrPost, detailOrderGet, successOrderPatch } from "../../../services/client/checkoutServies";
 import { Button, Card, Col, message, QRCode, Row, Table, Tabs, Typography } from "antd";
-import { CreditCardOutlined, WalletOutlined } from "@ant-design/icons";
+import { CheckCircleOutlined, CreditCardOutlined, WalletOutlined } from "@ant-design/icons";
 import "./CheckoutPay.scss";
+import Title from "antd/es/typography/Title";
 const { Text } = Typography;
 
 
@@ -33,7 +34,7 @@ function CheckoutPay() {
     fetchApi();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-  
+
 
   // Cấu hình cột của bảng
   const columns = [
@@ -45,7 +46,7 @@ function CheckoutPay() {
             <b>{record.productInfo.title}</b>
             <p>Số lượng: <b>{record.quantity}</b></p>
             <p>Kích cở: <b>{record.size}</b></p>
-            
+
             <p>Đơn giá: {(Number(record.productInfo.price) * (100 - Number(record.productInfo.discountPercentage)) / 100).toLocaleString()} VNĐ</p>
             <p>Thành tiền: {record.quantity * (Number(record.productInfo.price) * (100 - Number(record.productInfo.discountPercentage)) / 100).toLocaleString()} VNĐ</p>
           </div>
@@ -84,20 +85,37 @@ function CheckoutPay() {
       render: (text) => <Text>{text}</Text>,
     },
   ];
+  console.log(order);
 
   const handlePayment = () => {
     const fetchApiSuccess = async () => {
-      try {
-        const response = await successOrderPatch(order._id, { paymentMethod: paymentMethod });
-        if (response.code === 200) {
-          message.success(response.message);
-          navigate("/");
-        } else {
-          message.error(response.message);
-        }
-      } catch (error) {
+      if (paymentMethod === "bank") {
+        try {
+          const option = {
+            code: code,
+            Amount: order.totalPriceProducts,
+            orderInfo: `Thanh toán đơn hàng ${code}`
+          }
+          const vnpayResponse = await createQrPost(option);
 
+          window.open(vnpayResponse);
+        } catch {
+
+        }
+      } else {
+        try {
+          const response = await successOrderPatch(order._id, { paymentMethod: paymentMethod });
+          if (response.code === 200) {
+            message.success(response.message);
+            navigate("/");
+          } else {
+            message.error(response.message);
+          }
+        } catch (error) {
+
+        }
       }
+
     }
 
     fetchApiSuccess();
@@ -143,77 +161,97 @@ function CheckoutPay() {
   return (
     <>
       <div className="check-out">
-        <Row gutter={[16, 16]}>
-          <Col span={14}>
-            <Typography.Title level={4}>
-              Thông tin cá nhân
-            </Typography.Title>
-            <Card>
-              <div className="info-user">
-                {order ? (
-                  <>
-                    <p>Họ tên: {order.userInfo.fullName}</p>
-                    <p>Số điện thoại: {order.userInfo.phone}</p>
-                    <p>Địa chỉ: {order.userInfo.address}</p>
-                    <p>Ghi chú: {order.userInfo.note}</p>
-                  </>
-                ) : (
-                  <p>Đang tải...</p>
-                )}
-              </div>
-            </Card>
-            <Card>
-              <div className="pay">
-                <Tabs defaultActiveKey="cod" items={items} type="card" onChange={onchange} />
-                <Button
-                  type="primary"
-                  style={{
-                    marginTop: 20,
-                    backgroundColor: "#FFC234",
-                    borderColor: "#FFC234",
-                    color: "#ffffff",
-                    fontWeight: "bold",
-                  }}
-                  block
-                  onClick={handlePayment}
-                >
-                  Xác nhận thanh toán đơn hàng.
-                </Button>
-              </div>
-            </Card>
-          </Col>
-          <Col span={10}>
-            <div className="cart">
-              <Typography.Title level={4}>
-                Giỏ hàng
-              </Typography.Title>
-              {order ? (
-                <Table
-                  dataSource={order.products.map((product, index) => ({
-                    ...product,
-                    key: product.id || index, // Sử dụng `id` nếu có, nếu không thì dùng chỉ số
-                  }))}
-                  columns={columns}
-                  pagination={false}
-                  key={"data-cart"}
-                  summary={() => (
-                    <>
-                      <Table.Summary.Row>
-                        <Table.Summary.Cell colSpan={1} align="right">
-                          <Text strong>
-                            Tổng tiền: {order.products.reduce((total, item) => total + item.totalPrice, 0).toLocaleString()} $
-                          </Text>
-                        </Table.Summary.Cell>
-                      </Table.Summary.Row>
-                    </>
-                  )}
-                />
-              ) : (
-                <p>Đang tải...</p>
-              )}
+        {order && order.status !== "initialize" ? (
+          <>
+            <div style={{ textAlign: "center", marginBottom: 32 }}>
+              <CheckCircleOutlined
+                style={{
+                  fontSize: 64,
+                  color: "green",
+                  marginBottom: 16,
+                }}
+              />
+              <Title level={2} style={{ color: "#262626", marginBottom: 8 }}>
+                Bạn đã xử lý đơn hàng này rồi!
+              </Title>
             </div>
-          </Col>
-        </Row>
+          </>
+        ) : (
+          <>
+            <Row gutter={[16, 16]}>
+              <Col span={14}>
+                <Typography.Title level={4}>
+                  Thông tin cá nhân
+                </Typography.Title>
+                <Card>
+                  <div className="info-user">
+                    {order ? (
+                      <>
+                        <p>Họ tên: {order.userInfo.fullName}</p>
+                        <p>Số điện thoại: {order.userInfo.phone}</p>
+                        <p>Địa chỉ: {order.userInfo.address}</p>
+                        <p>Ghi chú: {order.userInfo.note}</p>
+                      </>
+                    ) : (
+                      <p>Đang tải...</p>
+                    )}
+                  </div>
+                </Card>
+                <Card>
+                  <div className="pay">
+                    <Tabs defaultActiveKey="cod" items={items} type="card" onChange={onchange} />
+                    <Button
+                      type="primary"
+                      style={{
+                        marginTop: 20,
+                        backgroundColor: "#FFC234",
+                        borderColor: "#FFC234",
+                        color: "#ffffff",
+                        fontWeight: "bold",
+                      }}
+                      block
+                      onClick={handlePayment}
+                    >
+                      Xác nhận thanh toán đơn hàng.
+                    </Button>
+                  </div>
+                </Card>
+              </Col>
+              <Col span={10}>
+                <div className="cart">
+                  <Typography.Title level={4}>
+                    Giỏ hàng
+                  </Typography.Title>
+                  {order ? (
+                    <Table
+                      dataSource={order.products.map((product, index) => ({
+                        ...product,
+                        key: product.id || index, // Sử dụng `id` nếu có, nếu không thì dùng chỉ số
+                      }))}
+                      columns={columns}
+                      pagination={false}
+                      key={"data-cart"}
+                      summary={() => (
+                        <>
+                          <Table.Summary.Row>
+                            <Table.Summary.Cell colSpan={1} align="right">
+                              <Text strong>
+                                Tổng tiền: {order.products.reduce((total, item) => total + item.totalPrice, 0).toLocaleString()} $
+                              </Text>
+                            </Table.Summary.Cell>
+                          </Table.Summary.Row>
+                        </>
+                      )}
+                    />
+                  ) : (
+                    <p>Đang tải...</p>
+                  )}
+                </div>
+              </Col>
+            </Row>
+          </>
+        )}
+
       </div>
     </>
   );

@@ -4,8 +4,8 @@ import { CaretLeftOutlined, CaretRightOutlined, HomeOutlined } from "@ant-design
 import "./LayoutAdmin.scss";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import MenuSider from "../../components/MenuSider";
-import logo from "../../images/jobs.svg";
-import logoFold from "../../images/logo-fold.png";
+import logo from "../../images/BunzDev.png";
+import logoFold from "../../images/B.png";
 import { getCookie } from "../../helpers/cookie";
 
 const { Sider, Content } = Layout;
@@ -39,13 +39,10 @@ function LayoutAdmin() {
                     :
                     <CaretLeftOutlined  onClick={() => setLoading(!loading)} />}
                 </div>
-                <div>
-                  <h3>Trang quản trị</h3>
-                </div>
               </div>
               <div className="header__nav-right">
                 <div className="header__nav-right-title">
-                  <Button style={{ marginBottom: "5px" }} onClick={() => { navigate(`/admin/account-info`) }}>
+                  <Button style={{ marginBottom: "3px" }} onClick={() => { navigate(`/admin/account-info`) }}>
                     <HomeOutlined className="icons_home" /> Xin chào , <b>{fullName}</b>
                   </Button>
                 </div>
