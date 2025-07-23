@@ -6,6 +6,7 @@ import HeaderClient from "./HeaderClient";
 import { Outlet } from "react-router-dom";
 import { CartProvider } from "../../components/CartProvider";
 // import ChatBotAi from "../../components/chatBotAi";
+// import ChatBotAi from "../../components/chatBotAi";
 
 function LayoutDefault() {
 
