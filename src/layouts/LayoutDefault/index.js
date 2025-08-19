@@ -5,7 +5,7 @@ import FooterClient from "./FooterClient";
 import HeaderClient from "./HeaderClient";
 import { Outlet } from "react-router-dom";
 import { CartProvider } from "../../components/CartProvider";
-import ChatBotAi from "../../components/ChatBotAi";
+// import ChatBotAi from "../../components/ChatBotAi";
 
 function LayoutDefault() {
 
@@ -24,7 +24,7 @@ function LayoutDefault() {
           <FooterClient />
         </Layout>
       </CartProvider>
-      <ChatBotAi />
+      {/* <ChatBotAi /> */}
     </>
   )
 }
