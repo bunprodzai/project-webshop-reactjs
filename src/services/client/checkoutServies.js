@@ -19,3 +19,8 @@ export const createQrPost = async (options) => {
   const result = await post(`/vn-pay/create-qr`, options);
   return result;
 }
+
+export const checkVoucherPost = async (options) => {
+  const result = await post(`/checkout/check-voucher`, options);
+  return result;
+}

@@ -7,6 +7,8 @@ import { deleteRole } from "../../services/admin/rolesServies";
 import { deleteAccountDel } from "../../services/admin/accountServies";
 import { deleteUserDel } from "../../services/admin/userServies";
 import { deleteArticleDel } from "../../services/admin/articleServies";
+import { deleteBanner } from "../../services/admin/bannerServies";
+import { deleteVoucher } from "../../services/admin/voucherServies";
 const { confirm } = Modal;
 
 function DeleteItem(props) {
@@ -101,12 +103,41 @@ function DeleteItem(props) {
         }
       }
       break;
+
+    case "banner":
+      item = "quảng cáo"
+      deleteItem = async () => {
+        const response = await deleteBanner(record._id, token);
+        if (response.code === 200) {
+          message.success(`Xóa ${item} thành công`);
+          onReload();
+        } else {
+          message.error(response.message);
+          return;
+        }
+      }
+      break;
+
+    case "voucher":
+      item = "voucher"
+      deleteItem = async () => {
+        const response = await deleteVoucher(record._id, token);
+        if (response.code === 200) {
+          message.success(`Xóa ${item} thành công`);
+          onReload();
+        } else {
+          message.error(response.message);
+          return;
+        }
+      }
+      break;
+
     default:
       break;
   }
 
 
-
+  
   const showDeleteConfirm = () => {
     confirm({
       title: `Bạn chắc chắn muốn xóa ${item} này?`,

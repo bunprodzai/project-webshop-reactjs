@@ -69,8 +69,9 @@ const columns = [
   },
   {
     title: 'Tổng tiền',
-    dataIndex: 'totalMoney',
-    key: 'totalMoney',
+    dataIndex: 'totalOrder',
+    key: 'totalOrder',
+    render: (text) => <span>{Number(text.toString()).toLocaleString()} VNĐ</span>
   },
   {
     title: 'Số lượng SP',
@@ -127,7 +128,7 @@ function Order() {
           fullName: order.userInfo.fullName,
           phone: order.userInfo.phone,
           address: order.userInfo.address,
-          totalMoney: order.totalOrder,
+          totalOrder: order.totalOrder,
           createdAt: order.createdAt,
           quantityOrder: order.products.reduce((sum, product) => sum + product.quantity, 0),
           products: order.products,
@@ -150,9 +151,6 @@ function Order() {
     fetchApi();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  console.log("orders", orders);
-
 
   return (
     <>

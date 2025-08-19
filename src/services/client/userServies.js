@@ -1,4 +1,4 @@
-import { get, getAuth, patch, patchAuth, post, postAuth } from "../../utils/request";
+import { getAuth, patchAuth, post, postAuth } from "../../utils/request";
 
 export const forgotPasswordPost = async (options) => {
   const result = await post(`/users/password/forgot`, options);

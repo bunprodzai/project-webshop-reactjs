@@ -5,6 +5,7 @@ import { changeStatusOrderGet, listOrderGet } from "../../../services/admin/orde
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import OrderDetail from "../OrderDetail";
 import NoRole from "../../../components/NoRole";
+import { formatDate } from "../../../helpers/dateTime";
 
 const { confirm } = Modal;
 
@@ -44,16 +45,6 @@ function OrderList() {
     fetchApi();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  const formatDate = (isoString) => {
-    const date = new Date(isoString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
-    const year = date.getFullYear();
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${day}/${month}/${year} ${hours}:${minutes}`;
-  };
 
   const handleReload = () => {
     fetchApi();

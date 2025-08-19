@@ -1,18 +1,21 @@
-import { Button, Card, Input, Table, Tag, Form, Row, Col, Select, message } from 'antd';
-import "./ListProduct.scss";
+import { Button, Card, Input, Table, Tag, Form, Row, Col, message } from 'antd';
 import { useEffect, useState } from 'react';
-import { changeStatusProduct, listProducts } from '../../../services/admin/productServies';
 import { getCookie } from "../../../helpers/cookie";
 import DeleteItem from '../../../components/DeleteItem';
-import ProductEdit from '../ProductEdit';
 import NoRole from '../../../components/NoRole';
+import { changeStatusBanner, listBanners } from '../../../services/admin/bannerServies';
+import { formatDate } from '../../../helpers/dateTime';
+import BannerEdt from '../BannerEdit';
 
-function ProductList() {
+
+const BannerList = () => {
   const permissions = JSON.parse(localStorage.getItem('permissions'));
   const [data, setData] = useState([]);
   const token = getCookie("token");
+
   // tổng số trang để phân trang
   const [totalPage, setTotalPage] = useState(0);
+
   // eslint-disable-next-line no-unused-vars
   const [limit, setLimit] = useState(10);
 
@@ -21,16 +24,20 @@ function ProductList() {
 
   // keyword tìm kiếm
   const [keyword, setKeyword] = useState("");
-  // sort 
+
+  // sort
+  // eslint-disable-next-line no-unused-vars
   const [sortKey, setSortKey] = useState("");
+  // eslint-disable-next-line no-unused-vars
   const [sortType, setSortType] = useState("asc");
 
-  
-  const fetchApi = async () => {
-    const response = await listProducts(token, currentPage, limit, keyword, sortKey, sortType);
 
+  const fetchApi = async () => {
+    const response = await listBanners(token, currentPage, limit, keyword, sortKey, sortType);
     if (response.code === 200) {
-      setData(response.products);
+      console.log(response);
+
+      setData(response.banners);
       setTotalPage(response.totalPage);
     } else {
       setData([]);
@@ -49,40 +56,47 @@ function ProductList() {
   // Data đổ vào table
   const columns = [
     {
-      title: 'Tên sản phẩm',
+      title: 'Tiêu đề QC',
       dataIndex: 'title',
       key: 'title',
     },
     {
       title: 'Ảnh',
-      dataIndex: 'thumbnail',
-      key: 'thumbnail',
+      dataIndex: 'image',
+      key: 'image',
       render: (_, record) => {
         return (
           <>
             <img
-              src={record.thumbnail}
+              src={record.image}
               alt="Uploaded"
-              style={{ width: "70px", display: "block", marginTop: "10px" }}
+              style={{ width: "150px", display: "block", marginTop: "10px" }}
             />
           </>
         )
       }
     },
     {
-      title: 'Giá',
-      dataIndex: 'price',
-      key: 'price',
+      title: 'Mô tả ngắn',
+      dataIndex: 'excerpt',
+      key: 'excerpt',
     },
     {
-      title: 'Số lượng',
-      dataIndex: 'stock',
-      key: 'stock',
+      title: 'Ngày bắt đầu',
+      dataIndex: 'start_date',
+      key: 'start_date',
+      render: (text) => formatDate(text)
     },
     {
-      title: 'Giảm giá',
-      dataIndex: 'discountPercentage',
-      key: 'discountPercentage',
+      title: 'Ngày kết thúc',
+      dataIndex: 'end_date',
+      key: 'end_date',
+      render: (text) => formatDate(text)
+    },
+    {
+      title: 'Vị trí',
+      dataIndex: 'position',
+      key: 'position',
     },
     {
       title: 'Trạng thái',
@@ -112,11 +126,11 @@ function ProductList() {
         return (
           <>
             <div>
-              {permissions.includes("products_edit") && (
-                <ProductEdit record={record} key={`edit-${record._id}`} onReload={handleReload} />
+              {permissions.includes("banners_edit") && (
+                <BannerEdt record={record} key={`edit-${record._id}`} onReload={handleReload} />
               )}
-              {permissions.includes("products_del") && (
-                <DeleteItem record={record} key={`delete-${record._id}`} typeDelete="product" onReload={handleReload} />
+              {permissions.includes("banners_del") && (
+                <DeleteItem record={record} key={`delete-${record._id}`} typeDelete="banner" onReload={handleReload} />
               )}
             </div>
           </>
@@ -130,7 +144,7 @@ function ProductList() {
     const statusChange = e.target.attributes[0].value.split("-")[0];
 
     const fetchApiChangeStatus = async () => {
-      const response = await changeStatusProduct(token, statusChange, id);
+      const response = await changeStatusBanner(token, statusChange, id);
 
       if (response.code === 200) {
         message.success("Thay đổi trạng thái thành công");
@@ -149,20 +163,10 @@ function ProductList() {
   const onFinish = (e) => {
     setKeyword(e.keyword);
   }
-
-  const handleChangePrice = (e) => {
-    setSortType(e);
-    setSortKey("price");
-  }
-  const handleChangePosition = (e) => {
-    setSortType(e);
-    setSortKey("stock");
-  }
-
   return (
     <>
-      {permissions.includes("products_view") ?
-        <Card title="Danh sách sản phẩm">
+      {permissions.includes("banners_view") ?
+        <Card title="Danh sách quảng cáo">
           <Form onFinish={onFinish} layout="vertical">
             <Row gutter={[12, 12]}>
               <Col span={22}>
@@ -178,48 +182,6 @@ function ProductList() {
               <Col span={2}>
                 <Form.Item name='btnSearch'>
                   <Button type="primary" htmlType="submit" >Tìm kiếm</Button>
-                </Form.Item>
-              </Col>
-              <Col span={4}>
-                <Form.Item label="Giá" name="sortPrice" initialValue="">
-                  <Select
-                    onChange={handleChangePrice}
-                    options={[
-                      {
-                        label: "Mặc định",
-                        value: ""
-                      },
-                      {
-                        label: "Tăng",
-                        value: "asc"
-                      },
-                      {
-                        label: "Giảm",
-                        value: "desc"
-                      }
-                    ]}
-                  />
-                </Form.Item>
-              </Col>
-              <Col span={4}>
-                <Form.Item label="Số lượng" name="sortStock" initialValue="">
-                  <Select
-                    onChange={handleChangePosition}
-                    options={[
-                      {
-                        label: "Mặc định",
-                        value: ""
-                      },
-                      {
-                        label: "Tăng",
-                        value: "asc"
-                      },
-                      {
-                        label: "Giảm",
-                        value: "desc"
-                      }
-                    ]}
-                  />
                 </Form.Item>
               </Col>
             </Row>
@@ -255,4 +217,4 @@ function ProductList() {
   )
 }
 
-export default ProductList;
+export default BannerList;

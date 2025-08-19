@@ -118,6 +118,18 @@ const RolePermissions = () => {
     { key: 'settings', feature: 'Phân quyền', isCategory: true },
     { key: 'settings_general', feature: 'Toàn quyền', isCategory: false },
 
+    { key: 'banners', feature: 'Quảng cáo', isCategory: true },
+    { key: 'banners_view', feature: 'Xem', isCategory: false },
+    { key: 'banners_edit', feature: 'Thêm mới', isCategory: false },
+    { key: 'banners_create', feature: 'Chỉnh sửa', isCategory: false },
+    { key: 'banners_del', feature: 'Xóa', isCategory: false },
+
+    { key: 'vouchers', feature: 'Voucher', isCategory: true },
+    { key: 'vouchers_view', feature: 'Xem', isCategory: false },
+    { key: 'vouchers_edit', feature: 'Thêm mới', isCategory: false },
+    { key: 'vouchers_create', feature: 'Chỉnh sửa', isCategory: false },
+    { key: 'vouchers_del', feature: 'Xóa', isCategory: false },
+
   ];
 
   // gửi api lên server

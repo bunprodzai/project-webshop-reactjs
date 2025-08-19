@@ -17,6 +17,7 @@ const ArticleDetail = () => {
 
   const [article, setArticle] = useState({});
   const [recentArticles, setRecentArticles] = useState([]);
+  
   useEffect(() => {
     const fetchArticle = async () => {
       const response = await detailArticle(slug);

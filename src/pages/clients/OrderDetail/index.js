@@ -41,6 +41,7 @@ const OrderDetail = (props) => {
       title: 'Giá cũ',
       dataIndex: 'price',
       key: 'price',
+      render: (text) => <span>{Number(text.toString()).toLocaleString()} VNĐ</span>
     },
     {
       title: '% Giảm giá',
@@ -51,11 +52,13 @@ const OrderDetail = (props) => {
       title: 'Giá mới',
       dataIndex: 'newPrice',
       key: 'newPrice',
+      render: (text) => <span>{Number(text.toString()).toLocaleString()} VNĐ</span>
     },
     {
       title: 'Tổng tiền',
       dataIndex: 'totalPrice',
-      key: 'totalPrice'
+      key: 'totalPrice',
+      render: (text) => <span>{Number(text.toString()).toLocaleString()} VNĐ</span>
     }
   ];
 
@@ -139,7 +142,7 @@ const OrderDetail = (props) => {
                   )}
                 </b>
                 <br />
-                Tổng tiền: <b>{record.totalMoney} VNĐ</b>
+                Tổng tiền: <b>{Number(record.totalOrder).toLocaleString()} VNĐ</b>
               </Col>
             </Row>
           </Modal>

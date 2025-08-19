@@ -32,6 +32,11 @@ import Order from "../pages/clients/Order";
 import ArticleDetail from "../pages/clients/ArticleDetail";
 import SuccessCheckOut from "../pages/clients/SuccessCheckOut";
 import FailCheckOut from "../pages/clients/FailCheckOut";
+import VoucherList from "../pages/admin/VoucherList";
+import VoucherCreate from "../pages/admin/VoucherCreate";
+import BannerCreate from "../pages/admin/BannerCreate";
+import BannerList from "../pages/admin/BannerList";
+import BannerDetail from "../pages/clients/BannerDetail";
 
 const pathAdmin = "admin";
 
@@ -83,16 +88,19 @@ export const routes = [
       ,
       {
         path: `articles/:slug`,
-        element: <ArticleDetail/>
+        element: <ArticleDetail />
       },
       {
         path: `order/checkout/pay/success/:code`,
         element: <SuccessCheckOut />
-      }
-      ,
+      },
       {
         path: `order/checkout/pay/fail/:code`,
         element: <FailCheckOut />
+      },
+      {
+        path: `banner/:slug`,
+        element: <BannerDetail />
       }
       // {
       //   path: "login",
@@ -194,6 +202,22 @@ export const routes = [
           {
             path: `${pathAdmin}/account-info`,
             element: <AccountInfo />
+          },
+          {
+            path: `${pathAdmin}/vouchers`,
+            element: <VoucherList />
+          },
+          {
+            path: `${pathAdmin}/vouchers/create`,
+            element: <VoucherCreate />
+          },
+          {
+            path: `${pathAdmin}/banners`,
+            element: <BannerList />
+          },
+          {
+            path: `${pathAdmin}/banners/create`,
+            element: <BannerCreate />
           }
         ]
       }

@@ -93,6 +93,31 @@ function FooterClient() {
                 </li>
               </ul>
             </Col>
+            {/* Google Maps */}
+            <Col xs={24} sm={24} lg={6}>
+              <Title level={4} style={{ color: "white", marginBottom: "20px" }}>
+                Vị trí cửa hàng
+              </Title>
+              <div
+                style={{
+                  borderRadius: "12px",
+                  overflow: "hidden",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+                  border: "2px solid rgba(255,255,255,0.1)",
+                }}
+              >
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.0315914447!2d108.22082731533!3d16.06778438889!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314219c792252a83%3A0x36ac5073f8618a0b!2zTmd1eeG7hW4gVsSDbiBMaW5oLCBIw6BpIENow6J1LCDEkMOgIE7hurVuZyA1NTAwMDAsIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1642678901234!5m2!1svi!2s"
+                  width="100%"
+                  height="200"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Vị trí cửa hàng"
+                />
+              </div>
+            </Col>
           </Row>
           <Divider />
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
@@ -133,103 +158,6 @@ function FooterClient() {
             </Space>
           </div>
         </div>
-        {/* <div className="container">
-          <div className="content">
-            <Row gutter={[16, 16]}>
-              <Col span={6}>
-                <ul>
-                  <li>LIÊN HỆ</li>
-                  <li>
-                    <EnvironmentOutlined style={{ marginRight: "5px" }} />
-                    {setting.address}
-                  </li>
-                  <li>
-                    <a href={setting.facebook} target="_blank" rel="noreferrer">
-                      <FacebookOutlined style={{ marginRight: "5px" }} />
-                      Facebook
-                    </a>
-                  </li>
-                  <li>
-                    <a href={setting.instagram} target="_blank" rel="noreferrer">
-                      <FacebookOutlined style={{ marginRight: "5px" }} />
-                      Instagram
-                    </a>
-                  </li>
-                  <li>
-                    <PhoneOutlined style={{ marginRight: "5px" }} />
-                    {setting.phone}
-                  </li>
-                </ul>
-              </Col>
-              <Col span={6}>
-                <ul>
-                  <li>HỖ TRỢ KHÁCH HÀNG</li>
-                  <li>
-                    <a href={setting.facebook} target="_blank" rel="noreferrer">
-                      Hướng dẫn mua hàng trực tuyến
-                    </a>
-                  </li>
-                  <li>
-                    <a href={setting.facebook} target="_blank" rel="noreferrer">
-                      Hướng dẫn thanh toán
-                    </a>
-                  </li>
-                  <li>
-                    <a href={setting.facebook} target="_blank" rel="noreferrer">
-                      Hướng dẫn mua hàng trả góp
-                    </a>
-                  </li>
-                  <li>
-                    <a href={setting.facebook} target="_blank" rel="noreferrer">
-                      Check Hoá đơn điện tử
-                    </a>
-                  </li>
-                  <li>
-                    <a href={setting.facebook} target="_blank" rel="noreferrer">
-                      Liên hệ góp ý
-                    </a>
-                  </li>
-                </ul>
-              </Col>
-              <Col span={6}>
-                <ul>
-                  <li>VỀ CHÚNG TÔI</li>
-                  <li>
-                    <a href={setting.facebook} target="_blank" rel="noreferrer">
-                      Giới thiệu về công ty
-                    </a>
-                  </li>
-                  <li>
-                    <a href={setting.facebook} target="_blank" rel="noreferrer">
-                      Hệ thống cửa hàng
-                    </a>
-                  </li>
-                  <li>
-                    <a href={setting.facebook} target="_blank" rel="noreferrer">
-                      Tuyển dụng
-                    </a>
-                  </li>
-                </ul>
-              </Col>
-              <Col span={6}>
-                <ul>
-                  <li>CHĂM SÓC KHÁCH HÀNG</li>
-                  <li>
-                    <a href={setting.facebook} target="_blank" rel="noreferrer">
-                      Chính sách bảo hành
-                    </a>
-                  </li>
-                  <li>
-                    <a href={setting.facebook} target="_blank" rel="noreferrer">
-                      Chính sách đổi trả sản phẩm
-                    </a>
-                  </li>
-                </ul>
-              </Col>
-            </Row>
-          </div>
-          
-        </div> */}
       </Footer>
     </>
   )

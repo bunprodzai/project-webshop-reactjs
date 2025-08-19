@@ -44,7 +44,7 @@ function Home() {
         <Content>
           <TopBanner />
           {/* Hero Section */}
-          <section style={{ padding: "48px 0", background: "linear-gradient(to right, #f0f5ff, #e6f7ff)" }}>
+          {/* <section style={{ padding: "48px 0", background: "linear-gradient(to right, #f0f5ff, #e6f7ff)" }}>
             <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 16px" }}>
               <Row gutter={[32, 32]} align="middle">
                 <Col xs={24} lg={12}>
@@ -78,7 +78,7 @@ function Home() {
                 </Col>
               </Row>
             </div>
-          </section>
+          </section> */}
 
           {/* Categories */}
           {categories.length > 0 && (

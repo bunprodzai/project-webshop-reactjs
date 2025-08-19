@@ -47,6 +47,22 @@ export const getRerentOrders = async (token) => {
   return result;
 }
 
+export const getTopSellingCategories = async (token, time) => {
+  const result = await getAuth(`${admin}/dashboard/top-selling-category/${time}`, token);
+  return result;
+}
+
+
+export const getTopSellingProducts = async (token, time) => {
+  const result = await getAuth(`${admin}/dashboard/top-selling-product/${time}`, token);
+  return result;
+}
+
+export const getLowStockProducts = async (token) => {
+  const result = await getAuth(`${admin}/dashboard/low-stock-products`, token);
+  return result;
+}
+
 // export const editCategory = async (id, option, token) => {
 //   const result = await patchAuth(`${admin}/products-category/edit/${id}`, option, token);
 //   return result;

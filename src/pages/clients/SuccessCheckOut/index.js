@@ -111,6 +111,8 @@ const SuccessCheckOut = () => {
     )
   }
 
+    console.log(order);
+    
   const statusConfig = getStatusConfig(order.status)
 
   return (
@@ -300,7 +302,7 @@ const SuccessCheckOut = () => {
                       <Text>Tạm tính:</Text>
                     </Col>
                     <Col>
-                      <Text>{formatPrice(order.totalPriceProducts)}</Text>
+                      <Text>{formatPrice(order.totalOrder)}</Text>
                     </Col>
                   </Row>
 
@@ -321,7 +323,7 @@ const SuccessCheckOut = () => {
                     </Col>
                     <Col>
                       <Title level={4} style={{ color: "#52c41a", margin: 0 }}>
-                        {formatPrice(order.totalPriceProducts)}
+                        {formatPrice(order.totalOrder)}
                       </Title>
                     </Col>
                   </Row>
@@ -334,9 +336,11 @@ const SuccessCheckOut = () => {
                   Theo dõi đơn hàng
                 </Button>
 
-                <Button size="large" block icon={<ShoppingOutlined />} onClick={handleContinueShopping}>
-                  Tiếp tục mua sắm
-                </Button>
+                <a href="/" style={{ textDecoration: "none" }} target="_blank" rel="noopener noreferrer">
+                  <Button size="large" block icon={<ShoppingOutlined />} onClick={handleContinueShopping}>
+                    Tiếp tục mua sắm
+                  </Button>
+                </a>
               </Space>
             </Space>
           </Col>

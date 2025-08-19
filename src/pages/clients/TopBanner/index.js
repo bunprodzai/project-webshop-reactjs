@@ -1,55 +1,43 @@
 import { Carousel, Button, Typography, Row, Col } from "antd"
 import { LeftOutlined, RightOutlined } from "@ant-design/icons"
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
+import { listBanner } from "../../../services/client/bannerServies"
 
 const { Title, Text } = Typography
 
 function TopBanner() {
   const carouselRef = useRef(null)
+  const [bannerData, setBannerData] = useState([]);
+  useEffect(() => {
+
+    const fetchApi = async () => {
+      const response = await listBanner();
+      if (response.code === 200) {
+        response.banners.forEach(item => {
+          item.buttonLink = `/banners/${item.slug}`;
+          item.buttonText = `Xem thêm`;
+        });
+        console.log(response.banners);
+
+        setBannerData(response.banners);
+      }
+    }
+    fetchApi();
+  }, [])
 
   // Mảng dữ liệu banner
-  const bannerData = [
-    {
-      id: 1,
-      title: "Summer Sale 2025",
-      subtitle: "Up to 70% OFF",
-      description: "Discover amazing deals on summer collection",
-      image: "https://img.freepik.com/free-vector/hand-drawn-summer-sale-banner-template-with-photo_23-2148961156.jpg",
-      buttonText: "Shop Now",
-      buttonLink: "/summer-sale",
-      backgroundColor: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-    },
-    {
-      id: 2,
-      title: "New Arrivals",
-      subtitle: "Fresh & Trendy",
-      description: "Check out our latest fashion trends",
-      image: "https://img.freepik.com/free-vector/fashion-sale-banner-template_23-2148926844.jpg",
-      buttonText: "Explore",
-      buttonLink: "/new-arrivals",
-      backgroundColor: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-    },
-    {
-      id: 3,
-      title: "Electronics Deal",
-      subtitle: "Tech Paradise",
-      description: "Best prices on smartphones, laptops & more",
-      image: "https://img.freepik.com/free-vector/electronics-store-banner-template_23-2148969287.jpg",
-      buttonText: "Buy Now",
-      buttonLink: "/electronics",
-      backgroundColor: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-    },
-    {
-      id: 4,
-      title: "Home & Living",
-      subtitle: "Comfort Zone",
-      description: "Transform your space with our home collection",
-      image: "https://img.freepik.com/free-vector/home-decor-banner-template_23-2148969156.jpg",
-      buttonText: "Discover",
-      buttonLink: "/home-living",
-      backgroundColor: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
-    },
-  ]
+  // const bannerData = [
+  //   {
+  //     id: 1,
+  //     title: "Summer Sale 2025",
+  //     subtitle: "Up to 70% OFF",
+  //     description: "Discover amazing deals on summer collection",
+  //     image: "https://img.freepik.com/free-vector/hand-drawn-summer-sale-banner-template-with-photo_23-2148961156.jpg",
+  //     buttonText: "Shop Now",
+  //     buttonLink: "/summer-sale",
+  //     backgroundColor: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+  //   }
+  // ]
 
   const nextSlide = () => {
     carouselRef.current?.next()
@@ -86,7 +74,7 @@ function TopBanner() {
                 <Row align="middle" style={{ height: "100%", padding: "0 16px" }}>
                   <Col xs={24} md={12}>
                     <div style={{ padding: "20px 0" }}>
-                      <Text
+                      {/* <Text
                         style={{
                           color: "rgba(255, 255, 255, 0.9)",
                           fontSize: "16px",
@@ -96,7 +84,7 @@ function TopBanner() {
                         }}
                       >
                         {banner.subtitle}
-                      </Text>
+                      </Text> */}
                       <Title
                         level={1}
                         style={{
@@ -116,7 +104,7 @@ function TopBanner() {
                           lineHeight: "1.6",
                         }}
                       >
-                        {banner.description}
+                        {banner.excerpt}
                       </Text>
                       <Button
                         type="primary"
@@ -129,7 +117,7 @@ function TopBanner() {
                           height: "48px",
                           padding: "0 32px",
                         }}
-                        onClick={() => (window.location.href = banner.buttonLink)}
+                        onClick={() => (window.location.href = `banner/${banner.slug}`)}
                       >
                         {banner.buttonText}
                       </Button>

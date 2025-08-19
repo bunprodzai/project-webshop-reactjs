@@ -19,7 +19,7 @@ import {
 } from "@ant-design/icons"
 import { useEffect, useState } from "react"
 import { Option } from "antd/es/mentions"
-import { getLatestRevenue, getpercentGrowthCategory, getpercentGrowthOrder, getpercentGrowthProduct, getpercentGrowthUser, getRerentOrders, getTimeStartWeb } from "../../../services/admin/dashboardServies"
+import { getLatestRevenue, getLowStockProducts, getpercentGrowthCategory, getpercentGrowthOrder, getpercentGrowthProduct, getpercentGrowthUser, getRerentOrders, getTimeStartWeb, getTopSellingCategories, getTopSellingProducts } from "../../../services/admin/dashboardServies"
 import { getCookie } from "../../../helpers/cookie"
 import OrderDetail from "../OrderDetail"
 
@@ -151,8 +151,13 @@ function Dashboard() {
 
   const [recentOrders, setRecentOrders] = useState([]);
 
+  const [topSellingCategorys, setTopSellingCategorys] = useState([]);
+
+  const [lowStockProducts, setLowStockProducts] = useState([]);
+
+  const [topSellingProducts, setTopSellingProducts] = useState([]);
   // End dữ liệu thống kê
-  
+
   const [latestRevenue, setLatestRevenue] = useState([]);
 
   const fetchApiPercentGrowthProduct = async (time) => {
@@ -161,6 +166,41 @@ function Dashboard() {
       if (response.code === 200) {
         setCountProductCurrent(response.countProductCurrent);
         setCountProductLast(response.countProductLast);
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy tỷ lệ tăng trưởng sản phẩm:", error);
+    }
+  }
+
+  const fetchApiTopSellingCategory = async (time) => {
+    try {
+      const response = await getTopSellingCategories(token, time);
+      if (response.code === 200) {
+        setTopSellingCategorys(response.result);
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy tỷ lệ tăng trưởng sản phẩm:", error);
+    }
+  }
+
+  const fetchApiLowStockProducts = async () => {
+    try {
+      const response = await getLowStockProducts(token);
+      if (response.code === 200) {
+        setLowStockProducts(response.result);
+      } else {
+        setLowStockProducts([]);
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy tỷ lệ tăng trưởng sản phẩm:", error);
+    }
+  }
+
+  const fetchApiTopSellingProduct = async (time) => {
+    try {
+      const response = await getTopSellingProducts(token, time);
+      if (response.code === 200) {
+        setTopSellingProducts(response.result);
       }
     } catch (error) {
       console.error("Lỗi khi lấy tỷ lệ tăng trưởng sản phẩm:", error);
@@ -236,14 +276,15 @@ function Dashboard() {
     }
   }
 
+  // Màu sắc cố định cho các category
+  const colors = ["#ff6b35", "#52c41a", "#722ed1", "#13c2c2", "#faad14"];
+
   useEffect(() => {
     const fetchApiTimeStart = async () => {
       try {
         const response = await getTimeStartWeb(token);
         if (response.code === 200) {
           setTimeLine(response.timeLine);
-          console.log(response);
-          
           // Thiết lập tháng được chọn mặc định là tháng hiện tại
           const currentMonth = getCurrentMonth();
           if (response.timeLine.includes(currentMonth)) {
@@ -258,6 +299,9 @@ function Dashboard() {
       }
     }
 
+    fetchApiLowStockProducts();
+    fetchApiTopSellingProduct(selectedMonth);
+    fetchApiTopSellingCategory(selectedMonth);
     fetchApiLatesRevenue();
     fetchApiPercentGrowthUser(selectedMonth);
     fetchApiPercentGrowthCategory(selectedMonth);
@@ -266,12 +310,17 @@ function Dashboard() {
     fetchApiRecentOrders();
     fetchApiTimeStart();
     setLoading(false);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  
+  // Tính tổng số sản phẩm bán
+  const totalProductsSold = topSellingCategorys.reduce(
+    (sum, cat) => sum + cat.totalQuantity, 0
+  );
 
   const handleChange = (value) => {
+    fetchApiTopSellingProduct(value);
+    fetchApiTopSellingCategory(value);
     setSelectedMonth(value);
     fetchApiPercentGrowthProduct(value);
     fetchApiPercentGrowthOrder(value);
@@ -447,7 +496,7 @@ function Dashboard() {
                 <div style={{ padding: "16px 0" }}>
                   <Row justify="space-between" style={{ marginBottom: 16 }}>
                     <Text strong>Tháng {latestRevenue[0].time.split("-")[1]}</Text>
-                    <Text type="secondary">{latestRevenue[0].totalRevenue} VNĐ</Text>
+                    <Text type="secondary">{Number(latestRevenue[0].totalRevenue).toLocaleString()} VNĐ</Text>
                   </Row>
                   <Progress percent={calculateGrowthPercentage(latestRevenue, latestRevenue[0].time)} strokeColor="#ff6b35" style={{ marginBottom: 24 }} />
 
@@ -478,110 +527,59 @@ function Dashboard() {
                 title={
                   <Space>
                     <PieChartOutlined />
-                    <span>Top Danh Mục Bán Chạy</span>
+                    <span>Top 5 Danh Mục Bán Chạy</span>
                   </Space>
                 }
               >
                 <div style={{ padding: "16px 0" }}>
-                  <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
-                    <Space>
-                      <div
-                        style={{
-                          width: 12,
-                          height: 12,
-                          backgroundColor: "#ff6b35",
-                          borderRadius: "50%",
-                        }}
-                      />
-                      <Text strong>Điện tử</Text>
-                    </Space>
-                    <Text type="secondary">35%</Text>
-                  </Row>
-
-                  <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
-                    <Space>
-                      <div
-                        style={{
-                          width: 12,
-                          height: 12,
-                          backgroundColor: "#52c41a",
-                          borderRadius: "50%",
-                        }}
-                      />
-                      <Text strong>Thời trang</Text>
-                    </Space>
-                    <Text type="secondary">28%</Text>
-                  </Row>
-
-                  <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
-                    <Space>
-                      <div
-                        style={{
-                          width: 12,
-                          height: 12,
-                          backgroundColor: "#722ed1",
-                          borderRadius: "50%",
-                        }}
-                      />
-                      <Text strong>Gia dụng</Text>
-                    </Space>
-                    <Text type="secondary">22%</Text>
-                  </Row>
-
-                  <Row justify="space-between" align="middle">
-                    <Space>
-                      <div
-                        style={{
-                          width: 12,
-                          height: 12,
-                          backgroundColor: "#13c2c2",
-                          borderRadius: "50%",
-                        }}
-                      />
-                      <Text strong>Sách</Text>
-                    </Space>
-                    <Text type="secondary">15%</Text>
-                  </Row>
+                  {topSellingCategorys.map((cat, index) => {
+                    const percentage = ((cat.totalQuantity / totalProductsSold) * 100).toFixed(1);
+                    return (
+                      <Row
+                        key={cat._id}
+                        justify="space-between"
+                        align="middle"
+                        style={{ marginBottom: index !== topSellingCategorys.length - 1 ? 16 : 0 }}
+                      >
+                        <Space>
+                          <div
+                            style={{
+                              width: 12,
+                              height: 12,
+                              backgroundColor: colors[index % colors.length],
+                              borderRadius: "50%",
+                            }}
+                          />
+                          <Text strong>{cat.categoryTitle}</Text>
+                        </Space>
+                        <Text type="secondary">
+                          {percentage}% ({cat.totalQuantity} SP)
+                        </Text>
+                      </Row>
+                    );
+                  })}
                 </div>
               </Card>
             </Col>
           </Row>
         )}
 
-        {/* Recent Orders Table */}
-        <Card
-          title="Đơn Hàng Gần Đây"
-          extra={
-            <Space>
-              <Button icon={<FilterOutlined />}>Lọc</Button>
-              <Button icon={<CalendarOutlined />}>Thời gian</Button>
-            </Space>
-          }
-          style={{ marginBottom: 32 }}
-        >
-          {recentOrders.length > 0 && (
-            <Table columns={orderColumns} dataSource={recentOrders} pagination={{ pageSize: 5 }} scroll={{ x: 800 }} />
-          )}
-
-        </Card>
-
         {/* Sản Phẩm Bán Chạy */}
-        <Row gutter={[24, 24]}>
+        <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
+          {/* Sản Phẩm Bán Chạy */}
           <Col xs={24} md={8}>
             <Card title="Sản Phẩm Bán Chạy">
               <Space direction="vertical" style={{ width: "100%" }}>
-                <Row justify="space-between" align="middle">
-                  <Text>iPhone 15 Pro</Text>
-                  <Tag color="blue">127 đã bán</Tag>
-                </Row>
-                <Row justify="space-between" align="middle">
-                  <Text>Samsung Galaxy S24</Text>
-                  <Tag color="blue">98 đã bán</Tag>
-                </Row>
-                <Row justify="space-between" align="middle">
-                  <Text>MacBook Air M3</Text>
-                  <Tag color="blue">76 đã bán</Tag>
-                </Row>
+                {topSellingProducts.map((product) => (
+                  <Row
+                    key={product._id}
+                    justify="space-between"
+                    align="middle"
+                  >
+                    <Text>{product.title}</Text>
+                    <Tag color="blue">{product.totalSold} đã bán</Tag>
+                  </Row>
+                ))}
               </Space>
             </Card>
           </Col>
@@ -612,28 +610,36 @@ function Dashboard() {
           <Col xs={24} md={8}>
             <Card title="Tồn Kho Thấp">
               <Space direction="vertical" style={{ width: "100%" }}>
-                <Row justify="space-between" align="middle">
-                  <Text>Tai nghe AirPods</Text>
-                  <Tag color="red" icon={<WarningOutlined />}>
-                    5 còn lại
-                  </Tag>
-                </Row>
-                <Row justify="space-between" align="middle">
-                  <Text>Ốp lưng iPhone</Text>
-                  <Tag color="red" icon={<WarningOutlined />}>
-                    3 còn lại
-                  </Tag>
-                </Row>
-                <Row justify="space-between" align="middle">
-                  <Text>Cáp sạc USB-C</Text>
-                  <Tag color="red" icon={<WarningOutlined />}>
-                    8 còn lại
-                  </Tag>
-                </Row>
+                {lowStockProducts.map((product) => (
+                  <Row
+                    key={product._id}
+                    justify="space-between"
+                    align="middle"
+                  >
+                    <Text>{product.title}</Text>
+                    <Tag color="red" icon={<WarningOutlined />}>{product.stock} còn lại</Tag>
+                  </Row>
+                ))}
               </Space>
             </Card>
           </Col>
         </Row>
+
+        {/* Recent Orders Table */}
+        <Card
+          title="Đơn Hàng Tháng Này"
+          extra={
+            <Space>
+              <Button icon={<FilterOutlined />}>Lọc</Button>
+              <Button icon={<CalendarOutlined />}>Thời gian</Button>
+            </Space>
+          }
+          style={{ marginBottom: 32 }}
+        >
+          {recentOrders.length > 0 && (
+            <Table columns={orderColumns} dataSource={recentOrders} pagination={{ pageSize: 5 }} scroll={{ x: 800 }} />
+          )}
+        </Card>
       </div >
     </div >
   )

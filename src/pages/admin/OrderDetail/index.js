@@ -20,8 +20,7 @@ const OrderDetail = (props) => {
   const fetchApi = async () => {
     try {
       const response = await detailOrderGet(record._id, token);
-      console.log(response);
-      
+   
       setDetail(response.record);
     } catch (error) {
       message.error('Lỗi khi tải dữ liệu vai trò!');

@@ -1,5 +1,9 @@
 import { Menu } from "antd";
-import { ProductOutlined, EllipsisOutlined, OrderedListOutlined, BarChartOutlined, OneToOneOutlined, SettingOutlined, UserSwitchOutlined, UserAddOutlined, UserOutlined, UnorderedListOutlined, PlusOutlined, ReadOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import {
+  ProductOutlined, EllipsisOutlined, OrderedListOutlined, BarChartOutlined, OneToOneOutlined,
+  SettingOutlined, UserSwitchOutlined, UserAddOutlined, UserOutlined,
+  UnorderedListOutlined, PlusOutlined, ReadOutlined, ShoppingCartOutlined, MutedOutlined, DollarOutlined
+} from '@ant-design/icons';
 import { Link } from "react-router-dom";
 
 const filterItemsByPermissions = (items, permissions) => {
@@ -145,6 +149,44 @@ function MenuSider() {
           icon: <Link to="admin/articles/create"><PlusOutlined /></Link>,
           label: 'Thêm bài viết',
           permission: "articles_create",
+        }
+      ]
+    },
+    {
+      key: '10',
+      icon: <MutedOutlined />,
+      label: 'Quản lý quảng cáo',
+      children: [
+        {
+          key: 'banner-list',
+          icon: <Link to="admin/banners"><UnorderedListOutlined /></Link>,
+          label: 'Danh sách',
+          permission: "banners_view",
+        },
+        {
+          key: 'banner-create',
+          icon: <Link to="admin/banners/create"><PlusOutlined /></Link>,
+          label: 'Thêm quảng cáo',
+          permission: "banners_create",
+        }
+      ]
+    },
+    {
+      key: '11',
+      icon: <DollarOutlined />,
+      label: 'Quản lý Voucher',
+      children: [
+        {
+          key: 'voucher-list',
+          icon: <Link to="admin/vouchers"><UnorderedListOutlined /></Link>,
+          label: 'Danh sách',
+          permission: "vouchers_view",
+        },
+        {
+          key: 'voucher-create',
+          icon: <Link to="admin/vouchers/create"><PlusOutlined /></Link>,
+          label: 'Thêm bài Voucher',
+          permission: "vouchers_create",
         }
       ]
     }

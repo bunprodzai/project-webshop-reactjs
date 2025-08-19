@@ -9,6 +9,8 @@ import UploadFiles from "../../../components/UploadFiles";
 import UploadFile from "../../../components/UploadFile";
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+
+
 function ProductsCreate() {
   const permissions = JSON.parse(localStorage.getItem('permissions'));
 

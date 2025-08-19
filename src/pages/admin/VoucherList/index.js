@@ -1,18 +1,21 @@
-import { Button, Card, Input, Table, Tag, Form, Row, Col, Select, message } from 'antd';
-import "./ListProduct.scss";
+import { Button, Card, Input, Table, Tag, Form, Row, Col, message } from 'antd';
 import { useEffect, useState } from 'react';
-import { changeStatusProduct, listProducts } from '../../../services/admin/productServies';
 import { getCookie } from "../../../helpers/cookie";
 import DeleteItem from '../../../components/DeleteItem';
-import ProductEdit from '../ProductEdit';
 import NoRole from '../../../components/NoRole';
+import { formatDate } from '../../../helpers/dateTime';
+import { changeStatusVoucher, listVouchers } from '../../../services/admin/voucherServies';
+import VoucherEdit from '../VoucherEdit';
 
-function ProductList() {
+
+const VoucherList = () => {
   const permissions = JSON.parse(localStorage.getItem('permissions'));
   const [data, setData] = useState([]);
   const token = getCookie("token");
+
   // tổng số trang để phân trang
   const [totalPage, setTotalPage] = useState(0);
+
   // eslint-disable-next-line no-unused-vars
   const [limit, setLimit] = useState(10);
 
@@ -21,16 +24,20 @@ function ProductList() {
 
   // keyword tìm kiếm
   const [keyword, setKeyword] = useState("");
-  // sort 
+
+  // sort
+  // eslint-disable-next-line no-unused-vars
   const [sortKey, setSortKey] = useState("");
+  // eslint-disable-next-line no-unused-vars
   const [sortType, setSortType] = useState("asc");
 
-  
-  const fetchApi = async () => {
-    const response = await listProducts(token, currentPage, limit, keyword, sortKey, sortType);
 
+  const fetchApi = async () => {
+    const response = await listVouchers(token, currentPage, limit, keyword, sortKey, sortType);
     if (response.code === 200) {
-      setData(response.products);
+      console.log(response);
+
+      setData(response.vouchers);
       setTotalPage(response.totalPage);
     } else {
       setData([]);
@@ -49,40 +56,62 @@ function ProductList() {
   // Data đổ vào table
   const columns = [
     {
-      title: 'Tên sản phẩm',
+      title: 'Tiêu đề',
       dataIndex: 'title',
       key: 'title',
     },
     {
+      title: 'Mã voucher',
+      dataIndex: 'voucher_code',
+      key: 'voucher_code',
+    },
+    {
       title: 'Ảnh',
-      dataIndex: 'thumbnail',
-      key: 'thumbnail',
+      dataIndex: 'image',
+      key: 'image',
       render: (_, record) => {
         return (
           <>
             <img
-              src={record.thumbnail}
+              src={record.image}
               alt="Uploaded"
-              style={{ width: "70px", display: "block", marginTop: "10px" }}
+              style={{ width: "150px", display: "block", marginTop: "10px" }}
             />
           </>
         )
       }
     },
     {
-      title: 'Giá',
-      dataIndex: 'price',
-      key: 'price',
+      title: 'Ngày bắt đầu',
+      dataIndex: 'start_date',
+      key: 'start_date',
+      render: (text) => formatDate(text)
+    },
+    {
+      title: 'Ngày kết thúc',
+      dataIndex: 'end_date',
+      key: 'end_date',
+      render: (text) => formatDate(text)
     },
     {
       title: 'Số lượng',
-      dataIndex: 'stock',
-      key: 'stock',
+      dataIndex: 'quantity',
+      key: 'quantity',
     },
     {
-      title: 'Giảm giá',
-      dataIndex: 'discountPercentage',
-      key: 'discountPercentage',
+      title: 'Đã dùng',
+      dataIndex: 'used_count',
+      key: 'used_count',
+    },
+    {
+      title: 'Giá trị giảm giá',
+      dataIndex: 'discount_value',
+      key: 'discount_value',
+    },
+    {
+      title: 'Đơn hàng tối thiểu',
+      dataIndex: 'min_order_value',
+      key: 'min_order_value',
     },
     {
       title: 'Trạng thái',
@@ -112,11 +141,11 @@ function ProductList() {
         return (
           <>
             <div>
-              {permissions.includes("products_edit") && (
-                <ProductEdit record={record} key={`edit-${record._id}`} onReload={handleReload} />
+              {permissions.includes("vouchers_edit") && (
+                <VoucherEdit record={record} key={`edit-${record._id}`} onReload={handleReload} />
               )}
-              {permissions.includes("products_del") && (
-                <DeleteItem record={record} key={`delete-${record._id}`} typeDelete="product" onReload={handleReload} />
+              {permissions.includes("vouchers_del") && (
+                <DeleteItem record={record} key={`delete-${record._id}`} typeDelete="voucher" onReload={handleReload} />
               )}
             </div>
           </>
@@ -130,7 +159,7 @@ function ProductList() {
     const statusChange = e.target.attributes[0].value.split("-")[0];
 
     const fetchApiChangeStatus = async () => {
-      const response = await changeStatusProduct(token, statusChange, id);
+      const response = await changeStatusVoucher(token, statusChange, id);
 
       if (response.code === 200) {
         message.success("Thay đổi trạng thái thành công");
@@ -139,10 +168,10 @@ function ProductList() {
         message.error("Thay đổi trạng thái không thành công!")
       }
     }
-    if (permissions.includes("products_edit")) {
+    if (permissions.includes("vouchers_edit")) {
       fetchApiChangeStatus();
     } else {
-      message.error("Bạn không có quyền chỉnh sửa sản phẩm!")
+      message.error("Bạn không có quyền chỉnh sửa voucher!")
     }
   }
 
@@ -150,19 +179,10 @@ function ProductList() {
     setKeyword(e.keyword);
   }
 
-  const handleChangePrice = (e) => {
-    setSortType(e);
-    setSortKey("price");
-  }
-  const handleChangePosition = (e) => {
-    setSortType(e);
-    setSortKey("stock");
-  }
-
   return (
     <>
-      {permissions.includes("products_view") ?
-        <Card title="Danh sách sản phẩm">
+      {permissions.includes("vouchers_view") ?
+        <Card title="Danh sách voucher">
           <Form onFinish={onFinish} layout="vertical">
             <Row gutter={[12, 12]}>
               <Col span={22}>
@@ -178,48 +198,6 @@ function ProductList() {
               <Col span={2}>
                 <Form.Item name='btnSearch'>
                   <Button type="primary" htmlType="submit" >Tìm kiếm</Button>
-                </Form.Item>
-              </Col>
-              <Col span={4}>
-                <Form.Item label="Giá" name="sortPrice" initialValue="">
-                  <Select
-                    onChange={handleChangePrice}
-                    options={[
-                      {
-                        label: "Mặc định",
-                        value: ""
-                      },
-                      {
-                        label: "Tăng",
-                        value: "asc"
-                      },
-                      {
-                        label: "Giảm",
-                        value: "desc"
-                      }
-                    ]}
-                  />
-                </Form.Item>
-              </Col>
-              <Col span={4}>
-                <Form.Item label="Số lượng" name="sortStock" initialValue="">
-                  <Select
-                    onChange={handleChangePosition}
-                    options={[
-                      {
-                        label: "Mặc định",
-                        value: ""
-                      },
-                      {
-                        label: "Tăng",
-                        value: "asc"
-                      },
-                      {
-                        label: "Giảm",
-                        value: "desc"
-                      }
-                    ]}
-                  />
                 </Form.Item>
               </Col>
             </Row>
@@ -255,4 +233,4 @@ function ProductList() {
   )
 }
 
-export default ProductList;
+export default VoucherList;
