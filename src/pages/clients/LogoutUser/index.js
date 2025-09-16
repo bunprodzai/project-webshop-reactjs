@@ -15,6 +15,7 @@ function LogoutUser() {
     deleteCookie("email");
     deleteCookie("fullName");
     deleteCookie("avatar");
+    deleteCookie("userId");
     dispatch(checkLoginUser(false));
     message.success("Đăng xuất thành công")
     navigate("/");

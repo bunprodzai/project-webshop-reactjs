@@ -43,8 +43,8 @@ function InfoCheckOut() {
             <b>{record.productInfo.title}</b>
             <p>Số lượng: <b>{record.quantity}</b></p>
             <p>Kích cở: <b>{record.size}</b></p>
-            <p>Đơn giá: {(Number(record.productInfo.price) * (100 - Number(record.productInfo.discountPercentage)) / 100).toLocaleString()} VNĐ</p> 
-            <p>Thành tiền: {record.quantity * (Number(record.productInfo.price) * (100 - Number(record.productInfo.discountPercentage)) / 100).toLocaleString()} VNĐ</p>
+            <p>Đơn giá: {(Number(record.productInfo.price) * (100 - Number(record.productInfo.discountPercentage)) / 100).toLocaleString()} đ</p> 
+            <p>Thành tiền: {(record.quantity * (Number(record.productInfo.price) * (100 - Number(record.productInfo.discountPercentage)) / 100)).toLocaleString()} đ</p>
           </div>
         </div>
       ),
@@ -150,7 +150,7 @@ function InfoCheckOut() {
                   <>
                     <Table.Summary.Row>
                       <Table.Summary.Cell colSpan={1} align="right">
-                        <Text strong>Tổng tiền: {cart.reduce((total, item) => total + item.totalPrice, 0).toLocaleString()} $</Text>
+                        <Text strong>Tổng tiền: {cart.reduce((total, item) => total + item.totalPrice, 0).toLocaleString()} đ</Text>
                       </Table.Summary.Cell>
                     </Table.Summary.Row>
                     <Table.Summary.Row>

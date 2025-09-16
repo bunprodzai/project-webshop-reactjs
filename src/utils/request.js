@@ -21,6 +21,19 @@ export const patch = async (path, options) => {
   return result;
 }
 
+export const del = async (path, options) => {
+  const respones = await fetch(API_DOMAIN + path, {
+    method: "DELETE",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(options),
+  });
+  const result = await respones.json();
+  return result;
+}
+
 export const post = async (path, options, token) => {
   const response = await fetch(API_DOMAIN + path, {
     method: "POST",

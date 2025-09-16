@@ -17,12 +17,12 @@ const ArticleDetail = () => {
 
   const [article, setArticle] = useState({});
   const [recentArticles, setRecentArticles] = useState([]);
-  
+
   useEffect(() => {
     const fetchArticle = async () => {
       const response = await detailArticle(slug);
       if (response.code === 200) {
-        setArticle(response.article);
+        setArticle(response.data);
       }
 
       const responseArticles = await listArticles();
@@ -79,7 +79,7 @@ const ArticleDetail = () => {
             {/* Recent Posts */}
             <h3>Recent Articles</h3>
             <List
-              dataSource={recentArticles.slice(0, 5)}
+              dataSource={recentArticles?.slice(0, 5) || []}
               renderItem={(item) => (
                 <List.Item className="recent-post-item">
                   <div className="recent-post-content">
@@ -91,7 +91,7 @@ const ArticleDetail = () => {
                         {item.title}
                       </Title>
                       <Text className="recent-post-date">
-                        <CalendarOutlined /> {dayjs(article.createdAt).format('DD/MM/YYYY')}
+                        <CalendarOutlined /> {dayjs(item.createdAt).format('DD/MM/YYYY')}
                       </Text>
                     </div>
                   </div>

@@ -1,18 +1,14 @@
 
-import { Card, Row, Col, Statistic, Table, Tag, Input, Button, Progress, Space, Typography, Badge, Select, Spin } from "antd"
+import { Card, Row, Col, Table, Tag, Input, Button, Progress, Space, Typography, Badge, Select, Spin, Empty } from "antd"
 import {
   ShoppingCartOutlined,
   UserOutlined,
   FolderOpenOutlined,
-  RiseOutlined,
-  FallOutlined,
   SearchOutlined,
   BellOutlined,
   SettingOutlined,
   BarChartOutlined,
   PieChartOutlined,
-  CalendarOutlined,
-  FilterOutlined,
   TrophyOutlined,
   WarningOutlined,
   ShoppingOutlined,
@@ -21,7 +17,8 @@ import { useEffect, useState } from "react"
 import { Option } from "antd/es/mentions"
 import { getLatestRevenue, getLowStockProducts, getpercentGrowthCategory, getpercentGrowthOrder, getpercentGrowthProduct, getpercentGrowthUser, getRerentOrders, getTimeStartWeb, getTopSellingCategories, getTopSellingProducts } from "../../../services/admin/dashboardServies"
 import { getCookie } from "../../../helpers/cookie"
-import OrderDetail from "../OrderDetail"
+import OrderDetail from "../Order/Detail"
+import StatCard from "../../../components/StatCard"
 
 const { Title, Text } = Typography
 const { Search } = Input
@@ -299,17 +296,31 @@ function Dashboard() {
       }
     }
 
-    fetchApiLowStockProducts();
-    fetchApiTopSellingProduct(selectedMonth);
-    fetchApiTopSellingCategory(selectedMonth);
-    fetchApiLatesRevenue();
-    fetchApiPercentGrowthUser(selectedMonth);
-    fetchApiPercentGrowthCategory(selectedMonth);
-    fetchApiPercentGrowthOrder(selectedMonth);
-    fetchApiPercentGrowthProduct(selectedMonth);
-    fetchApiRecentOrders();
-    fetchApiTimeStart();
-    setLoading(false);
+
+    setLoading(true);
+    Promise.all([
+      fetchApiLowStockProducts(),
+      fetchApiTopSellingProduct(selectedMonth),
+      fetchApiTopSellingCategory(selectedMonth),
+      fetchApiLatesRevenue(),
+      fetchApiPercentGrowthUser(selectedMonth),
+      fetchApiPercentGrowthCategory(selectedMonth),
+      fetchApiPercentGrowthOrder(selectedMonth),
+      fetchApiPercentGrowthProduct(selectedMonth),
+      fetchApiRecentOrders(),
+      fetchApiTimeStart()
+    ]).finally(() => setLoading(false));
+    // fetchApiLowStockProducts();
+    // fetchApiTopSellingProduct(selectedMonth);
+    // fetchApiTopSellingCategory(selectedMonth);
+    // fetchApiLatesRevenue();
+    // fetchApiPercentGrowthUser(selectedMonth);
+    // fetchApiPercentGrowthCategory(selectedMonth);
+    // fetchApiPercentGrowthOrder(selectedMonth);
+    // fetchApiPercentGrowthProduct(selectedMonth);
+    // fetchApiRecentOrders();
+    // fetchApiTimeStart();
+    // setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -382,101 +393,64 @@ function Dashboard() {
                 width: 150
               }}>
               {timeLine.slice().reverse().map((month) => (
-                <Option value={month}>
+                <Option value={month} key={month}>
                   Tháng {month}
                 </Option>
               ))}
             </Select>
           </div>
         </Col>
+
         {/* Stats Cards */}
         <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-          {/* Tổng Đơn Hàng */}
-          <Col xs={24} sm={12} lg={6}>
-            <Card
-              style={{
-                background: "linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)",
-                border: "none",
-              }}
-            >
-              <Statistic
-                title={<span style={{ color: "rgba(255,255,255,0.9)" }}>Tổng Đơn Hàng ({countOrderCurrent - countOrderLast})</span>}
-                value={countOrderCurrent}
-                valueStyle={{ color: "white", fontSize: "32px", fontWeight: "bold" }}
-                prefix={<ShoppingCartOutlined style={{ color: "white" }} />}
-                suffix={
-                  <div style={{ fontSize: "14px", color: "rgba(255,255,255,0.9)" }}>
-                    <RiseOutlined /> {((countOrderCurrent - countOrderLast) / countOrderLast) * 100}%
-                  </div>
-                }
-              />
-            </Card>
+          <Col xs={24} sm={12} lg={4}>
+            <StatCard
+              title="Đơn Hàng"
+              current={countOrderCurrent}
+              last={countOrderLast}
+              icon={<ShoppingCartOutlined style={{ color: "white" }} />}
+              gradient="linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)"
+            />
           </Col>
 
-          {/* Sản Phẩm */}
-          <Col xs={24} sm={12} lg={6}>
-            <Card
-              style={{
-                background: "linear-gradient(135deg, #52c41a 0%, #73d13d 100%)",
-                border: "none",
-              }}
-            >
-              <Statistic
-                title={<span style={{ color: "rgba(255,255,255,0.9)" }}>Sản Phẩm {countProductCurrent}-{countProductLast}</span>}
-                value={countProductCurrent}
-                valueStyle={{ color: "white", fontSize: "32px", fontWeight: "bold" }}
-                prefix={<ShoppingOutlined style={{ color: "white" }} />}
-                suffix={
-                  <div style={{ fontSize: "14px", color: "rgba(255,255,255,0.9)" }}>
-                    <RiseOutlined /> {((countProductCurrent - countProductLast) / countProductLast) * 100}%
-                  </div>
-                }
-              />
-            </Card>
+          <Col xs={24} sm={12} lg={4}>
+            <StatCard
+              title="Doanh Thu"
+              current={countOrderCurrent} // TODO: nên thay = doanh thu thật
+              last={countOrderLast}
+              icon={<BarChartOutlined style={{ color: "white" }} />}
+              gradient="linear-gradient(135deg, #f39c12 0%, #e67e22 100%)"
+            />
           </Col>
 
-          {/* Khách Hàng */}
-          <Col xs={24} sm={12} lg={6}>
-            <Card
-              style={{
-                background: "linear-gradient(135deg, #722ed1 0%, #9254de 100%)",
-                border: "none",
-              }}
-            >
-              <Statistic
-                title={<span style={{ color: "rgba(255,255,255,0.9)" }}>Khách Hàng ({countUserCurrent - countUserLast})</span>}
-                value={countUserCurrent}
-                valueStyle={{ color: "white", fontSize: "32px", fontWeight: "bold" }}
-                prefix={<UserOutlined style={{ color: "white" }} />}
-                suffix={
-                  <div style={{ fontSize: "14px", color: "rgba(255,255,255,0.9)" }}>
-                    <RiseOutlined /> {((countUserCurrent - countUserLast) / countUserLast) * 100}%
-                  </div>
-                }
-              />
-            </Card>
+          <Col xs={24} sm={12} lg={4}>
+            <StatCard
+              title="Sản Phẩm"
+              current={countProductCurrent}
+              last={countProductLast}
+              icon={<ShoppingOutlined style={{ color: "white" }} />}
+              gradient="linear-gradient(135deg, #52c41a 0%, #73d13d 100%)"
+            />
           </Col>
 
-          {/* Danh Mục */}
-          <Col xs={24} sm={12} lg={6}>
-            <Card
-              style={{
-                background: "linear-gradient(135deg, #13c2c2 0%, #36cfc9 100%)",
-                border: "none",
-              }}
-            >
-              <Statistic
-                title={<span style={{ color: "rgba(255,255,255,0.9)" }}>Danh Mục ({countCategoryCurrent - countCategoryLast})</span>}
-                value={countCategoryCurrent}
-                valueStyle={{ color: "white", fontSize: "32px", fontWeight: "bold" }}
-                prefix={<FolderOpenOutlined style={{ color: "white" }} />}
-                suffix={
-                  <div style={{ fontSize: "14px", color: "rgba(255,255,255,0.9)" }}>
-                    <FallOutlined /> {((countCategoryCurrent - countCategoryLast) / countCategoryLast) * 100}%
-                  </div>
-                }
-              />
-            </Card>
+          <Col xs={24} sm={12} lg={4}>
+            <StatCard
+              title="Khách Hàng"
+              current={countUserCurrent}
+              last={countUserLast}
+              icon={<UserOutlined style={{ color: "white" }} />}
+              gradient="linear-gradient(135deg, #722ed1 0%, #9254de 100%)"
+            />
+          </Col>
+
+          <Col xs={24} sm={12} lg={4}>
+            <StatCard
+              title="Danh Mục"
+              current={countCategoryCurrent}
+              last={countCategoryLast}
+              icon={<FolderOpenOutlined style={{ color: "white" }} />}
+              gradient="linear-gradient(135deg, #13c2c2 0%, #36cfc9 100%)"
+            />
           </Col>
         </Row>
 
@@ -502,19 +476,19 @@ function Dashboard() {
 
                   <Row justify="space-between" style={{ marginBottom: 16 }}>
                     <Text strong>Tháng {latestRevenue[1].time.split("-")[1]}</Text>
-                    <Text type="secondary">{latestRevenue[1].totalRevenue} VNĐ</Text>
+                    <Text type="secondary">{Number(latestRevenue[1].totalRevenue).toLocaleString()} VNĐ</Text>
                   </Row>
                   <Progress percent={calculateGrowthPercentage(latestRevenue, latestRevenue[1].time)} strokeColor="#52c41a" style={{ marginBottom: 24 }} />
 
                   <Row justify="space-between" style={{ marginBottom: 16 }}>
                     <Text strong>Tháng {latestRevenue[2].time.split("-")[1]}</Text>
-                    <Text type="secondary">{latestRevenue[2].totalRevenue} VNĐ</Text>
+                    <Text type="secondary">{Number(latestRevenue[2].totalRevenue).toLocaleString()} VNĐ</Text>
                   </Row>
                   <Progress percent={calculateGrowthPercentage(latestRevenue, latestRevenue[2].time)} strokeColor="#722ed1" style={{ marginBottom: 24 }} />
 
                   <Row justify="space-between" style={{ marginBottom: 16 }}>
                     <Text strong>Tháng {latestRevenue[3].time.split("-")[1]}</Text>
-                    <Text type="secondary">{latestRevenue[3].totalRevenue} VNĐ</Text>
+                    <Text type="secondary">{Number(latestRevenue[3].totalRevenue).toLocaleString()} VNĐ</Text>
                   </Row>
                   <Progress percent={calculateGrowthPercentage(latestRevenue, latestRevenue[3].time)} strokeColor="#13c2c2" />
                 </div>
@@ -628,16 +602,12 @@ function Dashboard() {
         {/* Recent Orders Table */}
         <Card
           title="Đơn Hàng Tháng Này"
-          extra={
-            <Space>
-              <Button icon={<FilterOutlined />}>Lọc</Button>
-              <Button icon={<CalendarOutlined />}>Thời gian</Button>
-            </Space>
-          }
           style={{ marginBottom: 32 }}
         >
-          {recentOrders.length > 0 && (
+          {recentOrders.length > 0 ? (
             <Table columns={orderColumns} dataSource={recentOrders} pagination={{ pageSize: 5 }} scroll={{ x: 800 }} />
+          ) : (
+            <Empty description="Không có đơn hàng nào" />
           )}
         </Card>
       </div >

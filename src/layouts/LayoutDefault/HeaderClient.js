@@ -1,7 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { getCookie } from "../../helpers/cookie";
 import { useDispatch, useSelector } from "react-redux";
-import LoginUser from "../../pages/clients/LoginUser";
 import { useEffect, useRef, useState } from "react";
 import { settingGeneralGet } from "../../services/client/settingServies";
 import { findCartGet } from "../../services/client/cartServies";
@@ -94,8 +93,8 @@ function HeaderClient() {
     { key: "home", href: "/", label: "Home" },
     { key: "products", href: "/products", label: "Products" },
     { key: "categories", href: "/danh-muc", label: "Categories" },
-    { key: "deals", href: "/deals", label: "Deals" },
-    { key: "about", href: "/about", label: "About" },
+    { key: "blogs", href: "/blog", label: "Blog" },
+    { key: "about", href: "/about-us", label: "About Us" },
   ]
 
   const handleUserMenuClick = ({ key }) => {
@@ -116,34 +115,6 @@ function HeaderClient() {
     setIsMenuOpen(false); // Đóng menu sau khi chọn
   };
 
-
-  // User dropdown menu
-  const userMenu = (
-    <Menu
-      onClick={handleUserMenuClick}
-      items={[
-        {
-          key: "profile",
-          label: `Xin chào!, ${fullName || ""}`,
-        },
-        {
-          key: "orders",
-          label: "Đơn hàng của bạn",
-        },
-        {
-          type: "divider",
-        },
-        {
-          key: "logout",
-          label: (
-            <>
-              <LogoutOutlined /> Logout
-            </>
-          ),
-        },
-      ]}
-    />
-  );
 
   // Mobile menu items
   const mobileMenuItems = navItems.map((item) => ({
@@ -166,7 +137,7 @@ function HeaderClient() {
             boxShadow: "0 1px 2px rgba(0, 0, 0, 0.06)",
           }}
         >
-          <Row justify="space-between" align="middle"  style={{ height: "100%", padding: "0px 10px 0px 0px" }}>
+          <Row justify="space-between" align="middle" style={{ height: "100%", padding: "0px 10px 0px 0px" }}>
             {/* Left side - Logo and Navigation */}
             <Col xs={12} sm={8} md={12} lg={8}>
               <Row align="middle" gutter={24}>
@@ -262,7 +233,30 @@ function HeaderClient() {
                     {tokenUser ? (
                       <div ref={componentRef}>
                         <Dropdown
-                          overlay={userMenu} // 👈 dùng overlay thay vì menu
+                          menu={{
+                            items: [
+                              {
+                                key: "profile",
+                                label: `Xin chào!, ${fullName || ""}`,
+                              },
+                              {
+                                key: "orders",
+                                label: "Đơn hàng của bạn",
+                              },
+                              {
+                                type: "divider",
+                              },
+                              {
+                                key: "logout",
+                                label: (
+                                  <>
+                                    <LogoutOutlined /> Logout
+                                  </>
+                                ),
+                              },
+                            ],
+                            onClick: handleUserMenuClick,
+                          }}
                           trigger={["click"]}
                           open={isMenuOpen}
                           onOpenChange={setIsMenuOpen}
@@ -279,8 +273,11 @@ function HeaderClient() {
                       </div>
                     ) : (
                       <Space size={8} className="auth-buttons">
-                        <LoginUser onReload={handleReload} onMenuOpen={() => setIsMenuOpen(false)} />
-                        <Register onReload={handleReload} page="header" onMenuOpen={() => setIsMenuOpen(false)} />
+                        <a href="/login">Đăng nhập</a>
+                        <a href="/register">Đăng ký</a>
+
+                        {/* <LoginUser onReload={handleReload} onMenuOpen={() => setIsMenuOpen(false)} /> */}
+                        {/* <Register onReload={handleReload} page="header" onMenuOpen={() => setIsMenuOpen(false)} /> */}
                       </Space>
                     )}
                   </Space>
@@ -340,7 +337,8 @@ function HeaderClient() {
             <>
               <Divider />
               <Space direction="vertical" style={{ width: "100%" }}>
-                <LoginUser onReload={handleReload} onMenuOpen={() => setIsMobileMenuOpen(false)} />
+                <a href="/login">Đăng nhập</a>
+                {/* <LoginUser onReload={handleReload} onMenuOpen={() => setIsMobileMenuOpen(false)} /> */}
                 <Register onReload={handleReload} page="header" onMenuOpen={() => setIsMobileMenuOpen(false)} />
               </Space>
             </>
@@ -376,7 +374,7 @@ function HeaderClient() {
           </Form>
         </Drawer>
 
-        <style jsx global>{`
+        <style>{`
         @media (max-width: 768px) {
           .mobile-search-btn {
             display: inline-flex !important;

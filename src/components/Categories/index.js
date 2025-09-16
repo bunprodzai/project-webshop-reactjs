@@ -1,87 +1,52 @@
-import { productsCategoryGet } from "../../services/client/productServies";
 import { useState, useEffect } from "react"
 import { Typography, Card, Tabs, Breadcrumb } from "antd"
 import { NavLink, useSearchParams } from "react-router-dom"
-import { listCategoriesGet } from "../../services/client/categoriesServies";
 import ListProduct from "../ListProduct";
+import useProducts from "../../hooks/client/useProducts";
 
 const { Title, Text } = Typography
 const { TabPane } = Tabs
 
 function Categories() {
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const [categories, setCategories] = useState([]);
-  const [products, setProducts] = useState([]);
+  const slugParam = searchParams.get('danhmuc');
 
   // sort 
   const [sortKey, setSortKey] = useState("");
   const [sortType, setSortType] = useState("asc");
-
   const [priceRange, setPriceRange] = useState("");
-
   const [selectedCategory, setSelectedCategory] = useState(1);
 
-  const slugParam = searchParams.get('danhmuc');
-
-  const fetchApiProducts = async (slug, sortKey, sortType, priceRange) => {
-    try {
-      const response = await productsCategoryGet(slug, sortKey, sortType, priceRange);
-      setProducts(response.products);
-    } catch (error) {
-
-    }
-  }
-
+  const { productsQuery, categoriesQuery } = useProducts({ slug: slugParam, sortKey, sortType, priceRange });
+  console.log(slugParam);
+  
   // Filter products based on selected category and subcategories
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await listCategoriesGet();
-        // setCategories(response.productsCategory);
-        // console.log(response);
-        const list = Array.isArray(response?.productsCategory)
-          ? response.productsCategory
-          : [];
+    if (!categoriesQuery.data || !slugParam) return;
 
-        setCategories(list);
+    const categoryCurrent = categoriesQuery.data.find(
+      (cat) => cat.slug === slugParam
+    );
 
-        if (!slugParam || response.productsCategory.length === 0) return;
-
-        const category = response.productsCategory.find(cat => cat.slug === slugParam);
-
-        if (category) {
-          fetchApiProducts(slugParam, sortKey, sortType, priceRange);
-          // setSelectedCategory(category._id.toString());
-          if (selectedCategory !== category._id.toString()) {
-            setSelectedCategory(category._id.toString());
-          }
-        } else {
-          console.warn('Không tìm thấy category với slug:', slugParam);
-        }
-
-      } catch (error) {
-
+    if (categoryCurrent) {
+      if (selectedCategory !== categoryCurrent._id.toString()) {
+        setSelectedCategory(categoryCurrent._id.toString());
       }
+    } else {
+      console.warn("Không tìm thấy category với slug:", slugParam);
     }
 
-    fetchCategories();
-
-  }, [sortKey, sortType, priceRange, searchParams, slugParam, selectedCategory])
-
+  }, [categoriesQuery.data, slugParam, selectedCategory]);
 
   // Handle category change
   const handleCategoryChange = (categoryId) => {
-    const category = categories.find((cat) => cat._id.toString() === categoryId);
+    const category = categoriesQuery.data.find((cat) => cat._id.toString() === categoryId);
     if (category) {
       setSortKey("");
-      setSortType("asc"); 
+      setSortType("asc");
       setPriceRange("");
-      
-      fetchApiProducts(category.slug, sortKey, sortType, priceRange);
       setSearchParams({ danhmuc: category.slug });
     }
-
     setSelectedCategory(categoryId);
   }
 
@@ -105,8 +70,8 @@ function Categories() {
             <NavLink to="/">Home</NavLink>
           </Breadcrumb.Item>
           <Breadcrumb.Item>Categories</Breadcrumb.Item>
-          {categories.length > 0 && (
-            <Breadcrumb.Item>{categories.find((c) => c._id === selectedCategory)?.title}</Breadcrumb.Item>
+          {categoriesQuery.data > 0 && (
+            <Breadcrumb.Item>{categoriesQuery.data.find((c) => c._id === selectedCategory)?.title}</Breadcrumb.Item>
           )}
         </Breadcrumb>
 
@@ -123,33 +88,16 @@ function Categories() {
             tabPosition="top"
           >
             <Text strong>Subcategories:</Text>
-            {/* {categories?.map((category) => (
-              <TabPane
-                tab={
-                  <span>
-                    {category.title}
-                  </span>
-                }
-                // key = categoryId
-                key={category._id.toString()}
-              >
-                {products.length > 0 && (
-                  <div style={{ padding: "0" }} className="products_category">
-                    <ListProduct products={products} filter={true} onFilterChange={handleFilterChange} />
-                  </div>
-                )}
-              </TabPane>
-            ))} */}
 
-            {Array.isArray(categories) &&
-              categories.map((category) => (
+            {Array.isArray(categoriesQuery.data) &&
+              categoriesQuery.data.map((category) => (
                 <TabPane
                   tab={<span>{category.title}</span>}
                   key={category._id.toString()}
                 >
                   <div style={{ padding: "0" }} className="products_category">
                     <ListProduct
-                      products={products}
+                      products={productsQuery.data || []}
                       filter={true}
                       onFilterChange={handleFilterChange}
                     />

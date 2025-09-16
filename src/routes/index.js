@@ -1,42 +1,61 @@
-import LayoutAdmin from "../layouts/LayoutAdmin";
-import PrivateRoutes from "../components/PrivateRoutes";
+// Admin imports (sorted alphabetically)
+import AccountCreate from "../pages/admin/Account/Create";
+import AccountInfo from "../pages/admin/Account/Info";
+import AccountList from "../pages/admin/Account/List";
+
+import ArticleCreate from "../pages/admin/Article/Create";
+import ArticleList from "../pages/admin/Article/List";
+
+import BannerCreate from "../pages/admin/Banner/Create";
+import BannerList from "../pages/admin/Banner/List";
+
+import CategoriesCreate from "../pages/admin/Category/Create";
+import CategoriesList from "../pages/admin/Category/List";
+
 import Dashboard from "../pages/admin/Dashboard";
+import LayoutAdmin from "../layouts/LayoutAdmin";
 import Login from "../pages/admin/Login/index";
 import Logout from "../pages/admin/Logout/index";
-import ProductsCreate from "../pages/admin/ProductsCreate/index";
-import LayoutDefault from "../layouts/LayoutDefault";
-import Home from "../pages/clients/Home";
-import CategoriesList from "../pages/admin/CategoriesList";
-import RolePermissions from "../pages/admin/RolePermissions";
-import RoleCreate from "../pages/admin/RoleCreate";
-import RoleList from "../pages/admin/RoleList";
-import AccountList from "../pages/admin/AccountList";
-import AccountCreate from "../pages/admin/AcountCreate";
-import CategoriesCreate from "../pages/admin/CategoriesCreate";
-import ProductList from "../pages/admin/ProductList/index";
+
+import OrderList from "../pages/admin/Order/List";
+
+import PrivateRoutes from "../components/PrivateRoutes";
+
+import ProductList from "../pages/admin/Product/List";
+import ProductsCreate from "../pages/admin/Product/Create";
+
+import RoleCreate from "../pages/admin/Role/Create";
+import RoleList from "../pages/admin/Role/List";
+import RolePermissions from "../pages/admin/Role/Permissions";
+
 import SettingGeneral from "../pages/admin/SettingGeneral";
-import UserList from "../pages/admin/UserList";
-import OrderList from "../pages/admin/OrderList";
-import ArticleList from "../pages/admin/ArticleList";
-import ArticleCreate from "../pages/admin/ArticleCreate";
-import LogoutUser from "../pages/clients/LogoutUser";
-import Search from "../pages/clients/Search";
-import DetailProduct from "../pages/clients/DetailProduct";
+
+import UserList from "../pages/admin/User/List";
+
+import VoucherCreate from "../pages/admin/Voucher/Create";
+import VoucherList from "../pages/admin/Voucher/List";
+
+// Client imports (sorted alphabetically)
+import AboutUs from "../pages/clients/AboutUs";
+import BannerDetail from "../pages/clients/BannerDetail";
+import Blog from "../pages/clients/Blog";
 import Cart from "../pages/clients/Cart";
-import InfoCheckOut from "../pages/clients/InfoCheckOut";
-import CheckoutPay from "../pages/clients/CheckoutPay";
-import InfoUser from "../pages/clients/InfoUser";
 import Categories from "../components/Categories";
-import AccountInfo from "../pages/admin/AccountInfo";
+import CheckoutPay from "../pages/clients/CheckoutPay";
+import DetailProduct from "../pages/clients/DetailProduct";
+import FailCheckOut from "../pages/clients/FailCheckOut";
+import Home from "../pages/clients/Home";
+import InfoCheckOut from "../pages/clients/InfoCheckOut";
+import InfoUser from "../pages/clients/InfoUser";
+import LayoutDefault from "../layouts/LayoutDefault";
+import LogoutUser from "../pages/clients/LogoutUser";
 import Order from "../pages/clients/Order";
 import ArticleDetail from "../pages/clients/ArticleDetail";
+import Search from "../pages/clients/Search";
 import SuccessCheckOut from "../pages/clients/SuccessCheckOut";
-import FailCheckOut from "../pages/clients/FailCheckOut";
-import VoucherList from "../pages/admin/VoucherList";
-import VoucherCreate from "../pages/admin/VoucherCreate";
-import BannerCreate from "../pages/admin/BannerCreate";
-import BannerList from "../pages/admin/BannerList";
-import BannerDetail from "../pages/clients/BannerDetail";
+import LoginUser from "../pages/clients/LoginUser";
+import Register from "../pages/clients/Register";
+import ForgotPassword from "../pages/clients/ForgotPassword";
 
 const pathAdmin = "admin";
 
@@ -101,6 +120,26 @@ export const routes = [
       {
         path: `banner/:slug`,
         element: <BannerDetail />
+      },
+      {
+        path: `blog`,
+        element: <Blog />
+      },
+      {
+        path: `about-us`,
+        element: <AboutUs />
+      },
+      {
+        path: "login",
+        element: <LoginUser />
+      },
+      {
+        path: "register",
+        element: <Register />
+      },
+      {
+        path: "forgot-password",
+        element: <ForgotPassword />
       }
       // {
       //   path: "login",

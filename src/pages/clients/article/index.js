@@ -17,7 +17,7 @@ export default function Article() {
     const fetchApi = async () => {
       const responseArticles = await listArticles();
       if (responseArticles.code === 200) {
-        setArticles(responseArticles.articles);
+        setArticles(responseArticles.data);
       }
     }
 

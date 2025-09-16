@@ -8,15 +8,17 @@ import { applyMiddleware, createStore } from 'redux';
 import { thunk } from "redux-thunk";
 import allReducers from './reducer';
 import { Provider } from "react-redux";
-
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 const store = createStore(allReducers, applyMiddleware(thunk));
-
+const queryClient = new QueryClient()
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
     <BrowserRouter>
-      <App />
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
     </BrowserRouter>
   </Provider>
 );

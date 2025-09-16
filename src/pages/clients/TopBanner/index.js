@@ -13,13 +13,11 @@ function TopBanner() {
     const fetchApi = async () => {
       const response = await listBanner();
       if (response.code === 200) {
-        response.banners.forEach(item => {
+        response.data.forEach(item => {
           item.buttonLink = `/banners/${item.slug}`;
           item.buttonText = `Xem thêm`;
         });
-        console.log(response.banners);
-
-        setBannerData(response.banners);
+        setBannerData(response.data);
       }
     }
     fetchApi();
@@ -48,7 +46,7 @@ function TopBanner() {
   }
 
   return (
-    <div style={{ position: "relative", overflow: "hidden" }}>
+    <div className="bg-white" style={{ position: "relative", overflow: "hidden", marginBottom: "20px" }}>
       <Carousel
         ref={carouselRef}
         autoplay
@@ -74,17 +72,6 @@ function TopBanner() {
                 <Row align="middle" style={{ height: "100%", padding: "0 16px" }}>
                   <Col xs={24} md={12}>
                     <div style={{ padding: "20px 0" }}>
-                      {/* <Text
-                        style={{
-                          color: "rgba(255, 255, 255, 0.9)",
-                          fontSize: "16px",
-                          fontWeight: "500",
-                          display: "block",
-                          marginBottom: "8px",
-                        }}
-                      >
-                        {banner.subtitle}
-                      </Text> */}
                       <Title
                         level={1}
                         style={{

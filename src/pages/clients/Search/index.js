@@ -16,7 +16,7 @@ function Search() {
     const fetchApi = async () => {
       try {
         const response = await productsSearchGet(keyword);
-        setProducts(response.records);
+        setProducts(response.data);
       } catch (error) {
         
       }

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react"
 import { useParams } from "react-router-dom"
-import { detailProductGet } from "../../../services/client/productServies"
 import {
   Row,
   Col,
@@ -8,7 +7,6 @@ import {
   Typography,
   Button,
   InputNumber,
-  message,
   Tag,
   Carousel,
   Radio,
@@ -17,25 +15,29 @@ import {
   Divider,
   Badge,
 } from "antd"
-import { addCartPatch } from "../../../services/client/cartServies"
-import { updateCartLength } from "../../../actions/cart"
-import { useDispatch } from "react-redux"
-import { LeftOutlined, RightOutlined, ShoppingCartOutlined, ThunderboltOutlined, TagOutlined } from "@ant-design/icons"
+import { LeftOutlined, RightOutlined, ShoppingCartOutlined, TagOutlined } from "@ant-design/icons"
 import parse from 'html-react-parser';
+import ReviewProduct from "../ReviewProduct"
+import ProductsRelated from "../../../components/Products-Related"
+import { useCart } from "../../../hooks/client/useCart";
+import useProducts from "../../../hooks/client/useProducts";
 
 const { Title, Text } = Typography
 
 function DetailProduct() {
   const params = useParams()
+  const { add } = useCart()
   const [product, setProduct] = useState({})
   const [quantity, setQuantity] = useState(1)
+  const { productQuery } = useProducts({ slugProduct: params.slug });
   const [images, setImages] = useState([])
-  const dispatch = useDispatch()
+
   const carouselRef = useRef(null)
+
   const [selectedSize, setSelectedSize] = useState("")
   const [sizeStock, setSizeStock] = useState({})
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
-  const [loading, setLoading] = useState(true)
+  const [productId, setProductId] = useState("");
 
   // Handle window resize
   useEffect(() => {
@@ -48,57 +50,22 @@ function DetailProduct() {
   }, [])
 
   useEffect(() => {
-    const fetchApi = async () => {
-      try {
-        setLoading(true)
-        const response = await detailProductGet(params.slug)
-        if (response.code === 200) {
-          setProduct(response.record)
-          setImages(response.record.images || [])
-          const sizeStockMap = {}
-            ; (response.record.sizeStock || []).forEach((item) => {
-              const [size, stock] = item.split("-")
-              sizeStockMap[size] = Number(stock)
-            })
-          setSizeStock(sizeStockMap)
-        }
-      } catch (error) {
-        console.log(error.message)
-        message.error("Không thể tải thông tin sản phẩm")
-      } finally {
-        setLoading(false)
-      }
+    if (productQuery.data) {
+      setProductId(productQuery.data._id);
+      setProduct(productQuery.data);
+      setImages(productQuery.data.images || []);
+
+      const sizeStockMap = {};
+      (productQuery.data.sizeStock || []).forEach((item) => {
+        const [size, stock] = item.split("-");
+        sizeStockMap[size] = Number(stock);
+      });
+      setSizeStock(sizeStockMap);
     }
-    fetchApi()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [productQuery.data]);
 
   const addCart = () => {
-    const productId = product._id
-    const fetchApiAddCart = async () => {
-      try {
-        const resAddToCart = await addCartPatch(productId, {
-          quantity: quantity,
-          cartId: localStorage.getItem("cartId"),
-          size: selectedSize,
-        })
-        if (resAddToCart.code === 200) {
-          const newLength = resAddToCart.totalQuantityProduts
-          dispatch(updateCartLength(newLength))
-          message.success("Thêm vào giỏ hàng thành công!")
-        } else {
-          message.error("Thêm vào giỏ hàng thất bại")
-        }
-      } catch (error) {
-        message.error("Có lỗi xảy ra, vui lòng thử lại")
-      }
-    }
-
-    if (selectedSize === "") {
-      message.error("Vui lòng chọn kích cỡ!")
-    } else {
-      fetchApiAddCart()
-    }
+    add(productId, quantity, selectedSize);
   }
 
   const handleChangeQuantity = (e) => {
@@ -111,25 +78,6 @@ function DetailProduct() {
 
   const handleNext = () => {
     carouselRef.current?.next()
-  }
-
-  const buyNow = () => {
-    if (selectedSize === "") {
-      message.error("Vui lòng chọn kích cỡ!")
-      return
-    }
-    // Add to cart first, then redirect to checkout
-    addCart()
-    // You can add redirect logic here
-    // window.location.href = '/checkout'
-  }
-
-  if (loading) {
-    return (
-      <div style={{ padding: isMobile ? 16 : 24, textAlign: "center" }}>
-        <div>Đang tải...</div>
-      </div>
-    )
   }
 
   return (
@@ -396,23 +344,6 @@ function DetailProduct() {
             {product.stock > 0 ? (
               <Space direction={isMobile ? "vertical" : "horizontal"} size={12} style={{ width: "100%" }}>
                 <Button
-                  type="primary"
-                  size="large"
-                  icon={<ThunderboltOutlined />}
-                  onClick={buyNow}
-                  style={{
-                    backgroundColor: "#ffcd39",
-                    borderColor: "#ffcd39",
-                    color: "#000",
-                    fontWeight: 600,
-                    height: 48,
-                    width: isMobile ? "100%" : 200,
-                    borderRadius: 8,
-                  }}
-                >
-                  MUA NGAY
-                </Button>
-                <Button
                   size="large"
                   icon={<ShoppingCartOutlined />}
                   onClick={addCart}
@@ -447,6 +378,19 @@ function DetailProduct() {
         <Card title="Mô tả sản phẩm" style={{ marginTop: 24 }}>
           {parse(product.description || "<p>No content available</p>")}
         </Card>
+      )}
+
+      {product.slugCategory && (
+        <>
+          {/* Related Products */}
+          < ProductsRelated slug={product.slugCategory} />
+        </>
+      )}
+      {productId && (
+        <>
+          {/* Reviews Products */}
+          <ReviewProduct productId={productId} />
+        </>
       )}
     </div>
   )

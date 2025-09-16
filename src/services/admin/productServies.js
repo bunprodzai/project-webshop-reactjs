@@ -25,3 +25,18 @@ export const changeStatusProduct = async (token, status, id) => {
   const result = await getAuth(`${admin}/products/change-status/${status}/${id}`, token);
   return result;
 }
+
+export const addProductReviewReplyByAdmin = async (reviewId, options, token) => {
+  const result = await postAuth(`${admin}/products/reviews/replies/${reviewId}`, options, token);
+  return result;
+}
+
+export const delProductReviewByAdmin = async (reviewId, token) => {
+  const result = await delAuth(`${admin}/products/reviews/delete/${reviewId}`, token);
+  return result;
+}
+
+export const delProductReplyByAdmin = async (reviewId, replyId, token) => {
+  const result = await delAuth(`${admin}/products/reviews/delete/${reviewId}/${replyId}`, token);
+  return result;
+}

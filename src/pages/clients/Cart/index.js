@@ -1,16 +1,14 @@
-
 import { useEffect, useState } from "react"
-import { delCartPatch, findCartGet, updateCartPatch } from "../../../services/client/cartServies"
-import { Table, Button, InputNumber, Typography, message, Card, Row, Col, Space, Divider } from "antd"
+import { findCartGet } from "../../../services/client/cartServies"
+import { Table, Button, InputNumber, Typography, Card, Row, Col, Space, Divider } from "antd"
 import { DeleteOutlined, ShoppingCartOutlined } from "@ant-design/icons"
 import "antd/dist/reset.css"
-import { updateCartLength } from "../../../actions/cart"
-import { useDispatch } from "react-redux"
-
+import { useCart } from "../../../hooks/client/useCart"
 const { Text, Title } = Typography
 
 function Cart() {
-  const dispatch = useDispatch()
+  const { update, remove } = useCart();
+
   const cartId = localStorage.getItem("cartId")
   const [cart, setCart] = useState([])
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
@@ -43,41 +41,19 @@ function Cart() {
 
   // Xử lý thay đổi số lượng
   const handleQuantityChange = (e, record) => {
-    const fetchApiChangeQuantity = async () => {
-      const response = await updateCartPatch(record.productInfo._id, {
-        quantity: e,
-        cartId: localStorage.getItem("cartId"),
-        size: record.size,
-      })
-      if (response.code === 200) {
-        const updatedItems = cart.map((item) => (item._id === record._id ? { ...item, quantity: e } : item))
-        setCart(updatedItems)
-        dispatch(updateCartLength(response.totalQuantityProduts))
-        fetchApi()
-        message.success(response.message)
-      } else {
-        message.error(response.message)
-      }
+    const check = update(record.productInfo._id, e, record.size);
+    if (check) {
+      const updatedItems = cart.map((item) => (item._id === record._id ? { ...item, quantity: e } : item))
+      setCart(updatedItems)
     }
-    fetchApiChangeQuantity()
   }
 
   // Xóa sản phẩm
   const handleRemove = (record) => {
-    const fetchApiDelProduct = async () => {
-      const response = await delCartPatch(record.productInfo._id, {
-        cartId: localStorage.getItem("cartId"),
-        size: record.size,
-      })
-      if (response.code === 200) {
-        dispatch(updateCartLength(response.totalQuantityProduts))
-        fetchApi()
-        message.success(response.message)
-      } else {
-        message.error(response.message)
-      }
+    const check = remove(record.productInfo._id, record.size);
+    if (check) {
+      fetchApi();
     }
-    fetchApiDelProduct()
   }
 
   // Mobile Card Layout
@@ -215,7 +191,7 @@ function Cart() {
       dataIndex: "price",
       key: "price",
       width: 120,
-      render: (_, record) => <Text strong>{record.productInfo.price.toLocaleString()} VNĐ</Text>,
+      render: (_, record) => <Text strong>{record.productInfo.price.toLocaleString()} đ</Text>,
     },
     {
       title: "Giảm giá",
@@ -235,7 +211,7 @@ function Cart() {
             (Number(record.productInfo.price) * (100 - Number(record.productInfo.discountPercentage))) /
             100
           ).toLocaleString()}{" "}
-          VNĐ
+          đ
         </Text>
       ),
     },
@@ -267,7 +243,7 @@ function Cart() {
       width: 130,
       render: (text) => (
         <Text strong style={{ color: "#f5222d", fontSize: 16 }}>
-          {text.toLocaleString()} VNĐ
+          {text.toLocaleString()} đ
         </Text>
       ),
     },
@@ -325,7 +301,7 @@ function Cart() {
                   </Col>
                   <Col>
                     <Title level={3} style={{ margin: 0, color: "#f5222d" }}>
-                      {totalAmount.toLocaleString()} VNĐ
+                      {totalAmount.toLocaleString()} đ
                     </Title>
                   </Col>
                 </Row>
@@ -365,7 +341,7 @@ function Cart() {
                     </Table.Summary.Cell>
                     <Table.Summary.Cell>
                       <Text strong style={{ fontSize: 18, color: "#f5222d" }}>
-                        {totalAmount.toLocaleString()} VNĐ
+                        {totalAmount.toLocaleString()} đ
                       </Text>
                     </Table.Summary.Cell>
                   </Table.Summary.Row>

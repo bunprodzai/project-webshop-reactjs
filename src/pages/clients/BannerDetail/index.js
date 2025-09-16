@@ -72,10 +72,10 @@ function BannerDetail() {
         setLoading(true)
         const response = await detailBanner(slug)
         if (response.code === 200) {
-          setBanner(response.banner)
-          const responseVouchers = await vouchersBanner(response.banner._id);
+          setBanner(response.data)
+          const responseVouchers = await vouchersBanner(response.data._id);
           if (responseVouchers.code === 200) {
-            setVouchers(responseVouchers.vouchers)
+            setVouchers(responseVouchers.data)
           }
         } else {
           message.error(response.message || "Không tìm thấy banner")
