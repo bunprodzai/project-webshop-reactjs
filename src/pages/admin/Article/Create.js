@@ -61,7 +61,7 @@ function ArticleCreate() {
     };
 
     fetchApi();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // xử lý submit
@@ -74,12 +74,17 @@ function ArticleCreate() {
 
     try {
       const response = await addArticlePost(e, token); // Truyền token vào hàm
-      console.log(response);
+
       if (response.code === 200) {
         message.success("Thêm mới thành công");
         navigate(`/admin/articles`);
       } else {
-        message.error(response.message);
+        if (Array.isArray(response.message)) {
+          const allErrors = response.message.map(err => err.message).join("\n");
+          message.error(allErrors);
+        } else {
+          message.error(response.message);
+        }
       }
     } catch (error) {
       message.error("Lỗi: ", error.message);
@@ -108,7 +113,8 @@ function ArticleCreate() {
             <Form onFinish={onFinish} layout="vertical">
               <Row gutter={[12, 12]}>
                 <Col span={24}>
-                  <Form.Item label="Tiêu đề" name="title" rules={[{ required: true, message: "Nhập tiêu đề" }]}>
+                  <Form.Item label="Tiêu đề" name="title" 
+                  rules={[{ required: true, message: "Nhập tiêu đề" }]}>
                     <Input />
                   </Form.Item>
                 </Col>

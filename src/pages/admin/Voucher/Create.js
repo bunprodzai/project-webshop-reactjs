@@ -29,7 +29,7 @@ const VoucherCreate = () => {
 
       try {
         const response = await listBanners(token);
-        if (response) {
+        if (response.code === 200) {
           setSetBanners(response.banners);
         }
       } catch (error) {
@@ -52,7 +52,12 @@ const VoucherCreate = () => {
         navigate("/admin/vouchers"); // Điều hướng đến trang sản phẩm
         message.success("Thêm mới thành công");
       } else {
-        message.error(response.message);
+        if (Array.isArray(response.message)) {
+          const allErrors = response.message.map(err => err.message).join("\n");
+          message.error(allErrors);
+        } else {
+          message.error(response.message);
+        }
       }
     } catch (error) {
       message.error("Lỗi: ", error.message);
@@ -92,8 +97,8 @@ const VoucherCreate = () => {
                   <Form.Item label="Mã Vouhcer" name="voucher_code"
                     rules={[{ required: true, message: 'Vui lòng nhập mã voucher!' }]}>
                     <Input onChange={(e) =>
-                        form.setFieldsValue({ voucher_code: e.target.value.toUpperCase() })
-                      }/>
+                      form.setFieldsValue({ voucher_code: e.target.value.toUpperCase() })
+                    } />
                   </Form.Item>
                 </Col>
 

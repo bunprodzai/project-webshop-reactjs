@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 
 
 function AccountInfo() {
-
   const token = getCookie('token');
   const [info, setInfo] = useState({});
 
@@ -47,7 +46,12 @@ function AccountInfo() {
         setCookie("name", e.fullName, 24)
         message.success(resChangeInfo.message);
       } else {
-        message.error(resChangeInfo.message);
+        if (Array.isArray(resChangeInfo.message)) {
+          const allErrors = resChangeInfo.message.map(err => err.message).join("\n");
+          message.error(allErrors);
+        } else {
+          message.error(resChangeInfo.message);
+        }
       }
     } catch (error) {
       message.error(error);

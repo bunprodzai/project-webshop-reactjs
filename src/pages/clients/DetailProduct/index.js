@@ -50,6 +50,8 @@ function DetailProduct() {
   }, [])
 
   useEffect(() => {
+    console.log(productQuery.data);
+
     if (productQuery.data) {
       setProductId(productQuery.data._id);
       setProduct(productQuery.data);
@@ -374,11 +376,9 @@ function DetailProduct() {
         </Col>
       </Row>
       {/* Product Info */}
-      {product.description && (
-        <Card title="Mô tả sản phẩm" style={{ marginTop: 24 }}>
-          {parse(product.description || "<p>No content available</p>")}
-        </Card>
-      )}
+      <Card title="Mô tả sản phẩm" style={{ marginTop: 24, marginBottom: 24 }}>
+        {parse(product.description || "<p></p>")}
+      </Card>
 
       {product.slugCategory && (
         <>

@@ -28,7 +28,6 @@ function AccountCreate() {
 
       try {
         const response = await listRoleGet(token);
-
         if (response.code === 200) {
           setRoles(response.roles);
         }
@@ -50,28 +49,6 @@ function AccountCreate() {
   const onFinish = async (e) => {
     e.avatar = imageUrl ? imageUrl : "";
     e.role_id = !e.role_id ? "" : e.role_id;
-
-
-    if (!e.fullName) {
-      message.error("Vui lòng nhập tên!");
-      return;
-    }
-
-    if (e.role_id === "") {
-      message.error("Vui lòng chọn quyền!");
-      return;
-    }
-
-    if (!e.email) {
-      message.error("Vui lòng nhập email!");
-      return;
-    }
-
-    if (!e.password) {
-      message.error("Vui lòng nhập password!");
-      return;
-    }
-
     // Kiểm tra số điện thoại
     if (!e.phone) {
       e.phone = "";
@@ -84,17 +61,22 @@ function AccountCreate() {
         return;
       }
     }
+    try {
+      const response = await addAccountPost(e, token);
 
-    if (!e.email) {
-      message.error("Vui lòng nhập mật khẩu!");
-    }
-
-    const response = await addAccountPost(e, token);
-    if (response.code === 200) {
-      message.success("Tạo tài khoản thành công")
-      navigate("/admin/accounts")
-    } else {
-      message.error(response.message);
+      if (response.code === 200) {
+        message.success(response.message)
+        navigate("/admin/accounts")
+      } else {
+        if (Array.isArray(response.message)) {
+          const allErrors = response.message.map(err => err.message).join("\n");
+          message.error(allErrors);
+        } else {
+          message.error(response.message);
+        }
+      }
+    } catch (error) {
+      message.error(error.message);
     }
   }
 
@@ -112,12 +94,14 @@ function AccountCreate() {
             <Form onFinish={onFinish} layout="vertical">
               <Row>
                 <Col span={24}>
-                  <Form.Item label="Họ tên" name="fullName">
+                  <Form.Item label="Họ tên" name="fullName"
+                    rules={[{ required: true, message: 'Nhập tên!' }]}>
                     <Input />
                   </Form.Item>
                 </Col>
                 <Col span={24}>
-                  <Form.Item label="Phân quyền" name="role_id">
+                  <Form.Item label="Phân quyền" name="role_id"
+                    rules={[{ required: true, message: 'Chọn quyền!' }]}>
                     <Select options={options} placeholder="Chọn quyền" />
                   </Form.Item>
                 </Col>
@@ -127,7 +111,8 @@ function AccountCreate() {
                   </Form.Item>
                 </Col>
                 <Col span={24}>
-                  <Form.Item label="Password" name="password">
+                  <Form.Item label="Password" name="password"
+                    rules={[{ required: true, message: 'Nhập password!' }]}>
                     <Input type="password" placeholder="Nhập mật khẩu mới nếu muốn thay đổi" />
                   </Form.Item>
                 </Col>

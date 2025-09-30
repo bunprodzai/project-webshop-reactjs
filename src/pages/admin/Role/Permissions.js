@@ -114,6 +114,7 @@ const RolePermissions = () => {
 
     { key: 'orders', feature: 'Đơn hàng', isCategory: true },
     { key: 'orders_view', feature: 'Xem', isCategory: false },
+    { key: 'orders_edit', feature: 'Sửa', isCategory: false },
 
     { key: 'settings', feature: 'Phân quyền', isCategory: true },
     { key: 'settings_general', feature: 'Toàn quyền', isCategory: false },
@@ -129,6 +130,11 @@ const RolePermissions = () => {
     { key: 'vouchers_edit', feature: 'Thêm mới', isCategory: false },
     { key: 'vouchers_create', feature: 'Chỉnh sửa', isCategory: false },
     { key: 'vouchers_del', feature: 'Xóa', isCategory: false },
+
+    { key: 'trashs', feature: 'Trash', isCategory: true },
+    { key: 'trashs_view', feature: 'Xem', isCategory: false },
+    { key: 'trashs_restore', feature: 'Khôi phục', isCategory: false },
+    { key: 'trashs_permanent_del', feature: 'Xóa vĩnh viễn', isCategory: false }
 
   ];
 

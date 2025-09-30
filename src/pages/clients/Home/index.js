@@ -4,7 +4,7 @@ import ListProduct from "../../../components/ListProduct";
 
 import { Layout, Button, Input, Typography, Row, Col, Form, Space, Card } from "antd"
 import CategoryCard from "../../../components/Category-card"
-import Article from "../article";
+import Article from "../articles/List";
 import TopBanner from "../TopBanner";
 import useProducts from "../../../hooks/client/useProducts";
 

@@ -98,14 +98,23 @@ const BannerEdt = (props) => {
     e.position = !e.position ? "" : Number(e.position);
     e.content = !e.content ? "" : e.content;
     e.backgroundColor = gradient;
-    
-    const response = await editBanner(record._id, e, token);
-    if (response.code === 200) {
-      message.success("Cập nhật thành công");
-      onReload();
-      handleCancel();
-    } else {
-      message.error(response.message);
+
+    try {
+      const response = await editBanner(record._id, e, token);
+      if (response.code === 200) {
+        message.success("Cập nhật thành công");
+        onReload();
+        handleCancel();
+      } else {
+        if (Array.isArray(response.message)) {
+          const allErrors = response.message.map(err => err.message).join("\n");
+          message.error(allErrors);
+        } else {
+          message.error(response.message);
+        }
+      }
+    } catch (error) {
+      message.error(error.message)
     }
   };
 

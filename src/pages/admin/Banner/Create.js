@@ -60,7 +60,12 @@ const BannerCreate = () => {
         navigate("/admin/banners"); // Điều hướng đến trang sản phẩm
         message.success("Thêm mới thành công");
       } else {
-        message.error(response.message);
+        if (Array.isArray(response.message)) {
+          const allErrors = response.message.map(err => err.message).join("\n");
+          message.error(allErrors);
+        } else {
+          message.error(response.message);
+        }
       }
     } catch (error) {
       message.error("Lỗi: ", error.message);

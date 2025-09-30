@@ -1,4 +1,4 @@
-import { del, delAuth, get, postAuth } from "../../utils/request";
+import { delAuth, get, getAuth, postAuth } from "../../utils/request";
 
 
 export const detailProductGet = async (slug) => {
@@ -15,7 +15,6 @@ export const productsSearchGet = async (slugCategory) => {
   const result = await get(`/search?keyword=${slugCategory}`);
   return result;
 }
-
 
 export const productReviewsGet = async (productId) => {
   const result = await get(`/products/reviews/${productId}`);
@@ -39,5 +38,15 @@ export const productReplyDelete = async (reviewId, replyId, tokenUser) => {
 
 export const productReviewAddReply = async (reviewId, options, tokenUser) => {
   const result = await postAuth(`/products/reviews/replies/${reviewId}`, options, tokenUser);
+  return result;
+}
+
+export const productsFavorite = async (tokenUser) => {
+  const result = await getAuth(`/products/favorite-products`, tokenUser);
+  return result;
+}
+
+export const productFavorite = async (typeFavorite, productId, tokenUser) => {
+  const result = await getAuth(`/products/favorite/${typeFavorite}/${productId}`, tokenUser);
   return result;
 }

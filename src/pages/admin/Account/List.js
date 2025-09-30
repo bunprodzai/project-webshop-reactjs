@@ -17,17 +17,24 @@ function AccountList() {
   const fetchApi = async () => {
     try {
       const responseRole = await listRoleGet(token);
-
       const responseAccount = await listAccountGet(token);
 
-      if (responseAccount.code === 200) {
+      if (responseAccount.code === 200 && responseRole.code === 200) {
         // Thêm title từ role vào accounts
         const updatedAccounts = responseAccount.accounts.map(item => {
           const role = responseRole.roles.find(role => role._id === item.role_id);
-          return {
-            ...item,
-            "title": role.title
-          };
+          if (role) {
+            return {
+              ...item,
+              "title": role.title
+            };
+          } else {
+            return {
+              ...item,
+              "title": "Quyền không tồn tại / đã xóa"
+            }
+          }
+
         });
 
         setAccounts(updatedAccounts);
@@ -125,8 +132,8 @@ function AccountList() {
               />
             </Card>
           </Card>
-        ) : 
-        <NoRole />
+        ) :
+          <NoRole />
         }
       </>
     </>

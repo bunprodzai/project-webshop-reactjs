@@ -4,15 +4,8 @@ import { historyOrderGet } from "../../../services/client/userServies";
 import { getCookie } from "../../../helpers/cookie";
 import { useEffect } from "react";
 import { CreditCardOutlined } from '@ant-design/icons';
-import OrderDetail from "../../clients/OrderDetail";
-
-const formatDate = (isoString) => {
-  const date = new Date(isoString);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
-};
+import OrderDetail from "./Detail";
+import { formatDate } from "../../../helpers/dateTime";
 
 const columns = [
   {
@@ -113,7 +106,7 @@ const columns = [
   }
 ];
 
-function Order() {
+function Orders() {
   const [orders, setOrders] = useState([]);
   const tokenUser = getCookie("tokenUser");
 
@@ -180,4 +173,4 @@ function Order() {
   );
 }
 
-export default Order;
+export default Orders;

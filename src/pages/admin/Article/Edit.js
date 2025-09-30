@@ -67,8 +67,10 @@ function ArticleEdit(props) {
 
       try {
         const response = await listCategory(token); // Truyền token vào hàm
-        if (response) {
+        if (response.code === 200) {
           setCategories(response.productsCategory);
+        } else {
+          message.error(response.message);
         }
       } catch (error) {
         message.error("Lỗi khi tải danh mục:", error.message);
@@ -102,7 +104,12 @@ function ArticleEdit(props) {
       onReload();
       handleCancel();
     } else {
-      message.error(response.message);
+      if (Array.isArray(response.message)) {
+        const allErrors = response.message.map(err => err.message).join("\n");
+        message.error(allErrors);
+      } else {
+        message.error(response.message);
+      }
     }
   };
 

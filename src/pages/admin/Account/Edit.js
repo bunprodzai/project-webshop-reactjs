@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getCookie } from "../../../helpers/cookie";
 import { listRoleGet } from "../../../services/admin/rolesServies";
 import { editAccountPatch } from "../../../services/admin/accountServies";
+import UploadFile from "../../../components/UploadFile";
 
 function AccountEdit(props) {
 
@@ -23,10 +24,9 @@ function AccountEdit(props) {
   const onChange = (e) => {
     setValueRadio(e.target.value);
   };
-  
+
   // upload img
-  const [imageUrl, setImageUrl] = useState(record.avatar);
-  const [fileList, setFileList] = useState([]);
+  const [avatar, setAvatar] = useState(record.avatar);
   // upload img
 
   useEffect(() => {
@@ -69,18 +69,7 @@ function AccountEdit(props) {
 
   // xử lý edit
   const onFinish = async (e) => {
-    e.avatar = imageUrl ? imageUrl : "";
-    e.role_id = !e.role_id ? "" : e.role_id;
-
-    if (!e.fullName) {
-      message.error("Vui lòng nhập tên!");
-      return;
-    }
-
-    if (!e.email) {
-      message.error("Vui lòng nhập email!");
-      return;
-    }
+    e.avatar = avatar ? setAvatar : "";
 
     if (e.password === undefined) {
       delete e.password;
@@ -99,55 +88,26 @@ function AccountEdit(props) {
       }
     }
 
-    const response = await editAccountPatch(record._id, e, token);
-    if (response.code === 200) {
-      message.success("Cập nhật thành công")
-      onReload();
-      handleCancel();
-    } else {
-      message.error(response.message);
-    }
-  };
-
-
-  // upload img
-  const handleCustomRequest = async ({ file, onSuccess, onError }) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "my_preset"); // Thay bằng preset của bạn
-
     try {
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/djckm3ust/image/upload`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-      const data = await response.json();
+      const response = await editAccountPatch(record._id, e, token);
 
-      if (data.secure_url) {
-        setImageUrl(data.secure_url); // Cập nhật link ảnh
-        setFileList([
-          {
-            uid: data.asset_id, // Đảm bảo UID là duy nhất
-            name: data.original_filename,
-            status: "done",
-            url: data.secure_url,
-          },
-        ]);
-        onSuccess(data);
+      if (response.code === 200) {
+        message.success("Cập nhật thành công");
+        handleCancel();
+        onReload();
+      } else {
+        if (Array.isArray(response.message)) {
+          const allErrors = response.message.map(err => err.message).join("\n");
+          message.error(allErrors);
+        } else {
+          message.error(response.message);
+        }
       }
     } catch (error) {
-      console.error("Lỗi khi upload ảnh:", error);
-      onError(error);
+      message.error(error.message);
     }
   };
-  const handleRemove = () => {
-    setImageUrl(""); // Xóa link ảnh
-    setFileList([]); // Xóa danh sách file
-  }
-  // upload img
+
   return (
     <>
       <Button icon={<EditOutlined />} type="primary" ghost onClick={showModal} />
@@ -162,17 +122,20 @@ function AccountEdit(props) {
         <Form onFinish={onFinish} layout="vertical" form={form} initialValues={record}>
           <Row>
             <Col span={24}>
-              <Form.Item label="Họ tên" name="fullName">
+              <Form.Item label="Họ tên" name="fullName"
+                rules={[{ required: true, message: 'Nhập tên!' }]}>
                 <Input />
               </Form.Item>
             </Col>
             <Col span={24}>
-              <Form.Item label="Phân quyền" name="role_id">
+              <Form.Item label="Phân quyền" name="role_id"
+                rules={[{ required: true, message: 'Chọn quyền!' }]}>
                 <Select options={options} />
               </Form.Item>
             </Col>
             <Col span={24}>
-              <Form.Item label="Email" name="email">
+              <Form.Item label="Email" name="email"
+                rules={[{ required: true, message: 'Nhập email!' }]}>
                 <Input />
               </Form.Item>
             </Col>
@@ -187,41 +150,8 @@ function AccountEdit(props) {
               </Form.Item>
             </Col>
             <Col span={24}>
-              <Form.Item label="Ảnh nhỏ" name="avatar">
-                <Upload
-                  name="file"
-                  listType="picture-card"
-                  showUploadList={{ showPreviewIcon: false }}
-                  maxCount={1} // Giới hạn chỉ được chọn 1 ảnh
-                  customRequest={handleCustomRequest}
-                  onChange={({ fileList: newFileList }) => setFileList(newFileList)}
-                  onRemove={handleRemove}
-                  defaultFileList={[
-                    ...(fileList.length
-                      ? fileList
-                      : [
-                        {
-                          uid: "-1", // UID duy nhất cho ảnh đã có
-                          name: "existing-image", // Tên ảnh có sẵn
-                          status: "done",
-                          url: imageUrl, // Hiển thị ảnh hiện tại trong preview
-                        },
-                      ]),
-                  ]}
-                >
-                  {fileList.length >= 1 ? null : (
-                    <div>
-                      <PlusOutlined />
-                      <div style={{ marginTop: 8 }}>Upload</div>
-                    </div>
-                  )}
-                </Upload>
-                {imageUrl && (
-                  <div style={{ marginTop: "10px" }}>
-                    <p>Link ảnh:</p>
-                    <Input value={imageUrl} readOnly />
-                  </div>
-                )}
+              <Form.Item label="Ảnh đại diện" name="avatar">
+                <UploadFile onImageUrlsChange={setAvatar} initialImageUrls={avatar} />
               </Form.Item>
             </Col>
             <Col span={24}>

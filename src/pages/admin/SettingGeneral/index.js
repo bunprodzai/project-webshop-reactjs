@@ -23,6 +23,13 @@ function SettingGeneral() {
       if (response.code === 200) {
         form.setFieldsValue(response.setting[0]);
         setImageUrl(response.setting[0].logo);
+      } else {
+        if (Array.isArray(response.message)) {
+          const allErrors = response.message.map(err => err.message).join("\n");
+          message.error(allErrors);
+        } else {
+          message.error(response.message);
+        }
       }
     } catch (error) {
       message.error("Lỗi khi tải cài đặt chung:", error.message);

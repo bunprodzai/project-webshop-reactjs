@@ -6,7 +6,6 @@ import { EyeOutlined } from "@ant-design/icons";
 const OrderDetail = (props) => {
 
   const { record } = props;
-  console.log(record);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
 

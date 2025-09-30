@@ -19,6 +19,7 @@ import { checkLoginUser } from "../../../actions/loginUser";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { addFavorite, getFavorites } from "../../../helpers/favorites";
 
 export default function LoginUser() {
   const [loading, setLoading] = useState(false)
@@ -37,13 +38,25 @@ export default function LoginUser() {
   const handleSubmit = async (e) => {
     setLoading(true)
     const response = await loginUserPost(e);
+    console.log(response);
+    
     if (response.code === 200) {
       message.success("Đăng nhập thành công");
+
+      if (response.favorites) {
+        response.favorites.forEach(productId => {
+          addFavorite(productId.product_id);
+        });
+      }
+      console.log(getFavorites());
+
+
       setCookie("email", e.email, 24);
       setCookie("avatar", response.avatar, 24);
       setCookie("tokenUser", response.tokenUser, 24);
       setCookie("fullName", response.fullName, 24);
       setCookie("userId", response.userId, 24);
+      setCookie("favorites", response.favorites, 24);
       dispatch(checkLoginUser(true));
       navigate("/");
     } else {

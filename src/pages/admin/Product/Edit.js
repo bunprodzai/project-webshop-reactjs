@@ -8,6 +8,7 @@ import NoRole from "../../../components/NoRole";
 import UploadFile from "../../../components/UploadFile";
 import UploadFiles from "../../../components/UploadFiles";
 import useProducts from "../../../hooks/admin/useProducts";
+import MyEditor from "../../../components/MyEditor";
 
 const convertSizeStock = (rawList) => {
   return rawList.map(item => {
@@ -138,18 +139,22 @@ function ProductEdit(props) {
               }}>
               <Row gutter={[16, 16]}>
                 <Col span={24}>
-                  <Form.Item label="Tiêu đề" name="title">
+                  <Form.Item label="Tiêu đề" name="title"
+                    rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]}>
                     <Input />
                   </Form.Item>
                 </Col>
                 <Col span={5}>
-                  <Form.Item label="Danh mục" name="product_category_id">
+                  <Form.Item label="Danh mục" name="product_category_id"
+                    rules={[{ required: true, message: 'Vui lòng chọn danh mục!' }]}>
                     <Select options={options} />
                   </Form.Item>
                 </Col>
                 <Col span={5}>
-                  <Form.Item label="Giá" name="price">
-                    <Input type="number" allowClear />
+                  <Form.Item label="Giá" name="price"
+                    rules={[{ required: true, message: 'Vui lòng nhập giá!' }]}>
+                    <Input type="number" allowClear
+                      min={0} />
                   </Form.Item>
                 </Col>
                 <Col span={5}>
@@ -158,7 +163,8 @@ function ProductEdit(props) {
                   </Form.Item>
                 </Col>
                 <Col span={5}>
-                  <Form.Item label="Phần trăm giảm giá" name="discountPercentage">
+                  <Form.Item label="Phần trăm giảm giá" name="discountPercentage"
+                    rules={[{ required: true, message: 'Vui lòng nhập phần trăm giảm giá!' }]}>
                     <Input allowClear type="number" min={0} max={100} />
                   </Form.Item>
                 </Col>
@@ -167,6 +173,7 @@ function ProductEdit(props) {
                     <Input
                       allowClear
                       type="number"
+                      min={0}
                       placeholder="Tự tăng"
                     />
                   </Form.Item>
@@ -262,8 +269,8 @@ function ProductEdit(props) {
                   </Form.Item>
                 </Col>
                 <Col span={24}>
-                  <Form.Item label="Mô tả" name="description">
-                    <TextArea rows={6} />
+                  <Form.Item label="Mô tả" name="description" >
+                    <MyEditor />
                   </Form.Item>
                 </Col>
                 <Col span={24}>

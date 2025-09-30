@@ -1,44 +1,36 @@
-
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import { Card, Typography, Badge, Button, Row, Col, Divider, Space, Image, Spin, Result, Alert } from "antd"
+import { Card, Typography, Badge, Button, Row, Col, Divider, Space, Image, Spin, Result } from "antd"
 import {
-  CloseCircleOutlined,
+  CheckCircleOutlined,
   ShoppingOutlined,
   UserOutlined,
   PhoneOutlined,
   MailOutlined,
   EnvironmentOutlined,
   CreditCardOutlined,
-  InboxOutlined ,
-  ReloadOutlined,
-  CustomerServiceOutlined,
-  ExclamationCircleOutlined,
+  InboxOutlined,
 } from "@ant-design/icons"
 import { detailOrderGet } from "../../../services/client/checkoutServies"
 
 const { Title, Text, Paragraph } = Typography
 
-const FailCheckOut = () => {
+const SuccessCheckout = () => {
   const params = useParams()
   const [code, setCode] = useState(params.code || "")
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [errorReason, setErrorReason] = useState("")
 
   useEffect(() => {
     const fetchApi = async () => {
       try {
         setLoading(true)
         const response = await detailOrderGet(code)
-        if (response.code === 200 && response.status !== "received") {
+        if (response.code === 200) {
           setOrder(response.recordsOrder)
-          // Giả sử có thông tin lỗi từ API
-          setErrorReason(response.errorReason || "Thanh toán không thành công")
         }
       } catch (error) {
         console.error("Lỗi lấy đơn hàng: ", error)
-        setErrorReason("Không thể kết nối đến server")
       } finally {
         setLoading(false)
       }
@@ -68,46 +60,23 @@ const FailCheckOut = () => {
 
   const getStatusConfig = (status) => {
     const statusMap = {
-      failed: { text: "Thanh toán thất bại", color: "red" },
-      cancelled: { text: "Đã hủy", color: "default" },
-      expired: { text: "Hết hạn", color: "orange" },
-      pending: { text: "Đang chờ", color: "blue" },
+      initialize: { text: "Đơn hàng mới khởi tạo", color: "red" },
+      received: { text: "Đã nhận đơn", color: "blue" },
+      processing: { text: "Đang xử lý", color: "orange" },
+      shipped: { text: "Đang giao", color: "purple" },
+      delivered: { text: "Đã giao", color: "green" },
     }
-    return statusMap[status] || { text: "Thất bại", color: "red" }
+    return statusMap[status] || { text: status, color: "default" }
   }
 
-  const handleRetryPayment = () => {
-    // Logic thử lại thanh toán
-    console.log("Thử lại thanh toán cho đơn hàng:", order?.code)
-    // Redirect to payment page
-    window.location.href = `/checkout/payment/${code}`
-  }
-
-  const handleContactSupport = () => {
-    // Logic liên hệ hỗ trợ
-    console.log("Liên hệ hỗ trợ cho đơn hàng:", order?.code)
-    // Open support chat or redirect to support page
+  const handleTrackOrder = () => {
+    // Logic theo dõi đơn hàng
+    console.log("Theo dõi đơn hàng:", order.code)
   }
 
   const handleContinueShopping = () => {
     // Logic tiếp tục mua sắm
     window.location.href = "/"
-  }
-
-  const handleBackToCart = () => {
-    // Logic quay lại giỏ hàng
-    window.location.href = "/cart"
-  }
-
-  const getFailureReasons = () => {
-    return [
-      "Thông tin thẻ tín dụng không chính xác",
-      "Tài khoản không đủ số dư",
-      "Thẻ đã hết hạn hoặc bị khóa",
-      "Vượt quá hạn mức giao dịch",
-      "Lỗi kết nối với ngân hàng",
-      "Phiên giao dịch đã hết hạn",
-    ]
   }
 
   if (loading) {
@@ -141,6 +110,8 @@ const FailCheckOut = () => {
     )
   }
 
+    console.log(order);
+    
   const statusConfig = getStatusConfig(order.status)
 
   return (
@@ -158,32 +129,22 @@ const FailCheckOut = () => {
           padding: "0 16px",
         }}
       >
-        {/* Header thất bại */}
+        {/* Header thành công */}
         <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <CloseCircleOutlined
+          <CheckCircleOutlined
             style={{
               fontSize: 64,
-              color: "#ff4d4f",
+              color: "#52c41a",
               marginBottom: 16,
             }}
           />
           <Title level={2} style={{ color: "#262626", marginBottom: 8 }}>
-            Thanh toán không thành công!
+            Đặt hàng thành công!
           </Title>
           <Paragraph style={{ fontSize: 16, color: "#8c8c8c" }}>
-            Rất tiếc, đã có lỗi xảy ra trong quá trình thanh toán. Vui lòng thử lại hoặc liên hệ hỗ trợ.
+            Cảm ơn bạn đã đặt hàng. Chúng tôi sẽ xử lý đơn hàng của bạn sớm nhất có thể.
           </Paragraph>
         </div>
-
-        {/* Thông báo lỗi */}
-        <Alert
-          message="Lỗi thanh toán"
-          description={errorReason}
-          type="error"
-          icon={<ExclamationCircleOutlined />}
-          style={{ marginBottom: 24 }}
-          showIcon
-        />
 
         <Row gutter={[24, 24]}>
           {/* Cột trái - Thông tin đơn hàng và sản phẩm */}
@@ -193,7 +154,7 @@ const FailCheckOut = () => {
               <Card
                 title={
                   <Space>
-                    <InboxOutlined  />
+                    <InboxOutlined />
                     <span>Thông tin đơn hàng</span>
                   </Space>
                 }
@@ -216,41 +177,23 @@ const FailCheckOut = () => {
                   </Col>
 
                   <Col span={12}>
-                    <Text strong>Thời gian thử thanh toán:</Text>
+                    <Text strong>Ngày đặt:</Text>
                   </Col>
                   <Col span={12}>
-                    <Text type="secondary">{formatDate(order.updatedAt || order.createdAt)}</Text>
+                    <Text type="secondary">{formatDate(order.createdAt)}</Text>
                   </Col>
 
                   <Col span={12}>
-                    <Text strong>Phương thức thanh toán:</Text>
+                    <Text strong>Thanh toán:</Text>
                   </Col>
                   <Col span={12}>
-                    <Text>{order.paymentMethod === "cod" ? "Thanh toán khi nhận hàng" : order.paymentMethod}</Text>
+                    <Text>{order.paymentMethod === "cod" ? "Thanh toán khi nhận hàng" : "Thanh toán bằng chuyển khoản"}</Text>
                   </Col>
                 </Row>
               </Card>
 
-              {/* Nguyên nhân có thể */}
-              <Card
-                title={
-                  <Space>
-                    <ExclamationCircleOutlined />
-                    <span>Nguyên nhân có thể</span>
-                  </Space>
-                }
-              >
-                <ul style={{ paddingLeft: 20, margin: 0 }}>
-                  {getFailureReasons().map((reason, index) => (
-                    <li key={index} style={{ marginBottom: 8 }}>
-                      <Text>{reason}</Text>
-                    </li>
-                  ))}
-                </ul>
-              </Card>
-
               {/* Danh sách sản phẩm */}
-              <Card title="Sản phẩm trong đơn hàng">
+              <Card title="Sản phẩm đã đặt">
                 <Space direction="vertical" size="middle" style={{ width: "100%" }}>
                   {order.products.map((product, index) => (
                     <Card key={product._id} size="small" style={{ backgroundColor: "#fafafa" }}>
@@ -286,7 +229,7 @@ const FailCheckOut = () => {
                         </Col>
 
                         <Col xs={24} sm={6} style={{ textAlign: "right" }}>
-                          <Title level={4} style={{ color: "#8c8c8c", margin: 0 }}>
+                          <Title level={4} style={{ color: "#52c41a", margin: 0 }}>
                             {formatPrice(product.totalPrice)}
                           </Title>
                         </Col>
@@ -358,7 +301,7 @@ const FailCheckOut = () => {
                       <Text>Tạm tính:</Text>
                     </Col>
                     <Col>
-                      <Text>{formatPrice(order.totalPriceProducts)}</Text>
+                      <Text>{formatPrice(order.totalOrder)}</Text>
                     </Col>
                   </Row>
 
@@ -378,8 +321,8 @@ const FailCheckOut = () => {
                       <Title level={4}>Tổng cộng:</Title>
                     </Col>
                     <Col>
-                      <Title level={4} style={{ color: "#ff4d4f", margin: 0 }}>
-                        {formatPrice(order.totalPriceProducts)}
+                      <Title level={4} style={{ color: "#52c41a", margin: 0 }}>
+                        {formatPrice(order.totalOrder)}
                       </Title>
                     </Col>
                   </Row>
@@ -388,79 +331,35 @@ const FailCheckOut = () => {
 
               {/* Nút hành động */}
               <Space direction="vertical" size="middle" style={{ width: "100%" }}>
-                <Button
-                  type="primary"
-                  size="large"
-                  block
-                  icon={<ReloadOutlined />}
-                  onClick={handleRetryPayment}
-                  style={{ backgroundColor: "#ff4d4f", borderColor: "#ff4d4f" }}
-                >
-                  Thử lại thanh toán
+                <Button type="primary" size="large" block onClick={handleTrackOrder}>
+                  Theo dõi đơn hàng
                 </Button>
 
-                <Button
-                  size="large"
-                  block
-                  icon={<CustomerServiceOutlined />}
-                  onClick={handleContactSupport}
-                  style={{ borderColor: "#ff4d4f", color: "#ff4d4f" }}
-                >
-                  Liên hệ hỗ trợ
-                </Button>
-
-                <Button size="large" block onClick={handleBackToCart}>
-                  Quay lại giỏ hàng
-                </Button>
-
-                <Button size="large" block icon={<ShoppingOutlined />} onClick={handleContinueShopping}>
-                  Tiếp tục mua sắm
-                </Button>
+                <a href="/" style={{ textDecoration: "none" }} target="_blank" rel="noopener noreferrer">
+                  <Button size="large" block icon={<ShoppingOutlined />} onClick={handleContinueShopping}>
+                    Tiếp tục mua sắm
+                  </Button>
+                </a>
               </Space>
             </Space>
           </Col>
         </Row>
 
-        {/* Thông tin hỗ trợ */}
-        <Card style={{ marginTop: 24 }}>
-          <Row gutter={[24, 16]}>
-            <Col xs={24} md={8} style={{ textAlign: "center" }}>
-              <CustomerServiceOutlined style={{ fontSize: 32, color: "#1890ff", marginBottom: 8 }} />
-              <Title level={4}>Hỗ trợ 24/7</Title>
-              <Text>Hotline: 1900 1234</Text>
-            </Col>
-
-            <Col xs={24} md={8} style={{ textAlign: "center" }}>
-              <MailOutlined style={{ fontSize: 32, color: "#1890ff", marginBottom: 8 }} />
-              <Title level={4}>Email hỗ trợ</Title>
-              <Text>support@example.com</Text>
-            </Col>
-
-            <Col xs={24} md={8} style={{ textAlign: "center" }}>
-              <ReloadOutlined style={{ fontSize: 32, color: "#1890ff", marginBottom: 8 }} />
-              <Title level={4}>Thử lại dễ dàng</Title>
-              <Text>Chỉ cần 1 click để thử lại</Text>
-            </Col>
-          </Row>
+        {/* Thông tin bổ sung */}
+        <Card style={{ marginTop: 24, textAlign: "center" }}>
+          <Paragraph style={{ marginBottom: 8 }}>
+            <Text strong>Lưu ý:</Text> Đơn hàng của bạn sẽ được xử lý trong vòng 1-2 ngày làm việc.
+          </Paragraph>
+          <Paragraph style={{ margin: 0 }}>
+            Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi qua hotline:
+            <Text strong style={{ marginLeft: 4 }}>
+              1900 1234
+            </Text>
+          </Paragraph>
         </Card>
-
-        {/* Lưu ý quan trọng */}
-        <Alert
-          message="Lưu ý quan trọng"
-          description={
-            <div>
-              <p>• Đơn hàng của bạn vẫn được lưu trong hệ thống và có thể thanh toán lại.</p>
-              <p>• Nếu bạn đã bị trừ tiền, số tiền sẽ được hoàn lại trong 3-5 ngày làm việc.</p>
-              <p>• Liên hệ ngay với chúng tôi nếu cần hỗ trợ khẩn cấp.</p>
-            </div>
-          }
-          type="info"
-          style={{ marginTop: 24 }}
-          showIcon
-        />
       </div>
     </div>
   )
 }
 
-export default FailCheckOut;
+export default SuccessCheckout;

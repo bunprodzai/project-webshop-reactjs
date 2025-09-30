@@ -10,8 +10,6 @@ function useProducts({ token } = {}) {
   // CREATE
   const createProduct = useMutation({
     mutationFn: async (newProduct) => {
-      console.log(newProduct);
-      console.log(token);
       return await addProduct(newProduct, token);
     },
     onSuccess: (response) => {
@@ -19,7 +17,12 @@ function useProducts({ token } = {}) {
         message.success("Thêm mới thành công");
         queryClient.invalidateQueries(["products"]); // refetch lại danh sách
       } else {
-        message.error(response.message || "Thêm mới thất bại");
+        if (Array.isArray(response.message)) {
+          const allErrors = response.message.map(err => err.message).join("\n");
+          message.error(allErrors);
+        } else {
+          message.error(response.message);
+        }
       }
     },
     onError: (error) => {
@@ -38,7 +41,12 @@ function useProducts({ token } = {}) {
         // invalidate lại cache products để UI sync
         queryClient.invalidateQueries(["products"]);
       } else {
-        message.error(response?.message || "Cập nhật thất bại");
+        if (Array.isArray(response.message)) {
+          const allErrors = response.message.map(err => err.message).join("\n");
+          message.error(allErrors);
+        } else {
+          message.error(response.message);
+        }
       }
     },
     onError: (error) => {

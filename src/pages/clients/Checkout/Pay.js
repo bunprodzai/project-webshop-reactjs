@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { checkVoucherPost, createQrPost, detailOrderGet, successOrderPatch } from "../../../services/client/checkoutServies";
 import { Badge, Button, Card, Col, Form, Image, Input, message, Row, Space, Spin, Tabs, Typography, Radio, Divider } from "antd";
-import { CheckCircleOutlined, CreditCardOutlined, EnvironmentOutlined, MailOutlined, NotificationFilled, PhoneOutlined, UserOutlined, WalletOutlined, BankOutlined, MobileOutlined } from "@ant-design/icons";
+import {
+  CheckCircleOutlined, CreditCardOutlined, EnvironmentOutlined,
+  MailOutlined, NotificationFilled, PhoneOutlined, UserOutlined,
+  WalletOutlined, BankOutlined, MobileOutlined
+} from "@ant-design/icons";
 import "./CheckoutPay.scss";
 import Title from "antd/es/typography/Title";
 const { Text } = Typography;
@@ -66,7 +70,7 @@ function CheckoutPay() {
             shippingFee: shippingFee
           });
           if (response.code === 200) {
-            message.success(response.message) ;
+            message.success(response.message);
             navigate("/");
           } else {
             message.error(response.message);

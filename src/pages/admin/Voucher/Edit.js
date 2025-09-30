@@ -43,7 +43,7 @@ const VoucherEdit = (props) => {
 
       try {
         const response = await listBanners(token);
-        if (response) {
+        if (response.code === 200) {
           setSetBanners(response.banners);
         }
       } catch (error) {
@@ -58,13 +58,22 @@ const VoucherEdit = (props) => {
     e.image = imageUrl ? imageUrl : "";
     e.status = e.status ? "active" : "inactive";
 
-    const response = await editVoucher(record._id, e, token);
-    if (response.code === 200) {
-      message.success("Cập nhật thành công");
-      onReload();
-      handleCancel();
-    } else {
-      message.error(response.message);
+    try {
+      const response = await editVoucher(record._id, e, token);
+      if (response.code === 200) {
+        message.success("Cập nhật thành công");
+        onReload();
+        handleCancel();
+      } else {
+        if (Array.isArray(response.message)) {
+          const allErrors = response.message.map(err => err.message).join("\n");
+          message.error(allErrors);
+        } else {
+          message.error(response.message);
+        }
+      }
+    } catch (error) {
+      message.error(error.message);
     }
   };
 

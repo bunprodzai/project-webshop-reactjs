@@ -4,9 +4,7 @@ import { useEffect } from "react"
 import { productsCategoryGet } from "../../services/client/productServies"
 
 function ProductsRelated(props) {
-
   const { slug } = props;
-
 
   const [productRelated, setProductRelated] = useState([])
 
@@ -26,7 +24,7 @@ function ProductsRelated(props) {
   return (
     <>
       {/* Sản phẩm liên quan */}
-      <div id="products-related">
+      <div>
         <ListProduct products={productRelated} filter={false} title={`Sản phẩm liên quan`} />
       </div>
     </>

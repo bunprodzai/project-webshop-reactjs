@@ -21,7 +21,7 @@ const OrderDetail = (props) => {
     try {
       const response = await detailOrderGet(record._id, token);
 
-      setDetail(response.record);
+      setDetail(response.data);
     } catch (error) {
       message.error('Lỗi khi tải dữ liệu vai trò!');
     }

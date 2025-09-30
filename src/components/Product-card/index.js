@@ -1,43 +1,52 @@
 import { useState } from "react"
 import { NavLink } from 'react-router-dom';
-import { Card, Typography, Rate, Button, Badge } from "antd"
-import { HeartOutlined } from "@ant-design/icons"
+import { Card, Typography, Rate, Button, Badge, message } from "antd"
+import { HeartFilled, HeartOutlined } from "@ant-design/icons"
+import { useEffect } from "react";
+import { addFavorite, getFavorites, removeFavorite } from "../../helpers/favorites";
+import { getCookie } from "../../helpers/cookie";
+import { productFavorite } from "../../services/client/productServies";
 
 const { Meta } = Card
 const { Text } = Typography
-// const dispatch = useDispatch();
-// const addCart = () => {
-//     const productId = product._id;
 
-//     const fetchApiAddCart = async () => {
-//       try {
-//         const resAddToCart = await addCartPatch(productId, { quantity: 1, cartId: localStorage.getItem("cartId") });
-//         if (resAddToCart.code === 200) {
-//           console.log(resAddToCart);
-
-//           const newLength = resAddToCart.totalQuantityProduts; // Lấy số lượng sản phẩm mới từ API
-//           dispatch(updateCartLength(newLength)); // Cập nhật lengthCart trong Redux
-//           message.success("Thêm vào giỏ hàng thành công!");
-//         } else {
-//           message.error("Thêm vào giỏ hàng thất bại");
-//         }
-//       } catch (error) {
-
-//       }
-//     }
-//     fetchApiAddCart();
-//   }
-
-// const actions = [
-//   <Button key="add-to-cart" onClick={addCart} type="primary" icon={<ShoppingCartOutlined />} block>
-//     Add to Cart
-//   </Button>,
-// ]
 export default function ProductCard({ product }) {
+
+  const [isHovered, setIsHovered] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    setIsFavorite(getFavorites().includes(product._id));
+  }, [product._id])
 
   const discountedPrice = product.discountPercentage ? product.price * (1 - product.discountPercentage / 100) : product.price
 
-  const [isHovered, setIsHovered] = useState(false);
+
+  const handleToggleFavorite = async () => {
+    const tokenUser = getCookie("tokenUser")
+    try {
+      if (tokenUser) {
+        // nếu user đã login -> call API
+        const typeFavorite = isFavorite ? "unfavorite" : "favorite";
+        const res = await productFavorite(typeFavorite, product._id, tokenUser);
+        if (res.code === 200) {
+          setIsFavorite(!isFavorite);
+          addFavorite(product._id);
+          message.success(res.message)
+        } else if (res.code === 201) {
+          setIsFavorite(!isFavorite);
+          removeFavorite(product._id);
+          message.success(res.message)
+        } else {
+          message.error(res.message);
+        }
+      } else {
+        message.error("Vui lòng đăng nhập để thêm sản phẩm yêu thích")
+      }
+    } catch (err) {
+      message.error(err);
+    }
+  };
 
   return (
     <Badge.Ribbon text={`${product.discountPercentage}% OFF`} color="red" style={{ display: product.discountPercentage ? "block" : "none" }}>
@@ -60,9 +69,16 @@ export default function ProductCard({ product }) {
               <div className="flex space-x-2">
                 <Button
                   type="default"
-                  icon={<HeartOutlined />}
-                  size="small"
+                  icon={
+                    isFavorite ? (
+                      <HeartFilled style={{ color: "red" }} />
+                    ) : (
+                      <HeartOutlined />
+                    )
+                  }
+                  size="middle"
                   className="bg-white"
+                  onClick={handleToggleFavorite}
                 />
               </div>
             </div>

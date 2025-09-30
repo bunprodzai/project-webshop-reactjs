@@ -1,9 +1,11 @@
-import { Button, Col, Form, Input, message, Modal, Radio, Row, Select, Upload } from "antd";
-import { EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Col, Form, Input, message, Modal, Radio, Row, Select } from "antd";
+import { EditOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
 import { getCookie } from "../../../helpers/cookie";
 import { editCategory, listCategory } from "../../../services/admin/categoryServies";
+import UploadFile from "../../../components/UploadFile";
+import MyEditor from "../../../components/MyEditor";
 
 function CategoriesEdit(props) {
   const { record, onReload } = props;
@@ -24,7 +26,6 @@ function CategoriesEdit(props) {
 
   // upload img
   const [imageUrl, setImageUrl] = useState(record.thumbnail);
-  const [fileList, setFileList] = useState([]);
   // upload img
 
   useEffect(() => {
@@ -63,65 +64,31 @@ function CategoriesEdit(props) {
   };
 
   const onFinish = async (e) => {
-    if (!e.title) {
-      message.error("Vui lòng nhập tiêu đề");
-      return;
-    }
-
     e.status = e.status ? "active" : "inactive";
     e.parent_id = !e.parent_id ? "" : e.parent_id;
     e.description = !e.description ? "" : e.description;
     e.position = !e.position ? "" : Number(e.position);
     e.thumbnail = imageUrl ? imageUrl : "";
-    console.log(e);
-
-    console.log(record._id, e);
-    
-    const response = await editCategory(record._id, e, token);
-    if (response.code === 200) {
-      message.success("Cập nhật thành công");
-      onReload();
-      handleCancel();
-    } else {
-      message.error(response.message);
-    }
-  };
-
-  // upload ảnh
-  const handleCustomRequest = async ({ file, onSuccess, onError }) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "my_preset"); // Thay bằng preset của bạn
 
     try {
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/djckm3ust/image/upload`,
-        {
-          method: "POST",
-          body: formData,
+      const response = await editCategory(record._id, e, token);
+      if (response.code === 200) {
+        message.success("Cập nhật thành công");
+        onReload();
+        handleCancel();
+      } else {
+        if (Array.isArray(response.message)) {
+          const allErrors = response.message.map(err => err.message).join("\n");
+          message.error(allErrors);
+        } else {
+          message.error(response.message);
         }
-      );
-      const data = await response.json();
-
-      if (data.secure_url) {
-        setImageUrl(data.secure_url); // Cập nhật link ảnh
-        setFileList([
-          {
-            uid: data.asset_id, // Đảm bảo UID là duy nhất
-            name: data.original_filename,
-            status: "done",
-            url: data.secure_url,
-          },
-        ]);
-        onSuccess(data);
       }
     } catch (error) {
-      message.error("Lỗi khi upload ảnh:", error);
-      onError(error);
+      message.error("Lỗi " + error.message);
     }
-  };
-  // upload ảnh
 
+  };
 
   // options cho Select
   // Hàm đệ quy để xây dựng danh sách Select
@@ -140,20 +107,15 @@ function CategoriesEdit(props) {
       })
       .flat(); // Gộp mảng thành 1 chiều
   }
-  
+
   // loại bỏ danh mục hiện tại và con của nó
-  const newCategories = categories.filter((item) => 
+  const newCategories = categories.filter((item) =>
     item._id !== record._id && item.parent_id !== record._id
   );
-  
+
   // Gọi hàm để tạo danh sách Select
   const options = buildSelectOptions(newCategories);
   // end options cho Select
-
-  const handleRemove = () => {
-    setImageUrl(""); // Xóa link ảnh
-    setFileList([]); // Xóa danh sách file
-  }
   return (
     <>
       <Button icon={<EditOutlined />} type="primary" ghost onClick={showModal} />
@@ -168,7 +130,8 @@ function CategoriesEdit(props) {
         <Form onFinish={onFinish} layout="vertical" form={form} initialValues={record}>
           <Row>
             <Col span={24}>
-              <Form.Item label="Tiêu đề" name="title">
+              <Form.Item label="Tiêu đề" name="title"
+                rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]}>
                 <Input />
               </Form.Item>
             </Col>
@@ -188,45 +151,12 @@ function CategoriesEdit(props) {
             </Col>
             <Col span={24}>
               <Form.Item label="Ảnh nhỏ" name="thumbnail">
-                <Upload
-                  name="file"
-                  listType="picture-card"
-                  showUploadList={{ showPreviewIcon: false }}
-                  maxCount={1} // Giới hạn chỉ được chọn 1 ảnh
-                  customRequest={handleCustomRequest}
-                  onChange={({ fileList: newFileList }) => setFileList(newFileList)}
-                  onRemove={handleRemove}
-                  defaultFileList={[
-                    ...(fileList.length
-                      ? fileList
-                      : [
-                        {
-                          uid: "-1", // UID duy nhất cho ảnh đã có
-                          name: "existing-image", // Tên ảnh có sẵn
-                          status: "done",
-                          url: imageUrl, // Hiển thị ảnh hiện tại trong preview
-                        },
-                      ]),
-                  ]}
-                >
-                  {fileList.length >= 1 ? null : (
-                    <div>
-                      <PlusOutlined />
-                      <div style={{ marginTop: 8 }}>Upload</div>
-                    </div>
-                  )}
-                </Upload>
-                {imageUrl && (
-                  <div style={{ marginTop: "10px" }}>
-                    <p>Link ảnh:</p>
-                    <Input value={imageUrl} readOnly />
-                  </div>
-                )}
+                <UploadFile onImageUrlsChange={setImageUrl} initialImageUrls={imageUrl} />
               </Form.Item>
             </Col>
             <Col span={24}>
               <Form.Item label="Mô tả" name="description">
-                <TextArea rows={6} />
+                <MyEditor />
               </Form.Item>
             </Col>
             <Col span={24}>

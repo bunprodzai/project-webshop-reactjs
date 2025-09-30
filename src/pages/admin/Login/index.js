@@ -24,7 +24,12 @@ function Login() {
       dispatch(checkLogin(data.token))
       navigate("/admin/dashboard")
     } else {
-      message.error("Tài khoản hoặc mật khẩu không chính xác!!")
+      if (Array.isArray(data.message)) {
+        const allErrors = data.message.map(err => err.message).join("\n");
+        message.error(allErrors);
+      } else {
+        message.error(data.message);
+      }
     }
   }
 

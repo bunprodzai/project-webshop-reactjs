@@ -1,8 +1,6 @@
 import { Button, Card, Col, Form, Input, Row, Select, Switch, Radio, message } from "antd";
-import TextArea from "antd/es/input/TextArea";
 import { useEffect, useState } from "react";
 import { listCategory } from "../../../services/admin/categoryServies";
-import { addProduct } from "../../../services/admin/productServies";
 import { getCookie } from "../../../helpers/cookie";
 import NoRole from "../../../components/NoRole";
 import UploadFiles from "../../../components/UploadFiles";
@@ -10,7 +8,7 @@ import UploadFile from "../../../components/UploadFile";
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import useProducts from "../../../hooks/admin/useProducts";
-
+import MyEditor from "../../../components/MyEditor";
 
 function ProductsCreate() {
   const permissions = JSON.parse(localStorage.getItem('permissions'));
@@ -97,12 +95,14 @@ function ProductsCreate() {
             <Form onFinish={onFinish} layout="vertical" initialValues={{ discountPercentage: 0 }}>
               <Row gutter={[12, 12]}>
                 <Col span={24}>
-                  <Form.Item label="Tiêu đề" name="title" rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]}>
+                  <Form.Item label="Tiêu đề" name="title"
+                    rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]}>
                     <Input />
                   </Form.Item>
                 </Col>
                 <Col span={4}>
-                  <Form.Item label="Danh mục" name="product_category_id" rules={[{ required: true, message: 'Vui lòng chọn danh mục!' }]}>
+                  <Form.Item label="Danh mục" name="product_category_id"
+                    rules={[{ required: true, message: 'Vui lòng chọn danh mục!' }]}>
                     <Select
                       options={options}     // Cung cấp danh sách options
                       placeholder="Chọn danh mục"
@@ -113,6 +113,7 @@ function ProductsCreate() {
                   <Form.Item label="Giá" name="price" rules={[{ required: true, message: 'Vui lòng nhập giá!' }]}>
                     <Input
                       allowClear type="number"
+                      min={0}
                     />
                   </Form.Item>
                 </Col>
@@ -129,6 +130,7 @@ function ProductsCreate() {
                   <Form.Item label="Vị trí" name="position" >
                     <Input
                       allowClear
+                      min={0}
                       type="number"
                       placeholder="Tự tăng"
                     />
@@ -234,7 +236,7 @@ function ProductsCreate() {
                 </Col>
                 <Col span={24}>
                   <Form.Item label="Mô tả" name="description" >
-                    <TextArea rows={6} />
+                    <MyEditor />
                   </Form.Item>
                 </Col>
                 <Col span={24}>

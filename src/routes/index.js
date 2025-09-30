@@ -41,21 +41,30 @@ import BannerDetail from "../pages/clients/BannerDetail";
 import Blog from "../pages/clients/Blog";
 import Cart from "../pages/clients/Cart";
 import Categories from "../components/Categories";
-import CheckoutPay from "../pages/clients/CheckoutPay";
 import DetailProduct from "../pages/clients/DetailProduct";
-import FailCheckOut from "../pages/clients/FailCheckOut";
 import Home from "../pages/clients/Home";
-import InfoCheckOut from "../pages/clients/InfoCheckOut";
 import InfoUser from "../pages/clients/InfoUser";
 import LayoutDefault from "../layouts/LayoutDefault";
 import LogoutUser from "../pages/clients/LogoutUser";
-import Order from "../pages/clients/Order";
-import ArticleDetail from "../pages/clients/ArticleDetail";
+import Orders from "../pages/clients/Orders/List";
+import ArticleDetail from "../pages/clients/articles/Detail";
 import Search from "../pages/clients/Search";
-import SuccessCheckOut from "../pages/clients/SuccessCheckOut";
 import LoginUser from "../pages/clients/LoginUser";
 import Register from "../pages/clients/Register";
 import ForgotPassword from "../pages/clients/ForgotPassword";
+import CheckoutPay from "../pages/clients/Checkout/Pay";
+import InfoCheckOut from "../pages/clients/Checkout/Info";
+import InfoCheckout from "../pages/clients/Checkout/Info";
+import SuccessCheckout from "../pages/clients/Checkout/Success";
+import FavoriteProducts from "../pages/clients/FavoriteProducts";
+import ProductRestore from "../pages/admin/Trash/Product";
+import CategoryRestore from "../pages/admin/Trash/Category";
+import ArticleRestore from "../pages/admin/Trash/Article";
+import BannerRestore from "../pages/admin/Trash/Banner";
+import UserRestore from "../pages/admin/Trash/User";
+import AccountRestore from "../pages/admin/Trash/Account";
+import VoucherRestore from "../pages/admin/Trash/Voucher";
+
 
 const pathAdmin = "admin";
 
@@ -102,7 +111,7 @@ export const routes = [
       },
       {
         path: `order/history`,
-        element: <Order />
+        element: <Orders />
       }
       ,
       {
@@ -111,11 +120,11 @@ export const routes = [
       },
       {
         path: `order/checkout/pay/success/:code`,
-        element: <SuccessCheckOut />
+        element: <SuccessCheckout />
       },
       {
         path: `order/checkout/pay/fail/:code`,
-        element: <FailCheckOut />
+        element: <InfoCheckout />
       },
       {
         path: `banner/:slug`,
@@ -140,28 +149,11 @@ export const routes = [
       {
         path: "forgot-password",
         element: <ForgotPassword />
+      },
+      {
+        path: "favorite-products",
+        element: <FavoriteProducts />
       }
-      // {
-      //   path: "login",
-      //   element: <LoginUser />
-      // }
-      ,// {
-      //   path: "search",
-      //   element: <Search />
-      // },
-      // {
-      //   path: "jobdetail/:idcompany",
-      //   element: <JobDetail />
-      // },
-      // {
-      //   path: "companydetail/:id",
-      //   element: <CompanyDetail />
-      // },
-      // {
-      //   path: "register",
-      //   element: <Register />
-      // }
-
     ]
   },
   {
@@ -257,6 +249,34 @@ export const routes = [
           {
             path: `${pathAdmin}/banners/create`,
             element: <BannerCreate />
+          },
+          {
+            path: `${pathAdmin}/trashs/products`,
+            element: <ProductRestore />
+          },
+          {
+            path: `${pathAdmin}/trashs/categories`,
+            element: <CategoryRestore />
+          },
+          {
+            path: `${pathAdmin}/trashs/articles`,
+            element: <ArticleRestore />
+          },
+          {
+            path: `${pathAdmin}/restore/banners`,
+            element: <BannerRestore />
+          },
+          {
+            path: `${pathAdmin}/trashs/users`,
+            element: <UserRestore />
+          },
+          {
+            path: `${pathAdmin}/trashs/accounts`,
+            element: <AccountRestore />
+          },
+          {
+            path: `${pathAdmin}/trashs/vouchers`,
+            element: <VoucherRestore />
           }
         ]
       }

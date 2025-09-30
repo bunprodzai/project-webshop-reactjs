@@ -1,13 +1,12 @@
 import { Button, Card, Col, Form, Input, message, Row, Select, Switch } from "antd";
-import TextArea from "antd/es/input/TextArea";
 import { useEffect, useState } from "react";
 import { listCategory } from "../../../services/admin/categoryServies";
 import { addCategory } from "../../../services/admin/categoryServies";
 import { getCookie } from "../../../helpers/cookie";
 import { useNavigate } from "react-router-dom";
 import NoRole from "../../../components/NoRole";
-// import UploadFiles from "../../../components/UploadFiles";
 import UploadFile from "../../../components/UploadFile";
+import MyEditor from "../../../components/MyEditor";
 
 function CategoriesCreate() {
   const permissions = JSON.parse(localStorage.getItem('permissions'));
@@ -41,11 +40,6 @@ function CategoriesCreate() {
 
   // xử lý submit
   const onFinish = async (e) => {
-    if (!e.title) {
-      message.error("Vui lòng nhập tiêu đề");
-      return;
-    }
-
     e.status = e.status ? "active" : "inactive";
     e.parent_id = !e.parent_id ? "" : e.parent_id;
     e.description = !e.description ? "" : e.description;
@@ -54,19 +48,23 @@ function CategoriesCreate() {
 
     try {
       const response = await addCategory(e, token); // Truyền token vào hàm
-      console.log(response);
+
       if (response.code === 200) {
         message.success("Thêm mới thành công");
         navigate(`/admin/product-category`);
       } else {
-        message.error(response.message);
+        if (Array.isArray(response.message)) {
+          const allErrors = response.message.map(err => err.message).join("\n");
+          message.error(allErrors);
+        } else {
+          message.error(response.message);
+        }
       }
     } catch (error) {
       message.error("Lỗi: ", error.message);
     }
   }
   // xử lý submit
-
 
   // options cho Select
   // Hàm đệ quy để xây dựng danh sách Select
@@ -104,7 +102,8 @@ function CategoriesCreate() {
             <Form onFinish={onFinish} layout="vertical">
               <Row gutter={[12, 12]}>
                 <Col span={24}>
-                  <Form.Item label="Tiêu đề" name="title" >
+                  <Form.Item label="Tiêu đề" name="title"
+                    rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]}>
                     <Input />
                   </Form.Item>
                 </Col>
@@ -127,13 +126,12 @@ function CategoriesCreate() {
                 </Col>
                 <Col span={24}>
                   <Form.Item label="Ảnh nhỏ" name="thumbnail">
-                    {/* <UploadFiles onImageUrlsChange={setImageUrls} /> */}
                     <UploadFile onImageUrlsChange={setImageUrls} />
                   </Form.Item>
                 </Col>
                 <Col span={24}>
                   <Form.Item label="Mô tả" name="description" >
-                    <TextArea rows={6} />
+                    <MyEditor />
                   </Form.Item>
                 </Col>
                 <Col span={24}>

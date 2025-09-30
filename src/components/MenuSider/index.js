@@ -2,7 +2,8 @@ import { Menu } from "antd";
 import {
   ProductOutlined, EllipsisOutlined, OrderedListOutlined, BarChartOutlined, OneToOneOutlined,
   SettingOutlined, UserSwitchOutlined, UserAddOutlined, UserOutlined,
-  UnorderedListOutlined, PlusOutlined, ReadOutlined, ShoppingCartOutlined, MutedOutlined, DollarOutlined
+  UnorderedListOutlined, PlusOutlined, ReadOutlined, ShoppingCartOutlined, MutedOutlined, DollarOutlined,
+  DeleteOutlined
 } from '@ant-design/icons';
 import { Link } from "react-router-dom";
 
@@ -187,6 +188,55 @@ function MenuSider() {
           icon: <Link to="admin/vouchers/create"><PlusOutlined /></Link>,
           label: 'Thêm bài Voucher',
           permission: "vouchers_create",
+        }
+      ]
+    },
+    {
+      key: '12',
+      icon: <DeleteOutlined />,
+      label: 'Thùng rác',
+      children: [
+        {
+          key: 'product-trash',
+          icon: <Link to="admin/trashs/products"><ProductOutlined /></Link>,
+          label: 'Sản phẩm',
+          permission: "trashs_view",
+        },
+        {
+          key: 'category-trash',
+          icon: <Link to="admin/trashs/categories"><OrderedListOutlined /></Link>,
+          label: 'Danh mục',
+          permission: "trashs_view",
+        },
+        {
+          key: 'account-trash',
+          icon: <Link to="admin/trashs/accounts"><UserSwitchOutlined /></Link>,
+          label: 'Tài khoản',
+          permission: "trashs_view",
+        },
+        {
+          key: 'article-trash',
+          icon: <Link to="admin/trashs/articles"><ReadOutlined /></Link>,
+          label: 'Bài viết',
+          permission: "trashs_view",
+        },
+        {
+          key: 'banner-trash',
+          icon: <Link to="admin/trashs/banners"><MutedOutlined /></Link>,
+          label: 'Quảng cáo',
+          permission: "trashs_view",
+        },
+        {
+          key: 'voucher-trash',
+          icon: <Link to="admin/trashs/vouchers"><DollarOutlined /></Link>,
+          label: 'Voucher',
+          permission: "trashs_view",
+        },
+        {
+          key: 'user-trash',
+          icon: <Link to="admin/trashs/users"><UserOutlined /></Link>,
+          label: 'Khách hàng',
+          permission: "trashs_view",
         }
       ]
     }

@@ -154,13 +154,6 @@ function HeaderClient() {
                 {/* Logo */}
                 <Col xs={20} sm={24} md={24} lg={24}>
                   <Link to="/" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    {setting.logo && (
-                      <img
-                        src={setting.logo || "/placeholder.svg"}
-                        alt={setting.websiteName}
-                        style={{ maxHeight: "40px", width: "auto" }}
-                      />
-                    )}
                     <span style={{ fontSize: "18px", fontWeight: "bold", color: "#000" }}>{setting.websiteName}</span>
                   </Link>
                 </Col>
@@ -190,10 +183,11 @@ function HeaderClient() {
                   <Form form={form} onFinish={onFinish} layout="inline" style={{ width: "100%" }}>
                     <Row gutter={[8, 8]} style={{ width: "100%" }}>
                       <Col flex="auto">
-                        <Form.Item name="keyword" style={{ margin: 0 }}>
+                        <Form.Item name="keyword" style={{ margin: 0 }}
+                          rules={[{ required: true, message: "Nhập từ khóa tìm kiếm" }]}>
                           <Input
                             allowClear
-                            placeholder="Search products..."
+                            placeholder="Tìm kiếm sản phẩm..."
                             prefix={<SearchOutlined style={{ color: "rgba(0,0,0,.45)" }} />}
                           />
                         </Form.Item>
@@ -275,9 +269,6 @@ function HeaderClient() {
                       <Space size={8} className="auth-buttons">
                         <a href="/login">Đăng nhập</a>
                         <a href="/register">Đăng ký</a>
-
-                        {/* <LoginUser onReload={handleReload} onMenuOpen={() => setIsMenuOpen(false)} /> */}
-                        {/* <Register onReload={handleReload} page="header" onMenuOpen={() => setIsMenuOpen(false)} /> */}
                       </Space>
                     )}
                   </Space>
@@ -291,13 +282,6 @@ function HeaderClient() {
         <Drawer
           title={
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              {setting.logo && (
-                <img
-                  src={setting.logo || "/placeholder.svg"}
-                  alt={setting.websiteName}
-                  style={{ maxHeight: "32px", width: "auto" }}
-                />
-              )}
               <span>{setting.websiteName}</span>
             </div>
           }
