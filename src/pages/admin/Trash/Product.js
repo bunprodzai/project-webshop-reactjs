@@ -24,7 +24,6 @@ export default function ProductRestore() {
 
   const fetchApi = async () => {
     const response = await listItem(token, "products", currentPage, limit, keyword);
-    console.log(response);
 
     if (response.code === 200) {
       setData(response.data);

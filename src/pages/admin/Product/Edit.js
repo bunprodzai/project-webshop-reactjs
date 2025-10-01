@@ -226,7 +226,7 @@ function ProductEdit(props) {
                                     name={[name, "quantity"]}
                                     rules={[{ required: true, message: "Nhập số lượng!" }]}
                                   >
-                                    <Input type="number" min={0} placeholder="0" />
+                                    <Input type="number" min={0} placeholder="1" />
                                   </Form.Item>
                                 </Col>
 

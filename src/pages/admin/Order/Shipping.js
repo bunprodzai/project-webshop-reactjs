@@ -26,7 +26,6 @@ function ShippingSettings() {
     };
     fetchData();
   }, []);
-  console.log(data);
 
   const showModal = () => {
     setIsModalOpen(true);

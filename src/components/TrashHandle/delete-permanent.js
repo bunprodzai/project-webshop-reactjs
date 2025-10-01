@@ -16,7 +16,8 @@ export default function DeletePermanetItem(props) {
     case "product":
       item = "sản phẩm";
       handle = async () => {
-        const response = await permanentDelProduct(token, record._id);
+        const response = await permanentDelProduct(token, typeDelete, record._id);
+
         if (response.code === 200) {
           message.success(response.message);
           onReload();

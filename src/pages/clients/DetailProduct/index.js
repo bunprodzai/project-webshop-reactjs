@@ -65,9 +65,20 @@ function DetailProduct() {
       setSizeStock(sizeStockMap);
     }
   }, [productQuery.data]);
-
+  
   const addCart = () => {
-    add(productId, quantity, selectedSize);
+    // add(productId, quantity, selectedSize);
+    const productAdd = {
+      _id: product._id, 
+      title: product.title, 
+      price: product.price, 
+      discountPercentage: product.discountPercentage, 
+      size: selectedSize, 
+      quantity: quantity,
+      thumbnail: product.thumbnail,
+      slug: product.slug
+    }
+    add(productAdd);
   }
 
   const handleChangeQuantity = (e) => {

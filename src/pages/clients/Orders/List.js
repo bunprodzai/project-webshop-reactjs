@@ -29,35 +29,24 @@ const columns = [
     dataIndex: 'status',
     key: 'status',
     render: (_, record) => {
+      const statusMap = {
+        initialize: { label: "Khởi tạo", color: "default" },
+        confirmed: { label: "Đã xác nhận", color: "gold" },
+        received: { label: "Đã thanh toán", color: "blue" },
+        processing: { label: "Đang xử lý", color: "orange" },
+        shipping: { label: "Đang giao hàng", color: "geekblue" },
+        completed: { label: "Hoàn thành", color: "green" },
+        cancelled: { label: "Đã hủy", color: "red" },
+        returned: { label: "Hoàn trả / Hoàn tiền", color: "volcano" },
+      };
+
+      const status = statusMap[record.status] || { label: "Không xác định", color: "default" };
+
       return (
-        <>
-          {record.status === "initialize" && (
-            <Tag color="processing" key={`initialize-${record.code}`} style={{ cursor: "pointer" }} >
-              Khởi tạo
-            </Tag>
-          )}
-          {record.status === "processing" && (
-            <Tag color={"orange"} key={`received-${record.code}`} data-id={`received-${record.code}`} style={{ cursor: "pointer" }} >
-              Đang xử lý
-            </Tag>
-          )}
-          {record.status === "received" && (
-            <Tag color={"blue"} key={`received-${record.code}`} data-id={`received-${record.code}`} style={{ cursor: "pointer" }} >
-              Đã xác nhận
-            </Tag>
-          )}
-          {record.status === "success" && (
-            <Tag color={"success"} key={`success-${record.code}`} style={{ cursor: "pointer" }} >
-              Hoàn thành
-            </Tag>
-          )}
-          {record.status === "cancelled" && (
-            <Tag color={"red"} key={`cancelled-${record.code}`} style={{ cursor: "pointer" }} >
-              Hoàn thành
-            </Tag>
-          )}
-        </>
-      )
+        <Tag color={status.color} key={`${record.status}-${record.code}`} style={{ cursor: "pointer" }}>
+          {status.label}
+        </Tag>
+      );
     }
   },
   {
@@ -127,7 +116,8 @@ function Orders() {
           products: order.products,
           paymentMethod: order.paymentMethod,
           code: order.code,
-          status: order.status
+          status: order.status,
+          shippingFee: order.shippingFee
         }));
 
         setOrders(transformedOrders)

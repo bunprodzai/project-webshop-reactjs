@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { findCartGet } from "../../../services/client/cartServies";
+import { findCartByUserId } from "../../../services/client/cartServies";
 import { Button, Col, Form, Input, message, Row, Select, Table, Typography } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import { orderPost } from "../../../services/client/checkoutServies";
+import { orderUserPost } from "../../../services/client/checkoutServies";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { updateCartLength } from "../../../actions/cart"
 import { UserOutlined, MailOutlined, PhoneOutlined, HomeOutlined, ShoppingCartOutlined } from "@ant-design/icons"
 import Title from "antd/es/typography/Title";
+import { clearCart, getCart } from "../../../helpers/cartStorage";
+import { getCookie } from "../../../helpers/cookie";
 const { Text } = Typography;
 
 const { Option } = Select
@@ -16,7 +18,7 @@ function InfoCheckout() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const cartId = localStorage.getItem("cartId");
+  const tokenUser = getCookie("tokenUser");
   const [form] = Form.useForm();
   const [cart, setCart] = useState([]);
 
@@ -24,6 +26,7 @@ function InfoCheckout() {
   const [districts, setDistricts] = useState([])
   const [wards, setWards] = useState([])
   const [loading, setLoading] = useState(false)
+  const [totalAmount, setTotalAmount] = useState(0);
 
   const fetchProvinces = async () => {
     try {
@@ -81,12 +84,27 @@ function InfoCheckout() {
   useEffect(() => {
     const fetchApi = async () => {
       try {
-        const response = await findCartGet(cartId);
-        if (response.code === 200) {
-          setCart(response.recordsCart.products);
+        if (tokenUser) {
+          const response = await findCartByUserId(tokenUser);
+
+          if (response.code === 200) {
+            setCart(response.data.products);
+            setTotalAmount(
+              response.data.products.reduce((sum, item) => sum + (((Number(item.price) *
+                (100 - Number(item.discountPercentage))) / 100) * item.quantity), 0
+              ));
+          }
+        } else {
+          // non login
+          setCart(getCart());
+          setTotalAmount(
+            getCart().reduce((sum, item) => sum + (((Number(item.price) *
+              (100 - Number(item.discountPercentage))) / 100) * item.quantity), 0
+            ));
         }
       } catch (error) {
-
+        console.log(error.message);
+        message.error(error.message)
       }
     }
     fetchProvinces();
@@ -102,17 +120,17 @@ function InfoCheckout() {
       key: "product",
       render: (_, record) => {
         const discountedPrice =
-          (Number(record.productInfo.price) * (100 - Number(record.productInfo.discountPercentage))) / 100
+          (Number(record.price) * (100 - Number(record.discountPercentage))) / 100
 
         return (
           <div className="flex items-center gap-4">
             <img
-              src={record.productInfo.thumbnail || "/placeholder.svg"}
-              alt={record.productInfo.title}
+              src={record.thumbnail || "/placeholder.svg"}
+              alt={record.title}
               className="w-16 h-16 object-cover product-image"
             />
             <div className="flex-1">
-              <h4 className="font-semibold text-foreground mb-1">{record.productInfo.title}</h4>
+              <h4 className="font-semibold text-foreground mb-1">{record.title}</h4>
               <div className="text-sm text-muted-foreground space-y-1">
                 <p>
                   Số lượng: <span className="font-medium">{record.quantity}</span>
@@ -120,11 +138,16 @@ function InfoCheckout() {
                 <p>
                   Kích cỡ: <span className="font-medium">{record.size}</span>
                 </p>
-                <p className="price-text font-bold">{discountedPrice.toLocaleString()} đ</p>
+                <p>
+                  Giảm giá: <span className="font-medium">{record.discountPercentage}%</span>
+                </p>
+                <p>
+                  Đơn giá: <span className="font-medium">{discountedPrice.toLocaleString()} đ</span>
+                </p>
               </div>
             </div>
             <div className="text-right">
-              <p className="font-bold text-lg price-text">{record.totalPrice.toLocaleString()} đ</p>
+              <p className="font-bold text-lg price-text">{Number(discountedPrice * Number(record.quantity)).toLocaleString()} đ</p>
             </div>
           </div>
         )
@@ -133,7 +156,6 @@ function InfoCheckout() {
   ]
 
   const onFinish = async (values) => {
-
     // Tìm tên tương ứng từ code
     const provinceName = provinces.find((p) => p.code === values.province)
     const districtName = districts.find((d) => d.code === values.district)
@@ -154,23 +176,24 @@ function InfoCheckout() {
       note: values.note | "",
       email: values.email
     }
+
     try {
-      const resOrderPost = await orderPost({ cartId: cartId, userInfo: userInfo });
+      const resOrderPost = await orderUserPost(
+        { userInfo: userInfo, productItems: cart }, tokenUser ? tokenUser : "");
       if (resOrderPost.code === 200) {
         dispatch(updateCartLength(0));
         navigate(`/order/checkout/pay?code=${resOrderPost.codeOrder}`);
         message.success(resOrderPost.message);
+        clearCart();
       } else if (resOrderPost.code === 204) {
         message.error(resOrderPost.message);
       } else {
-        message.error("Tạo đơn hàng không thành công");
+        message.error(resOrderPost.message);
       }
     } catch (error) {
       message.error(error.message);
     }
   }
-
-  const totalAmount = cart.reduce((total, item) => total + item.totalPrice, 0)
 
   const filterOption = (input, option) => {
     if (option && option.children) {

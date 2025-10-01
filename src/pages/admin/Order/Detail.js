@@ -1,30 +1,18 @@
-import { Button, Card, Col, message, Modal, Row, Table, Tag } from "antd";
+import { Button, Card, Col, Modal, Row, Table, Tag, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { EyeOutlined } from "@ant-design/icons";
-import { getCookie } from "../../../helpers/cookie";
-import { detailOrderGet } from "../../../services/admin/orderServies";
 import NoRole from "../../../components/NoRole";
-
+const { Text } = Typography;
 
 const OrderDetail = (props) => {
   const permissions = JSON.parse(localStorage.getItem('permissions'));
-
-  const { record } = props;
-
-  const token = getCookie("token");
-
+  const { record, shippingFee } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [detail, setDetail] = useState([]);
+  const [products, setProducts] = useState([]);
 
   const fetchApi = async () => {
-    try {
-      const response = await detailOrderGet(record._id, token);
-
-      setDetail(response.data);
-    } catch (error) {
-      message.error('Lỗi khi tải dữ liệu vai trò!');
-    }
+    setProducts(record.products);
   }
 
   useEffect(() => {
@@ -80,7 +68,13 @@ const OrderDetail = (props) => {
       title: 'Tổng tiền',
       dataIndex: 'totalPrice',
       key: 'totalPrice',
-      render: (text) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(text)
+      render: (_, record) => {
+        return (
+          <>
+            <b>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(record.newPrice) * record.quantity)}</b>
+          </>
+        )
+      }
     }
   ];
 
@@ -127,7 +121,7 @@ const OrderDetail = (props) => {
               </Col>
               <Col span={24}>
                 <Table
-                  dataSource={detail.products ? detail.products : []}
+                  dataSource={products}
                   columns={columns}
                   className='table-list'
                   rowKey={(record) => record._id} // Đảm bảo rằng mỗi hàng trong bảng có key duy nhất
@@ -140,26 +134,44 @@ const OrderDetail = (props) => {
                 />
               </Col>
               <Col span={24}>
-                <b>Trạng thái: {record.status === "initialize" && (
-                  <Tag color="processing" key={`initialize-${record.code}`}>
-                    Khởi tạo
-                  </Tag>
-                )}
-                  {record.status === "received" && (
-                    <Tag color="orange" key={`received-${record.code}`} >
-                      Đã nhận
-                    </Tag>
-                  )}
-                  {record.status === "success" && (
-                    <Tag color="success" key={`success-${record.code}`} >
-                      Hoàn thành
-                    </Tag>
-                  )}
-                </b>
+                <b>Trạng thái: {
+                  (() => {
+                    const statusMap = {
+                      initialize: { label: "Khởi tạo", color: "default" },
+                      confirmed: { label: "Đã xác nhận đơn", color: "gold" },
+                      received: { label: "Đã thanh toán", color: "blue" },
+                      processing: { label: "Đang xử lý", color: "orange" },
+                      shipping: { label: "Đang giao hàng", color: "geekblue" },
+                      completed: { label: "Hoàn thành", color: "green" },
+                      cancelled: { label: "Đã hủy", color: "red" },
+                      returned: { label: "Hoàn trả / Hoàn tiền", color: "volcano" },
+                    };
+
+                    const st = statusMap[record.status] || { label: "Không xác định", color: "default" };
+                    return <Tag color={st.color}>{st.label}</Tag>;
+                  })()
+                }</b>
                 <br />
-                <b>
-                  Tổng tiền: {Number(detail.totalPriceProducts).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-                  + {Number(detail.shippingFee).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })} đ</b>
+                <Row justify="space-between">
+                  <Col>
+                    <Text>Phí vận chuyển:  </Text>
+                    <b>
+                      {shippingFee === 0 ? (
+                        <Text>Miễn phí vận chuyển</Text>
+                      ) : (
+                        <Text>{Number(shippingFee).toLocaleString()} đ</Text>
+                      )}
+                    </b>
+                  </Col>
+                </Row>
+                <Row justify="space-between">
+                  <Col>
+                    <Text>Tổng tiền:  </Text>
+                    <b>
+                      {Number(record.totalOrder).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                    </b>
+                  </Col>
+                </Row>
               </Col>
             </Row>
           </Modal>

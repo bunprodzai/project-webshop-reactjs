@@ -20,6 +20,9 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { addFavorite, getFavorites } from "../../../helpers/favorites";
+import { clearCart, getCart } from "../../../helpers/cartStorage";
+import { mergeCartPatch } from "../../../services/client/cartServies";
+import { updateCartLength } from "../../../actions/cart";
 
 export default function LoginUser() {
   const [loading, setLoading] = useState(false)
@@ -27,19 +30,20 @@ export default function LoginUser() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const token = getCookie("tokenUser");
+  const tokenUser = getCookie("tokenUser");
 
   useEffect(() => {
-    if (token) {
+    if (tokenUser) {
       navigate("/"); // đồng bộ Redux state từ cookie
     }
-  }, [navigate, token]);
+
+  }, [navigate, tokenUser]);
 
   const handleSubmit = async (e) => {
-    setLoading(true)
+    setLoading(true);
+
     const response = await loginUserPost(e);
-    console.log(response);
-    
+
     if (response.code === 200) {
       message.success("Đăng nhập thành công");
 
@@ -48,8 +52,18 @@ export default function LoginUser() {
           addFavorite(productId.product_id);
         });
       }
-      console.log(getFavorites());
+      const cartItems = getCart();
+      const responseMergeCart = await mergeCartPatch({ cartItems: cartItems }, response.tokenUser);
 
+      if (responseMergeCart.code === 200) {
+        const newLength = responseMergeCart.totalQuantity;
+        dispatch(updateCartLength(newLength));
+
+        clearCart();
+
+      } else {
+        message.error(responseMergeCart.message)
+      }
 
       setCookie("email", e.email, 24);
       setCookie("avatar", response.avatar, 24);

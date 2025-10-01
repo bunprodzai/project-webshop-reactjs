@@ -25,18 +25,18 @@ function OrderList() {
       // Biến đổi mảng
       const transformedOrders = response.records.map(order => ({
         _id: order._id,
-        cart_id: order.cart_id,
         fullName: order.userInfo.fullName,
         phone: order.userInfo.phone,
         address: order.userInfo.address,
-        totalMoney: order.totalOrder,
+        totalOrder: order.totalOrder,
         createdAt: order.createdAt,
         quantityOrder: order.products.reduce((sum, product) => sum + product.quantity, 0),
         products: order.products,
         paymentMethod: order.paymentMethod,
         code: order.code,
         status: order.status,
-        email: order.userInfo.email
+        email: order.userInfo.email,
+        shippingFee: order.shippingFee
       }));
 
       setOrders(transformedOrders)
@@ -112,32 +112,95 @@ function OrderList() {
       render: (_, record) => {
         // Tính toán option cần disable
         const disabledOptions = {
-          initialize: ['initialize', 'processing'],
-          processing: ['initialize', 'processing'],
-          received: ['initialize', 'processing'],
-          success: ['initialize', 'processing', 'received', 'cancelled'],
-          cancelled: ['initialize', 'processing', 'received', 'success'],
+          initialize: ['initialize', 'received', 'processing', 'shipping', 'completed', 'returned'],
+          confirmed: ['initialize', 'confirmed', 'shipping', 'completed', 'returned'],
+          received: ['initialize', 'received', 'shipping', 'completed', 'returned'],
+          processing: ['initialize', 'confirmed', 'processing', 'completed'],
+          shipping: ['initialize', 'confirmed', 'received', 'processing', 'shipping'],
+          completed: ['initialize', 'confirmed', 'received', 'processing', 'shipping', 'completed', 'cancelled', 'returned'],
+          cancelled: ['initialize', 'confirmed', 'received', 'processing', 'shipping', 'completed', 'cancelled', 'returned'],
+          returned: ['initialize', 'confirmed', 'received', 'processing', 'shipping', 'completed', 'cancelled', 'returned'],
         };
 
         return (
           <Select
             defaultValue={record.status}
-            style={{ width: 140 }}
+            style={{ width: 180 }}
             onChange={(value) => handleChangeStatus(value, record.code)}
           >
-            <Select.Option value="initialize" disabled={disabledOptions[record.status].includes('initialize')}>Khởi tạo</Select.Option>
-            <Select.Option value="processing" disabled={disabledOptions[record.status].includes('processing')}>Đang xử lý</Select.Option>
-            <Select.Option value="received" disabled={disabledOptions[record.status].includes('received')}>Đã nhận</Select.Option>
-            <Select.Option value="success" disabled={disabledOptions[record.status].includes('success')}>Hoàn thành</Select.Option>
-            <Select.Option value="cancelled" disabled={disabledOptions[record.status].includes('cancelled')}>Đã hủy</Select.Option>
+            <Select.Option
+              value="initialize"
+              style={{ color: "#1677ff" }} // xanh dương
+              disabled={disabledOptions[record.status].includes("initialize")}
+            >
+              <span style={{ color: "#1677ff" }}>Khởi tạo</span>
+            </Select.Option>
+
+            <Select.Option
+              value="received"
+              style={{ color: "#fa8c16" }} // cam
+              disabled={disabledOptions[record.status].includes("received")}
+            >
+              <span style={{ color: "#fa8c16" }}>Đã thanh toán</span>
+            </Select.Option>
+
+            <Select.Option
+              value="confirmed"
+              style={{ color: "#722ed1" }} // tím
+              disabled={disabledOptions[record.status].includes("confirmed")}
+            >
+              <span style={{ color: "#722ed1" }}>Đã xác nhận đơn</span>
+            </Select.Option>
+
+            <Select.Option
+              value="processing"
+              style={{ color: "#13c2c2" }} // xanh ngọc
+              disabled={disabledOptions[record.status].includes("processing")}
+            >
+              <span style={{ color: "#13c2c2" }}>Đang xử lý đơn</span>
+            </Select.Option>
+
+            <Select.Option
+              value="shipping"
+              style={{ color: "#1890ff" }} // xanh dương sáng
+              disabled={disabledOptions[record.status].includes("shipping")}
+            >
+              <span style={{ color: "#1890ff" }}>Đang giao hàng</span>
+            </Select.Option>
+
+            <Select.Option
+              value="completed"
+              style={{ color: "#52c41a" }} // xanh lá
+              disabled={disabledOptions[record.status].includes("completed")}
+            >
+              <span style={{ color: "#52c41a" }}>Hoàn thành</span>
+            </Select.Option>
+
+            <Select.Option
+              value="cancelled"
+              style={{ color: "red", fontWeight: 600 }} // đỏ
+              disabled={disabledOptions[record.status].includes("cancelled")}
+            >
+
+              <span style={{ color: "red" }}>Đã hủy</span>
+            </Select.Option>
+
+            <Select.Option
+              value="returned"
+              style={{ color: "#d46b08" }} // nâu cam
+              disabled={disabledOptions[record.status].includes("returned")}
+            >
+              <span style={{ color: "#d46b08" }}>Hoàn hàng / Hoàn tiền</span>
+            </Select.Option>
           </Select>
+
         );
       }
     },
     {
       title: 'Tổng tiền',
-      dataIndex: 'totalMoney',
-      key: 'totalMoney',
+      dataIndex: 'totalOrder',
+      key: 'totalOrder',
       render: (text) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(text)
     },
     {
@@ -159,7 +222,7 @@ function OrderList() {
         return (
           <>
             <div key={`action-${record._id}`}>
-              <OrderDetail record={record} />
+              <OrderDetail record={record} shippingFee={record.shippingFee} />
             </div>
           </>
         )

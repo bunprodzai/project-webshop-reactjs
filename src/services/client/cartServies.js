@@ -1,37 +1,26 @@
-import { get, getAuth, patch, patchAuth } from "../../utils/request";
-
-export const findCartGet = async (cartId) => {
-  const result = await get(`/cart/get-cart/${cartId}`);
-  return result;
-}
-
-export const cartCreateGet = async () => {
-  const result = await get(`/cart/create`);
-  return result;
-}
+import { getAuth, patchAuth } from "../../utils/request";
 
 export const findCartByUserId = async (tokenUser) => {
-  const result = await getAuth(`/cart/find`, tokenUser);
+  const result = await getAuth(`/cart/get-cart`, tokenUser);
   return result;
 }
 
-export const updateUserPatch = async (options, tokenUser) => {
-  const result = await patchAuth(`/cart/update-user`, options, tokenUser);
+export const addCartPatch = async (productId, options, tokenUser) => {
+  const result = await patchAuth(`/cart/add/${productId}`, options, tokenUser);
   return result;
 }
 
-export const addCartPatch = async (productId, options) => {
-  const result = await patch(`/cart/add/${productId}`, options);
+export const updateCartPatch = async (productId, options, tokenUser) => {
+  const result = await patchAuth(`/cart/update/${productId}`, options, tokenUser);
   return result;
 }
 
-
-export const updateCartPatch = async (productId, options) => {
-  const result = await patch(`/cart/update/${productId}`, options);
+export const delCartPatch = async (productId, options, tokenUser) => {
+  const result = await patchAuth(`/cart/delete/${productId}`, options, tokenUser);
   return result;
 }
 
-export const delCartPatch = async (productId, options) => {
-  const result = await patch(`/cart/delete/${productId}`, options);
+export const mergeCartPatch = async (options, tokenUser) => {
+  const result = await patchAuth(`/cart/merge-cart`, options, tokenUser);
   return result;
 }

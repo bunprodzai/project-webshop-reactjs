@@ -21,7 +21,7 @@ function LogoutUser() {
     removeAllFavorite();
     console.log(getFavorites());
     message.success("Đăng xuất thành công")
-    navigate("/");
+    navigate("/login");
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

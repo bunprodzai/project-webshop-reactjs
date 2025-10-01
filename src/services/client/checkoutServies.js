@@ -1,7 +1,7 @@
-import { get, patch, post } from "../../utils/request";
+import { get, patch, post, postAuth } from "../../utils/request";
 
-export const orderPost = async (options) => {
-  const result = await post(`/checkout/order`, options);
+export const orderUserPost = async (options, tokenUser) => {
+  const result = await postAuth(`/checkout/order-user`, options, tokenUser);
   return result;
 }
 

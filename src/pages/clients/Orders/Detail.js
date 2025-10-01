@@ -1,12 +1,11 @@
-import { Button, Card, Col, Modal, Row, Table, Tag } from "antd";
+import { Button, Card, Col, Modal, Row, Table, Tag, Typography } from "antd";
 import { useState } from "react";
 import { EyeOutlined } from "@ant-design/icons";
-
+const { Text } = Typography;
 
 const OrderDetail = (props) => {
-
   const { record } = props;
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => {
@@ -72,80 +71,90 @@ const OrderDetail = (props) => {
   };
 
   return (
-        <>
-          <Button icon={<EyeOutlined />} type="primary" ghost onClick={showModal} />
-          <Modal
-            title="Chi tiết đơn hàng"
-            open={isModalOpen}
-            onOk={handleOk}
-            onCancel={handleCancel}
-            footer={null}
-            width={"70%"}
-          >
-            <Row>
-              <Col span={24}>
-                <Card title="Thông tin khách hàng" style={{ height: "100%" }}>
-                  <Card
-                    style={{
-                      marginTop: 10,
-                      width: "100%"
-                    }}
-                    type="inner"
-                  >
-                    <p>Tên: {record.fullName}</p>
-                    <p>Số điện thoại: {record.phone}</p>
-                    <p>Địa chỉ: {record.address}</p>
-                    <p>Ngày tạo: {formatDate(record.createdAt)}</p>
-                  </Card>
-                </Card>
-              </Col>
-              <Col span={24}>
-                <Table
-                  dataSource={record.products ? record.products : []}
-                  columns={columns}
-                  className='table-list'
-                  rowKey={(record) => record._id} // Đảm bảo rằng mỗi hàng trong bảng có key duy nhất
-                  pagination={{
-                    pageSize: 5, // Số mục trên mỗi trang
-                    total: record.products.length, // Tổng số mục (dựa trên data)
-                    showSizeChanger: false, // Ẩn tính năng thay đổi số mục trên mỗi trang
-                    style: { display: 'flex', justifyContent: 'center' } // Căn giữa phân trang
-                  }}
-                />
-              </Col>
-              <Col span={24}>
-                <b>Trạng thái: {record.status === "initialize" && (
-                  <Tag color="processing" key={`initialize-${record.code}`}>
-                    Khởi tạo
-                  </Tag>
-                )}
-                  {record.status === "received" && (
-                    <Tag color="orange" key={`received-${record.code}`} >
-                      Đã xác nhận
-                    </Tag>
-                  )}
-                  {record.status === "success" && (
-                    <Tag color="success" key={`success-${record.code}`} >
-                      Hoàn thành
-                    </Tag>
-                  )}
-                  {record.status === "processing" && (
-                    <Tag color="green" key={`processing-${record.code}`} >
-                      Hoàn thành
-                    </Tag>
-                  )}
-                  {record.status === "cancelled" && (
-                    <Tag color="red" key={`cancelled-${record.code}`} >
-                      Hoàn thành
-                    </Tag>
+    <>
+      <Button icon={<EyeOutlined />} type="primary" ghost onClick={showModal} />
+      <Modal
+        title="Chi tiết đơn hàng"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={null}
+        width={"70%"}
+      >
+        <Row>
+          <Col span={24}>
+            <Card title="Thông tin khách hàng" style={{ height: "100%" }}>
+              <Card
+                style={{
+                  marginTop: 10,
+                  width: "100%"
+                }}
+                type="inner"
+              >
+                <p>Tên: {record.fullName}</p>
+                <p>Số điện thoại: {record.phone}</p>
+                <p>Địa chỉ: {record.address}</p>
+                <p>Ngày tạo: {formatDate(record.createdAt)}</p>
+              </Card>
+            </Card>
+          </Col>
+          <Col span={24}>
+            <Table
+              dataSource={record.products ? record.products : []}
+              columns={columns}
+              className='table-list'
+              rowKey={(record) => record._id} // Đảm bảo rằng mỗi hàng trong bảng có key duy nhất
+              pagination={{
+                pageSize: 5, // Số mục trên mỗi trang
+                total: record.products.length, // Tổng số mục (dựa trên data)
+                showSizeChanger: false, // Ẩn tính năng thay đổi số mục trên mỗi trang
+                style: { display: 'flex', justifyContent: 'center' } // Căn giữa phân trang
+              }}
+            />
+          </Col>
+          <Col span={24}>
+            <b>Trạng thái: {
+              (() => {
+                const statusMap = {
+                  initialize: { label: "Khởi tạo", color: "default" },
+                  confirmed: { label: "Đã xác nhận đơn", color: "gold" },
+                  received: { label: "Đã thanh toán", color: "blue" },
+                  processing: { label: "Đang xử lý", color: "orange" },
+                  shipping: { label: "Đang giao hàng", color: "geekblue" },
+                  completed: { label: "Hoàn thành", color: "green" },
+                  cancelled: { label: "Đã hủy", color: "red" },
+                  returned: { label: "Hoàn trả / Hoàn tiền", color: "volcano" },
+                };
+
+                const st = statusMap[record.status] || { label: "Không xác định", color: "default" };
+                return <Tag color={st.color}>{st.label}</Tag>;
+              })()
+            }</b>
+            <br />
+            <Row justify="space-between">
+              <Col>
+                <Text>Phí vận chuyển:  </Text>
+                <b>
+                  {record.shippingFee === 0 ? (
+                    <Text>Miễn phí vận chuyển</Text>
+                  ) : (
+                    <Text>{Number(record.shippingFee).toLocaleString()} đ</Text>
                   )}
                 </b>
-                <br />
-                Tổng tiền: <b>{Number(record.totalOrder).toLocaleString()} VNĐ</b>
               </Col>
             </Row>
-          </Modal>
-        </>
+            <Row justify="space-between">
+              <Col>
+                <Text>Tổng tiền:  </Text>
+                <b>
+                  {record.totalOrder.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                </b>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </Modal>
+    </>
   )
 }
 

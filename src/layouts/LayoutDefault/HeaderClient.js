@@ -3,12 +3,14 @@ import { getCookie } from "../../helpers/cookie";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import { settingGeneralGet } from "../../services/client/settingServies";
-import { findCartGet } from "../../services/client/cartServies";
+import { findCartByUserId } from "../../services/client/cartServies";
 import { updateCartLength } from "../../actions/cart";
 import Register from "../../pages/clients/Register";
 
 import { ShoppingCartOutlined, SearchOutlined, HeartOutlined, UserOutlined, LogoutOutlined, CloseOutlined, MenuOutlined } from "@ant-design/icons"
-import { Layout, Button, Input, Badge, Space, Form, Row, Col, Drawer, Divider, Menu, Dropdown, Avatar } from "antd"
+import { Layout, Button, Input, Badge, Space, Form, Row, Col, Drawer, Divider, Menu, Dropdown, Avatar, message } from "antd"
+import { useCart } from "../../hooks/client/useCart";
+import { getCart } from "../../helpers/cartStorage";
 
 const { Header } = Layout
 
@@ -44,14 +46,19 @@ function HeaderClient() {
         // Lấy thông tin web
         const response = await settingGeneralGet();
         setSetting(response.settings);
+
         // Xử lý giỏ hàng
-        const cartId = localStorage.getItem("cartId");
-        const resCart = await findCartGet(cartId);
-        if (resCart.code === 200) {
-          // Update số lượng sp giỏ hàng
-          dispatch(updateCartLength(resCart.recordsCart.totalQuantityProduts));
+        if (tokenUser) {
+          const resCart = await findCartByUserId(tokenUser);
+          if (resCart.code === 200) {
+            // Update số lượng sp giỏ hàng
+            dispatch(updateCartLength(resCart.totalQuantity));
+          }
+        } else {
+          dispatch(updateCartLength(getCart().reduce((sum, item) => sum + item.quantity, 0)));
         }
       } catch (error) {
+        message.error(error.message);
       }
     };
 

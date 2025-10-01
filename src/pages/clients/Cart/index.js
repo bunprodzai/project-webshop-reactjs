@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react"
-import { findCartGet } from "../../../services/client/cartServies"
+import { findCartByUserId } from "../../../services/client/cartServies"
 import { Table, Button, InputNumber, Typography, Card, Row, Col, Space, Divider } from "antd"
 import { DeleteOutlined, ShoppingCartOutlined } from "@ant-design/icons"
 import "antd/dist/reset.css"
 import { useCart } from "../../../hooks/client/useCart"
+import { getCart } from "../../../helpers/cartStorage"
+import { getCookie } from "../../../helpers/cookie"
 const { Text, Title } = Typography
 
 function Cart() {
   const { update, remove } = useCart();
 
-  const cartId = localStorage.getItem("cartId")
+  const tokenUser = getCookie("tokenUser")
   const [cart, setCart] = useState([])
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+  const [totalAmount, setTotalAmount] = useState(0);
 
   // Handle window resize
   useEffect(() => {
@@ -25,9 +28,24 @@ function Cart() {
 
   const fetchApi = async () => {
     try {
-      const response = await findCartGet(cartId)
-      if (response.code === 200) {
-        setCart(response.recordsCart.products)
+      if (tokenUser) {
+        // login
+        const response = await findCartByUserId(tokenUser);
+
+        if (response.code === 200) {
+          setCart(response.data.products);
+          setTotalAmount(
+            response.data.products.reduce((sum, item) => sum + (((Number(item.price) *
+              (100 - Number(item.discountPercentage))) / 100) * item.quantity), 0
+            ));
+        }
+      } else {
+        // non login
+        setCart(getCart());
+        setTotalAmount(
+          getCart().reduce((sum, item) => sum + (((Number(item.price) *
+            (100 - Number(item.discountPercentage))) / 100) * item.quantity), 0
+          ));
       }
     } catch (error) {
       console.error("Error fetching cart:", error)
@@ -38,19 +56,24 @@ function Cart() {
     fetchApi()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
   // Xử lý thay đổi số lượng
   const handleQuantityChange = (e, record) => {
-    const check = update(record.productInfo._id, e, record.size);
+    const check = update(record.product_id, e, record.size);
     if (check) {
-      const updatedItems = cart.map((item) => (item._id === record._id ? { ...item, quantity: e } : item))
-      setCart(updatedItems)
+      const updatedItems = cart.map((item) => (item.product_id === record.product_id ? { ...item, quantity: e } : item));
+      setCart(updatedItems);
+      setTotalAmount(
+        updatedItems.reduce((sum, item) => sum + (((Number(item.price) *
+          (100 - Number(item.discountPercentage))) / 100) * item.quantity), 0
+        ));
     }
   }
 
   // Xóa sản phẩm
-  const handleRemove = (record) => {
-    const check = remove(record.productInfo._id, record.size);
+  const handleRemove = async (record) => {
+    const check = await remove(record.product_id, record.size);
+    console.log(check);
+    
     if (check) {
       fetchApi();
     }
@@ -62,8 +85,8 @@ function Cart() {
       <Row gutter={[16, 16]} align="middle">
         <Col span={6}>
           <img
-            src={item.productInfo.thumbnail || "/placeholder.svg"}
-            alt={item.productInfo.title}
+            src={item.thumbnail || "/placeholder.svg"}
+            alt={item.title}
             style={{
               width: "100%",
               height: "auto",
@@ -75,7 +98,7 @@ function Cart() {
         <Col span={18}>
           <div>
             <a
-              href={`/detail/${item.productInfo.slug}`}
+              href={`/detail/${item.slug}`}
               style={{
                 fontSize: 16,
                 fontWeight: 500,
@@ -84,21 +107,21 @@ function Cart() {
                 color: "#1890ff",
               }}
             >
-              {item.productInfo.title}
+              {item.title}
             </a>
             <Space direction="vertical" size={4} style={{ width: "100%" }}>
               <Text type="secondary">Size: {item.size}</Text>
               <Text>
-                Giá: <Text strong>{item.productInfo.price.toLocaleString()} VNĐ</Text>
+                Giá: <Text strong>{item.price.toLocaleString()} VNĐ</Text>
               </Text>
               <Text>
-                Giảm giá: <Text type="warning">{item.productInfo.discountPercentage}%</Text>
+                Giảm giá: <Text type="warning">{item.discountPercentage}%</Text>
               </Text>
               <Text>
                 Thành tiền:{" "}
                 <Text strong style={{ color: "#52c41a" }}>
                   {(
-                    (Number(item.productInfo.price) * (100 - Number(item.productInfo.discountPercentage))) /
+                    (Number(item.price) * (100 - Number(item.discountPercentage))) /
                     100
                   ).toLocaleString()}{" "}
                   VNĐ
@@ -134,7 +157,7 @@ function Cart() {
       <Row justify="end" style={{ marginTop: 12 }}>
         <Col>
           <Text strong style={{ fontSize: 16, color: "#f5222d" }}>
-            Tổng: {item.totalPrice.toLocaleString()} VNĐ
+            Tổng tiền: {(((Number(item.price) * (100 - Number(item.discountPercentage))) / 100) * item.quantity).toLocaleString()} đ
           </Text>
         </Col>
       </Row>
@@ -151,8 +174,8 @@ function Cart() {
       render: (_, record) => (
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <img
-            src={record.productInfo.thumbnail || "/placeholder.svg"}
-            alt={record.productInfo.title}
+            src={record.thumbnail || "/placeholder.svg"}
+            alt={record.title}
             style={{
               width: 60,
               height: 60,
@@ -162,7 +185,7 @@ function Cart() {
           />
           <div>
             <a
-              href={`/detail/${record.productInfo.slug}`}
+              href={`/detail/${record.slug}`}
               style={{
                 fontWeight: 500,
                 fontSize: 14,
@@ -170,7 +193,7 @@ function Cart() {
                 marginBottom: 8,
               }}
             >
-              {record.productInfo.title}
+              {record.title}
             </a>
             <Button
               type="link"
@@ -191,14 +214,14 @@ function Cart() {
       dataIndex: "price",
       key: "price",
       width: 120,
-      render: (_, record) => <Text strong>{record.productInfo.price.toLocaleString()} đ</Text>,
+      render: (_, record) => <Text strong>{Number(record.price).toLocaleString()} đ</Text>,
     },
     {
       title: "Giảm giá",
       dataIndex: "discountPercentage",
       key: "discountPercentage",
       width: 100,
-      render: (_, record) => <Text type="warning">{record.productInfo.discountPercentage}%</Text>,
+      render: (_, record) => <Text type="warning">{record.discountPercentage}%</Text>,
     },
     {
       title: "Thành tiền",
@@ -207,10 +230,7 @@ function Cart() {
       width: 130,
       render: (_, record) => (
         <Text strong style={{ color: "#52c41a" }}>
-          {(
-            (Number(record.productInfo.price) * (100 - Number(record.productInfo.discountPercentage))) /
-            100
-          ).toLocaleString()}{" "}
+          {((Number(record.price) * (100 - Number(record.discountPercentage))) / 100).toLocaleString()}{" "}
           đ
         </Text>
       ),
@@ -241,15 +261,13 @@ function Cart() {
       dataIndex: "totalPrice",
       key: "totalPrice",
       width: 130,
-      render: (text) => (
+      render: (_, record) => (
         <Text strong style={{ color: "#f5222d", fontSize: 16 }}>
-          {text.toLocaleString()} đ
+          {(((Number(record.price) * (100 - Number(record.discountPercentage))) / 100) * record.quantity).toLocaleString()} đ
         </Text>
-      ),
+      )
     },
   ]
-
-  const totalAmount = cart.reduce((total, item) => total + item.totalPrice, 0)
 
   return (
     <div

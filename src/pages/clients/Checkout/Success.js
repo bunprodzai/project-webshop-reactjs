@@ -25,9 +25,10 @@ const SuccessCheckout = () => {
     const fetchApi = async () => {
       try {
         setLoading(true)
-        const response = await detailOrderGet(code)
+        const response = await detailOrderGet(code);
+
         if (response.code === 200) {
-          setOrder(response.recordsOrder)
+          setOrder(response.data)
         }
       } catch (error) {
         console.error("Lỗi lấy đơn hàng: ", error)
@@ -60,12 +61,16 @@ const SuccessCheckout = () => {
 
   const getStatusConfig = (status) => {
     const statusMap = {
-      initialize: { text: "Đơn hàng mới khởi tạo", color: "red" },
-      received: { text: "Đã nhận đơn", color: "blue" },
+      initialize: { text: "Khởi tạo", color: "default" },
+      confirmed: { text: "Đã xác nhận", color: "gold" },
+      received: { text: "Đã thanh toán", color: "blue" },
       processing: { text: "Đang xử lý", color: "orange" },
-      shipped: { text: "Đang giao", color: "purple" },
-      delivered: { text: "Đã giao", color: "green" },
+      shipping: { text: "Đang giao hàng", color: "geekblue" },
+      completed: { text: "Hoàn thành", color: "green" },
+      cancelled: { text: "Đã hủy", color: "red" },
+      returned: { text: "Hoàn trả / Hoàn tiền", color: "volcano" }
     }
+
     return statusMap[status] || { text: status, color: "default" }
   }
 
@@ -110,8 +115,6 @@ const SuccessCheckout = () => {
     )
   }
 
-    console.log(order);
-    
   const statusConfig = getStatusConfig(order.status)
 
   return (

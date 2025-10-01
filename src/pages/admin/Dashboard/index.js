@@ -62,11 +62,14 @@ const orderColumns = [
     key: "status",
     render: (status) => {
       const statusConfig = {
-        initialize: { color: "green", text: "Khởi tạo" },
-        success: { color: "green", text: "Hoàn thành" },
+        initialize: { color: "default", text: "Khởi tạo" },
+        confirmed: { color: "gold", text: "Hoàn thành" },
         processing: { color: "orange", text: "Đang xử lý" },
         received: { color: "blue", text: "Đã xác nhận" },
+        shipping: {color: "geekblue", text: "Đang giao hàng"},
+        completed: {color: "green", text: "Hoàn thành"},
         cancelled: { color: "red", text: "Đã hủy" },
+        returned: {color: "volcano", text: "Hoàn trả / Hoàn tiền"},
       }
       const config = statusConfig[status]
       return <Tag color={config.color}>{config.text}</Tag>

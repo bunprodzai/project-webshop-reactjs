@@ -29,9 +29,11 @@ function CheckoutPay() {
   const fetchApi = async () => {
     try {
       const response = await detailOrderGet(code);
+      console.log(response);
+      
       if (response.code === 200) {
-        setOrder(response.recordsOrder);
-        setShippingFee(response.shippingFee);
+        setOrder(response.data);
+        setShippingFee(response.data.shippingFee);
       }
     } catch (error) {
 
@@ -66,8 +68,7 @@ function CheckoutPay() {
       } else {
         try {
           const response = await successOrderPatch(order._id, {
-            paymentMethod: paymentMethod,
-            shippingFee: shippingFee
+            paymentMethod: paymentMethod
           });
           if (response.code === 200) {
             message.success(response.message);
